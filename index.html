@@ -1,0 +1,62 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="manifest" href="manifest.json">
+<title>Melting Pro 2.1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="header">
+  <div class="brand"><img src="icons/icon-A-192.png" alt="icon"><div><h1 id="title">Melting Pro 2.1</h1><div id="subtitle" class="subtitle">Aarav Steel Tech - Offline calculators</div></div></div>
+  <div class="controls"><button id="langBtn" class="lang">हिंदी</button></div>
+</header>
+<main class="container">
+  <section class="card">
+    <label id="selLabel">Select Calculator</label>
+    <select id="calculator">
+      <option value="1" id="opt1">Si-Mn Required (target Mn%)</option>
+      <option value="2" id="opt2">Mn Recovery (%)</option>
+      <option value="3" id="opt3">FeO from Fe(M)</option>
+      <option value="4" id="opt4">Carbon Adjustment (Up/Down)</option>
+    </select>
+  </section>
+
+  <section class="card calc-section" id="sec1">
+    <h3>Si-Mn Required (with recovery)</h3>
+    <div class="row"><label>Heat mass (kg)<input id="heatKg" type="number" /></label><label>Current Mn%<input id="curMn" type="number" step="0.001" /></label></div>
+    <div class="row"><label>Target Mn%<input id="targetMn" type="number" step="0.001" /></label><label>Alloy Mn%<input id="alloyMn" type="number" step="0.01" value="14" /></label></div>
+    <div class="row"><label>Recovery (%)<input id="recMn" type="number" step="0.1" value="75" /></label><label></label></div>
+  </section>
+
+  <section class="card calc-section" id="sec2" style="display:none">
+    <h3>Mn Recovery</h3>
+    <div class="row"><label>Metal weight (kg)<input id="rec_metalKg" type="number" /></label><label>Mn in metal (%)<input id="rec_mnMetal" type="number" step="0.001" /></label></div>
+    <div class="row"><label>Alloy weight (kg)<input id="rec_alloyKg" type="number" /></label><label>Mn in alloy (%)<input id="rec_mnAlloy" type="number" step="0.01" value="14" /></label></div>
+  </section>
+
+  <section class="card calc-section" id="sec3" style="display:none">
+    <h3>FeO from Fe(M)</h3>
+    <div class="row"><label>Fe total % (assumed)<input id="fe_tot" type="number" step="0.01" value="92" /></label><label>Fe(M) %<input id="fe_m" type="number" step="0.01" value="82" /></label></div>
+  </section>
+
+  <section class="card calc-section" id="sec4" style="display:none">
+    <h3>Carbon Adjustment (Up / Down)</h3>
+    <div class="row"><label>Metal weight (kg)<input id="c_metalKg" type="number" /></label><label>Current C%<input id="c_cur" type="number" step="0.001" /></label></div>
+    <div class="row"><label>Target C%<input id="c_target" type="number" step="0.001" /></label><label></label></div>
+    <div class="row"><label id="matLabel">Sponge Iron (FeO %)</label><label>Material % <input id="c_matPct" type="number" step="0.01" value="20" /></label></div>
+    <div class="row"><label>Material type<select id="c_mat"><option value="sponge">Sponge Iron (FeO %)</option><option value="cast">Cast Iron / Carburizer (C %)</option></select></label><label></label></div>
+  </section>
+
+  <section class="card">
+    <div style="display:flex;gap:8px;align-items:center"><button id="calcBtn" class="btn">Calculate</button><button id="resetBtn" class="btn" style="background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)">Reset</button></div>
+    <div id="allRes" class="result"></div>
+  </section>
+
+</main>
+<footer class="footer">Made for plant use — Melting Pro 2.1 (Aarav Steel Tech)</footer>
+<script src="app.js"></script>
+</body>
+</html>
