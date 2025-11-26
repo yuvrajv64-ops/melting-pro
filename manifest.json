@@ -1,21 +1,22 @@
 {
-  "short_name": "MeltingPro2.1",
-  "name": "Melting Pro 2.1 - Aarav Steel Tech",
+  "name": "MeltingPro",
+  "short_name": "MeltingPro",
+  "description": "Offline furnace calculators: Si-Mn required, Mn recovery, FeO from Fe(M) and Carbon adjustment. Developed by Aarav Steel Tech.",
+  "start_url": "index.html",
+  "scope": "./",
+  "display": "standalone",
+  "theme_color": "#1e3a8a",
+  "background_color": "#0f172a",
   "icons": [
     {
-      "src": "icons/icon-A-192.png",
+      "src": "icon-A-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "icons/icon-A-512.png",
+      "src": "icon-gear-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
-  ],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#0f1724",
-  "background_color": "#0f1724",
-  "description": "Melting Pro 2.1 - SiMn, Mn recovery, Carbon adjustment. Offline bilingual."
+  ]
 }
