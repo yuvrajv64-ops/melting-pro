@@ -1,36 +1,157 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MeltingPro</title>
+  <meta charset="utf-8">
+  <title>MeltingPro</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
 
-    <!-- Manifest added -->
-    <link rel="manifest" href="manifest.json">
+  <!-- PWA manifest -->
+  <link rel="manifest" href="manifest.json">
 
-    <!-- Basic style support -->
-    <link rel="stylesheet" href="style.css" />
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
+<header>
+  <h1>MeltingPro – Induction Furnace Toolkit <span class="badge">Offline</span></h1>
+  <p>Si-Mn • Mn recovery • FeO from Fe(M) • Carbon up / down (Aarav Steel Tech)</p>
+</header>
 
-<h2>MeltingPro Furnace Tools</h2>
-<p>Si-Mn Required • Mn Recovery • FeO from Fe(M) • Carbon Adjustment</p>
+<main>
+  <section class="card controls">
+    <div>
+      <label for="calcSel" id="lblCalc">Select calculator / कैलकुलेटर चुनें</label>
+      <select id="calcSel">
+        <option value="simn">Si-Mn required (with recovery)</option>
+        <option value="mnrec">Mn recovery (%)</option>
+        <option value="feo">FeO from Fe(M)</option>
+        <option value="carb">Carbon adjustment (up / down)</option>
+      </select>
+    </div>
+    <button id="langBtn" class="btn-ghost">हिंदी</button>
+  </section>
 
-<!-- Your existing content -->
-<div id="app"></div>
+  <!-- Si-Mn required -->
+  <section class="card calc" id="sec-simn">
+    <h3 id="hSimn">Si-Mn required (with recovery)</h3>
+    <div class="row">
+      <div>
+        <label id="lblHeat">Heat mass (kg)</label>
+        <input id="heatKg" type="number" inputmode="decimal">
+      </div>
+      <div>
+        <label id="lblCurMn">Current Mn %</label>
+        <input id="curMn" type="number" step="0.001" inputmode="decimal">
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label id="lblTargetMn">Target Mn %</label>
+        <input id="targetMn" type="number" step="0.001" inputmode="decimal">
+      </div>
+      <div>
+        <label id="lblAlloyMn">Alloy Mn % (Si-Mn)</label>
+        <input id="alloyMn" type="number" step="0.01" inputmode="decimal" value="14">
+      </div>
+    </div>
+    <label id="lblRecMn">Expected Mn recovery %</label>
+    <input id="recMn" type="number" step="0.1" inputmode="decimal" value="75">
+  </section>
 
-<!-- Your app JS -->
+  <!-- Mn recovery -->
+  <section class="card calc" id="sec-mnrec" style="display:none">
+    <h3 id="hMnrec">Mn recovery (%)</h3>
+    <div class="row">
+      <div>
+        <label id="lblRecMetal">Metal weight (kg)</label>
+        <input id="rec_metalKg" type="number" inputmode="decimal">
+      </div>
+      <div>
+        <label id="lblRecMnMetal">Mn in metal %</label>
+        <input id="rec_mnMetal" type="number" step="0.001" inputmode="decimal">
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label id="lblRecAlloyKg">Alloy weight (kg)</label>
+        <input id="rec_alloyKg" type="number" inputmode="decimal">
+      </div>
+      <div>
+        <label id="lblRecMnAlloy">Mn in alloy % (Si-Mn)</label>
+        <input id="rec_mnAlloy" type="number" step="0.01" inputmode="decimal" value="14">
+      </div>
+    </div>
+  </section>
+
+  <!-- FeO from Fe(M) -->
+  <section class="card calc" id="sec-feo" style="display:none">
+    <h3 id="hFeo">FeO from Fe(M)</h3>
+    <div class="row">
+      <div>
+        <label id="lblFeTot">Fe total % (assumed)</label>
+        <input id="fe_tot" type="number" step="0.01" inputmode="decimal" value="92">
+      </div>
+      <div>
+        <label id="lblFeM">Fe(M) %</label>
+        <input id="fe_m" type="number" step="0.01" inputmode="decimal" value="82">
+      </div>
+    </div>
+    <p class="hint" id="feoHint">
+      Uses relation FeO% = (FeT − Fe(M)) / 0.777  (FeO me Fe ≈ 77.7%)
+    </p>
+  </section>
+
+  <!-- Carbon adjustment -->
+  <section class="card calc" id="sec-carb" style="display:none">
+    <h3 id="hCarb">Carbon adjustment (up / down)</h3>
+    <div class="row">
+      <div>
+        <label id="lblCMetal">Metal weight (kg)</label>
+        <input id="c_metalKg" type="number" inputmode="decimal">
+      </div>
+      <div>
+        <label id="lblCurC">Current C %</label>
+        <input id="c_cur" type="number" step="0.001" inputmode="decimal">
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label id="lblTargetC">Target C %</label>
+        <input id="c_target" type="number" step="0.001" inputmode="decimal">
+      </div>
+      <div>
+        <label id="lblMatType">Material type</label>
+        <select id="c_mat">
+          <option value="sponge">Sponge iron (FeO %)</option>
+          <option value="cast">Cast / carburizer (C %)</option>
+        </select>
+      </div>
+    </div>
+    <label id="lblMatPct">FeO % in sponge iron</label>
+    <input id="c_matPct" type="number" step="0.01" inputmode="decimal" value="12">
+    <p class="hint" id="cHint">
+      Sponge iron formula (carbon down): Sponge kg = ΔC% × Metal(kg) × 6 ÷ FeO% 
+    </p>
+  </section>
+
+  <section class="card">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button id="btnCalc" class="btn-primary">Calculate</button>
+      <button id="btnReset" class="btn-ghost">Reset</button>
+    </div>
+    <div id="result" class="result"></div>
+  </section>
+</main>
+
+<footer>Developed by Aarav Steel Tech © 2025 • Designed for induction furnace shops</footer>
+
 <script src="app.js"></script>
-
-<!-- Service Worker Registration (MUST HAVE) -->
 <script>
+  // Service worker registration for offline use
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("service-worker.js")
-      .then(() => console.log("SW Registered"))
-      .catch((err) => console.log("SW Error:", err));
+      .catch(err => console.log("SW error", err));
   }
 </script>
-
 </body>
 </html>
