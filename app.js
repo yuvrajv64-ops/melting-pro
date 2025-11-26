@@ -1,2 +1,199 @@
+function toNum(v){ return Number(v || 0); }
 
-function toNum(v){return Number(v||0);}let lang='en';const T={en:{title:'Melting Pro 2.1 - Aarav Steel Tech',subtitle:'Offline furnace calculators',select:'Select Calculator',opt1:'Si-Mn Required (target Mn%)',opt2:'Mn Recovery (%)',opt3:'FeO from Fe(M)',opt4:'Carbon Adjustment (Up / Down)',calc:'Calculate',reset:'Reset',sponge_label:'Sponge Iron (FeO %)',cast_label:'Cast / Carburizer (C %)'},hi:{title:'Melting Pro 2.1 - आरव स्टील टेक',subtitle:'ऑफ़लाइन फर्नेस कैलकुलेटर',select:'कैलकुलेटर चुनें',opt1:'Si-Mn आवश्यक (लक्षित Mn%)',opt2:'Mn रीकवरी (%)',opt3:'Fe(M) से FeO',opt4:'कार्बन समायोजन (ऊपर/नीचे)',calc:'गणना करें',reset:'रीसेट',sponge_label:'स्पॉन्ज आयरन (FeO %)',cast_label:'कास्ट/कार्ब्यूराइज़र (C %)'}};function t(k){return T[lang][k]||k;}function renderUI(){document.getElementById('title').textContent=t('title');document.getElementById('subtitle').textContent=t('subtitle');document.getElementById('selLabel').textContent=t('select');document.getElementById('opt1').textContent=t('opt1');document.getElementById('opt2').textContent=t('opt2');document.getElementById('opt3').textContent=t('opt3');document.getElementById('opt4').textContent=t('opt4');document.getElementById('calcBtn').textContent=t('calc');document.getElementById('resetBtn').textContent=t('reset');document.getElementById('langBtn').textContent=(lang==='en')?'हिंदी':'EN';document.getElementById('matLabel').textContent=(document.getElementById('c_mat').value==='sponge')?t('sponge_label'):t('cast_label');}function init(){document.getElementById('langBtn').addEventListener('click',()=>{lang=(lang==='en')?'hi':'en';renderUI();});document.getElementById('calculator').addEventListener('change',()=>{switchUI();renderUI();});document.getElementById('calcBtn').addEventListener('click',doCalc);document.getElementById('resetBtn').addEventListener('click',resetAll);document.getElementById('c_mat').addEventListener('change',renderUI);renderUI();switchUI();if('serviceWorker' in navigator){navigator.serviceWorker.register('service-worker.js').catch(()=>{});}}function switchUI(){const v=document.getElementById('calculator').value;document.querySelectorAll('.calc-section').forEach(s=>s.style.display='none');if(v==='1')document.getElementById('sec1').style.display='block';if(v==='2')document.getElementById('sec2').style.display='block';if(v==='3')document.getElementById('sec3').style.display='block';if(v==='4')document.getElementById('sec4').style.display='block';document.getElementById('allRes').textContent='';}function calcSiMnRequired(){const heat=toNum(document.getElementById('heatKg').value);const cur=toNum(document.getElementById('curMn').value);const target=toNum(document.getElementById('targetMn').value);const alloy=toNum(document.getElementById('alloyMn').value);const rec=toNum(document.getElementById('recMn').value);if(heat<=0||alloy<=0||rec<=0)return{err:'Enter positive values'};const x=(target-cur)*heat*100.0/(alloy*rec);return{kg:x}}function calcMnRecovery(){const metal=toNum(document.getElementById('rec_metalKg').value);const mnMetal=toNum(document.getElementById('rec_mnMetal').value);const alloyW=toNum(document.getElementById('rec_alloyKg').value);const mnAlloy=toNum(document.getElementById('rec_mnAlloy').value);if(metal<=0||alloyW<=0||mnAlloy<=0)return{err:'Enter positive values'};const recovery=(metal*(mnMetal/100.0))/(alloyW*(mnAlloy/100.0))*100.0;return{recovery:recovery}}function calcFeOfromFeM(){const fetot=toNum(document.getElementById('fe_tot').value);const fem=toNum(document.getElementById('fe_m').value);if(fetot<=fem)return{err:'Fe total must be greater than Fe(M)'};const feo=(fetot-fem)/0.777;return{feo:feo}}function calcCarbonAdjust(){const metalKg=toNum(document.getElementById('c_metalKg').value);const curC=toNum(document.getElementById('c_cur').value);const targetC=toNum(document.getElementById('c_target').value);const matType=document.getElementById('c_mat').value;const matPct=toNum(document.getElementById('c_matPct').value);if(metalKg<=0||matPct<=0)return{err:'Enter positive metal mass and material %'};if(matType==='sponge'){const drop=curC-targetC;if(drop<=0)return{err:'Target must be lower than current for sponge'};const metalTon=metalKg/1000.0;const spongeKg=(drop*metalTon)/(0.1*matPct);return{spongeKg:spongeKg}}else{const delta=targetC-curC;if(delta<=0)return{err:'Target must be higher than current for cast/carburizer'};const addKg=(metalKg*delta)/matPct;return{addKg:addKg}}}function doCalc(){const sel=document.getElementById('calculator').value;let res;if(sel==='1')res=calcSiMnRequired();if(sel==='2')res=calcMnRecovery();if(sel==='3')res=calcFeOfromFeM();if(sel==='4')res=calcCarbonAdjust();const out=document.getElementById('allRes');if(!res){out.textContent='Calculation error';return}if(res.err){out.textContent=res.err;return}if(res.kg!==undefined)out.innerHTML='<strong>Result:</strong> Add '+res.kg.toFixed(2)+' kg of Si-Mn (approx).';else if(res.recovery!==undefined)out.innerHTML='<strong>Result:</strong> Mn Recovery ≈ '+res.recovery.toFixed(2)+' %';else if(res.feo!==undefined)out.innerHTML='<strong>Result:</strong> Estimated FeO ≈ '+res.feo.toFixed(2)+' %';else if(res.spongeKg!==undefined)out.innerHTML='<strong>Result:</strong> Add '+res.spongeKg.toFixed(1)+' kg sponge (approx).';else if(res.addKg!==undefined)out.innerHTML='<strong>Result:</strong> Add '+res.addKg.toFixed(1)+' kg carburizer/cast (approx).';else out.textContent=JSON.stringify(res)}function resetAll(){document.querySelectorAll('input').forEach(i=>i.value='');document.getElementById('allRes').textContent='';}document.addEventListener('DOMContentLoaded',init);
+let lang = 'en';
+
+document.addEventListener('DOMContentLoaded', () => {
+  const sel = document.getElementById('calcSel');
+  sel.addEventListener('change', onCalcChange);
+  document.getElementById('btnCalc').addEventListener('click', onCalc);
+  document.getElementById('btnReset').addEventListener('click', onReset);
+  document.getElementById('langBtn').addEventListener('click', toggleLang);
+  document.getElementById('c_mat').addEventListener('change', updateMatLabel);
+
+  onCalcChange(); // default first calculator
+});
+
+function onCalcChange(){
+  const v = document.getElementById('calcSel').value;
+  document.querySelectorAll('.calc').forEach(c => c.style.display='none');
+  document.getElementById('sec-'+v).style.display='block';
+  document.getElementById('result').textContent = '';
+}
+
+function updateMatLabel(){
+  const matType = document.getElementById('c_mat').value;
+  const lbl = document.getElementById('lblMatPct');
+  if(lang === 'hi'){
+    lbl.textContent = (matType === 'sponge')
+      ? 'स्पंज आयरन में FeO %'
+      : 'कास्ट / कार्बुराइज़र में C %';
+  } else {
+    lbl.textContent = (matType === 'sponge')
+      ? 'FeO % in sponge iron'
+      : 'C % in cast / carburizer';
+  }
+}
+
+function toggleLang(){
+  lang = (lang === 'en') ? 'hi' : 'en';
+
+  if(lang === 'hi'){
+    document.getElementById('langBtn').textContent = 'EN';
+    document.getElementById('lblCalc').textContent = 'कैलकुलेटर चुनें';
+    document.getElementById('hSimn').textContent = 'आवश्यक Si-Mn (रिकवरी सहित)';
+    document.getElementById('lblHeat').textContent = 'हीट वज़न (किलो)';
+    document.getElementById('lblCurMn').textContent = 'वर्तमान Mn %';
+    document.getElementById('lblTargetMn').textContent = 'टार्गेट Mn %';
+    document.getElementById('lblAlloyMn').textContent = 'एलॉय Mn % (Si-Mn)';
+    document.getElementById('lblRecMn').textContent = 'अपेक्षित Mn रिकवरी %';
+
+    document.getElementById('hMnrec').textContent = 'Mn रिकवरी (%)';
+    document.getElementById('lblRecMetal').textContent = 'मेटल वज़न (किलो)';
+    document.getElementById('lblRecMnMetal').textContent = 'मेटल में Mn %';
+    document.getElementById('lblRecAlloyKg').textContent = 'एलॉय वज़न (किलो)';
+    document.getElementById('lblRecMnAlloy').textContent = 'एलॉय में Mn % (Si-Mn)';
+
+    document.getElementById('hFeo').textContent = 'Fe(M) से FeO';
+    document.getElementById('lblFeTot').textContent = 'कुल Fe % (अनुमानित)';
+    document.getElementById('lblFeM').textContent = 'Fe(M) %';
+    document.getElementById('feoHint').textContent =
+      'FeO% = (FeT − Fe(M)) / 0.777  (FeO में Fe ≈ 77.7%)';
+
+    document.getElementById('hCarb').textContent = 'कार्बन समायोजन (बढ़ाएं / घटाएं)';
+    document.getElementById('lblCMetal').textContent = 'मेटल वज़न (किलो)';
+    document.getElementById('lblCurC').textContent = 'वर्तमान C %';
+    document.getElementById('lblTargetC').textContent = 'टार्गेट C %';
+    document.getElementById('lblMatType').textContent = 'मैटेरियल प्रकार';
+    updateMatLabel();
+    document.getElementById('cHint').textContent =
+      'स्पंज आयरन (C डाउन): स्पंज (किलो) = ΔC% × मेटल(किलो) × 6 ÷ FeO%';
+  } else {
+    document.getElementById('langBtn').textContent = 'हिंदी';
+    document.getElementById('lblCalc').textContent = 'Select calculator / कैलकुलेटर चुनें';
+    document.getElementById('hSimn').textContent = 'Si-Mn required (with recovery)';
+    document.getElementById('lblHeat').textContent = 'Heat mass (kg)';
+    document.getElementById('lblCurMn').textContent = 'Current Mn %';
+    document.getElementById('lblTargetMn').textContent = 'Target Mn %';
+    document.getElementById('lblAlloyMn').textContent = 'Alloy Mn % (Si-Mn)';
+    document.getElementById('lblRecMn').textContent = 'Expected Mn recovery %';
+
+    document.getElementById('hMnrec').textContent = 'Mn recovery (%)';
+    document.getElementById('lblRecMetal').textContent = 'Metal weight (kg)';
+    document.getElementById('lblRecMnMetal').textContent = 'Mn in metal %';
+    document.getElementById('lblRecAlloyKg').textContent = 'Alloy weight (kg)';
+    document.getElementById('lblRecMnAlloy').textContent = 'Mn in alloy % (Si-Mn)';
+
+    document.getElementById('hFeo').textContent = 'FeO from Fe(M)';
+    document.getElementById('lblFeTot').textContent = 'Fe total % (assumed)';
+    document.getElementById('lblFeM').textContent = 'Fe(M) %';
+    document.getElementById('feoHint').textContent =
+      'Uses relation FeO% = (FeT − Fe(M)) / 0.777  (FeO Fe ≈ 77.7%).';
+
+    document.getElementById('hCarb').textContent = 'Carbon adjustment (up / down)';
+    document.getElementById('lblCMetal').textContent = 'Metal weight (kg)';
+    document.getElementById('lblCurC').textContent = 'Current C %';
+    document.getElementById('lblTargetC').textContent = 'Target C %';
+    document.getElementById('lblMatType').textContent = 'Material type';
+    updateMatLabel();
+    document.getElementById('cHint').textContent =
+      'Sponge iron (C down): Sponge kg = ΔC% × Metal(kg) × 6 ÷ FeO%.';
+  }
+}
+
+function onReset(){
+  document.querySelectorAll('input').forEach(i => {
+    if(i.id === 'alloyMn') i.value = 14;
+    else if(i.id === 'recMn') i.value = 75;
+    else if(i.id === 'fe_tot') i.value = 92;
+    else if(i.id === 'fe_m') i.value = 82;
+    else if(i.id === 'c_matPct') i.value = 12;
+    else i.value='';
+  });
+  document.getElementById('result').textContent = '';
+}
+
+function onCalc(){
+  const which = document.getElementById('calcSel').value;
+  const out = document.getElementById('result');
+
+  if(which === 'simn'){
+    const heat   = toNum(heatKg.value);
+    const cur    = toNum(curMn.value);
+    const target = toNum(targetMn.value);
+    const alloy  = toNum(alloyMn.value);
+    const rec    = toNum(recMn.value);
+
+    if(heat<=0 || alloy<=0 || rec<=0){
+      out.textContent = 'Enter valid heat (kg), alloy% and recovery%.';
+      return;
+    }
+    const dMn = target - cur;
+    const requiredKg = (dMn * heat * 100.0) / (alloy * rec);
+    out.textContent = 'Add about ' + requiredKg.toFixed(2) + ' kg Si-Mn.';
+  }
+
+  else if(which === 'mnrec'){
+    const metal   = toNum(rec_metalKg.value);
+    const mnMetal = toNum(rec_mnMetal.value);
+    const alloyW  = toNum(rec_alloyKg.value);
+    const mnAlloy = toNum(rec_mnAlloy.value);
+
+    if(metal<=0 || alloyW<=0 || mnAlloy<=0){
+      out.textContent = 'Enter valid metal (kg), alloy (kg) and Mn% in alloy.';
+      return;
+    }
+    const mnInMetal  = metal * (mnMetal / 100.0);
+    const mnCharged  = alloyW * (mnAlloy / 100.0);
+    const recov      = (mnInMetal / mnCharged) * 100.0;
+    out.textContent = 'Mn recovery ≈ ' + recov.toFixed(2) + ' %.';
+  }
+
+  else if(which === 'feo'){
+    const ft = toNum(fe_tot.value);
+    const fm = toNum(fe_m.value);
+    if(ft <= fm){
+      out.textContent = 'Fe total must be greater than Fe(M).';
+      return;
+    }
+    // Correct FeO relation: FeO% = (FeT − Fe(M)) / 0.777
+    const feo = (ft - fm) / 0.777;
+    out.textContent = 'Estimated FeO ≈ ' + feo.toFixed(2) + ' %.';
+  }
+
+  else if(which === 'carb'){
+    const metalKg = toNum(c_metalKg.value);
+    const curC    = toNum(c_cur.value);
+    const targetC = toNum(c_target.value);
+    const matType = c_mat.value;
+    const matPct  = toNum(c_matPct.value);
+
+    if(metalKg<=0 || matPct<=0){
+      out.textContent = 'Enter valid metal weight and material %.';
+      return;
+    }
+
+    if(matType === 'sponge'){
+      // CARBON DOWN using sponge iron (FeO%)
+      const drop = curC - targetC;
+      if(drop <= 0){
+        out.textContent = 'For sponge iron, target C must be lower than current C.';
+        return;
+      }
+      // Sponge (kg) = ΔC% × Metal(kg) × 6 ÷ FeO%
+      const spongeKg = (drop * metalKg * 6.0) / matPct;
+      out.textContent = 'Add about ' + spongeKg.toFixed(1) +
+                        ' kg sponge iron to drop C by ' + drop.toFixed(3) + ' %.';
+    } else {
+      // CARBON UP using cast / carburizer
+      const gain = targetC - curC;
+      if(gain <= 0){
+        out.textContent = 'For carburizer, target C must be higher than current C.';
+        return;
+      }
+      // addKg = (metalKg * ΔC%) / C%(material)
+      const addKg = (metalKg * gain) / matPct;
+      out.textContent = 'Add about ' + addKg.toFixed(1) +
+                        ' kg cast / carburizer to raise C by ' + gain.toFixed(3) + ' %.';
+    }
+  }
+}
