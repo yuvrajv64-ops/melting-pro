@@ -1,1 +1,30 @@
-const CACHE_NAME = "melting-pro-2.1-final-v1";const URLS = [".","index.html","style.css","app.js","manifest.json","service-worker.js","icons/icon-A-192.png","icons/icon-A-512.png"];self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(URLS))); self.skipWaiting(); });self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(keys => Promise.all(keys.map(k => { if(k !== CACHE_NAME) return caches.delete(k); } )))); self.clients.claim(); });self.addEventListener('fetch', e => { e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))); });
+const CACHE_NAME = "meltingpro-cache-v1";
+const OFFLINE_URLS = [
+  "index.html",
+  "manifest.json",
+  "style.css",
+  "app.js",
+  "icon-A-192.png",
+  "icon-gear-512.png"
+];
+
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(OFFLINE_URLS);
+    })
+  );
+  self.skipWaiting();
+});
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil(self.clients.claim());
+});
+
+self.addEventListener("fetch", (event) => {
+  event.respondWith(
+    caches.match(event.request).then((cached) => {
+      return cached || fetch(event.request);
+    })
+  );
+});
