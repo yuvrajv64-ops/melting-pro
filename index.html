@@ -199,5 +199,57 @@
     "%<br>" +
     status;
 }</script>
+  <!-- FeO Lab Test Method Section -->
+<div class="premium-card">
+  <h2>🧪 FeO Lab Test Method (KMnO₄ Titration)</h2>
+
+  <p><strong>Principle:</strong> Fe²⁺ in slag is titrated with KMnO₄ in acidic medium.</p>
+
+  <p><strong>Procedure:</strong></p>
+  <p>1. Take fresh slag sample and grind properly.</p>
+  <p>2. Weigh 0.5 g sample (W).</p>
+  <p>3. Dissolve in dilute H₂SO₄.</p>
+  <p>4. Titrate with 0.1N KMnO₄.</p>
+  <p>5. Note titre value (V ml).</p>
+
+  <hr>
+
+  <p><strong>Accurate Formula:</strong></p>
+  <p>FeO% = (V × N × 7.99 × 100) / W</p>
+
+  <p><strong>Shortcut (For 0.5g sample & 0.1N KMnO₄):</strong></p>
+  <p>FeO% ≈ V × 1.6</p>
+
+  <input type="number" id="titre" placeholder="Enter Titre (ml)" />
+  <button onclick="calculateFeO()">Calculate FeO</button>
+
+  <div id="feoResult"></div>
+</div>
+  <script>
+    function calculateFeO() {
+  var v = parseFloat(document.getElementById("titre").value);
+
+  if (isNaN(v) || v <= 0) {
+    document.getElementById("feoResult").innerHTML =
+      "Please enter valid titre value.";
+    return;
+  }
+
+  var feo = v * 1.6;
+
+  var advice = "";
+
+  if (feo > 15) {
+    advice = "🔴 FeO High. If carbon fixed, use FeSi reduction + slag skimming before Mn addition.";
+  } else if (feo >= 12) {
+    advice = "🟡 FeO Moderate. Reduce slag before Mn addition.";
+  } else {
+    advice = "🟢 FeO Safe for Mn addition.";
+  }
+
+  document.getElementById("feoResult").innerHTML =
+    "Estimated FeO: " + feo.toFixed(2) + "%<br>" + advice;
+}
+  </script>
 </body>
 </html>
