@@ -165,5 +165,39 @@
   <button onclick="calculateRecovery()">Calculate</button>
   <div id="recoveryResult"></div>
 </div>
+  <script>function calculateRecovery() {
+  let feo = parseFloat(document.getElementById("feo").value);
+  let temp = parseFloat(document.getElementById("temp").value);
+  let slag = document.getElementById("slag").value;
+
+  if (isNaN(feo) || isNaN(temp)) {
+    document.getElementById("recoveryResult").innerHTML =
+      "Please enter valid FeO and Temperature.";
+    return;
+  }
+
+  let recovery = 90 - (1.5 * feo);
+
+  if (temp < 1550) recovery -= 5;
+  if (temp > 1620) recovery -= 3;
+
+  if (slag === "oxidizing") recovery -= 5;
+  if (slag === "reducing") recovery += 3;
+
+  let status = "";
+  if (recovery > 70) {
+    status = "🟢 Safe Condition";
+  } else if (recovery >= 60) {
+    status = "🟡 Moderate Risk";
+  } else {
+    status = "🔴 High Oxidation Risk";
+  }
+
+  document.getElementById("recoveryResult").innerHTML =
+    "Expected Mn Recovery: " +
+    recovery.toFixed(1) +
+    "%<br>" +
+    status;
+}</script>
 </body>
 </html>
