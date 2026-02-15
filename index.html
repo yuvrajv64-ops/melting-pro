@@ -199,32 +199,5 @@
     "%<br>" +
     status;
 }</script>
-  <!-- FeO Quick Check Section -->
-<div class="premium-card">
-  <h2>🧪 FeO Quick Check (Rapid Method)</h2>
-
-  <p>For 0.5g sample & 0.1N KMnO₄:</p>
-  <p><strong>FeO % ≈ Titre × 1.6</strong></p>
-
-  <input type="number" id="titre" placeholder="Enter Titre (ml)" />
-
-  <button onclick="calculateFeO()">Check FeO</button>
-
-  <div id="feoResult"></div>
-</div>
-  function calculateFeO() {
-  let v = parseFloat(document.getElementById("titre").value);
-
-  if (isNaN(v)) {
-    document.getElementById("feoResult").innerHTML =
-      "Please enter valid titre value.";
-    return;
-  }
-
-  let feo = v * 1.6;
-
-  document.getElementById("feoResult").innerHTML =
-    "Estimated FeO: " + feo.toFixed(2) + "%";
-}
 </body>
 </html>
