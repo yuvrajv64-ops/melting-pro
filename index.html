@@ -22,15 +22,17 @@
       scroll-snap-type: x mandatory;
     }
 
-    .page {
-      flex: 0 0 100%;
-      height: 100vh;
-      scroll-snap-align: start;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 24px;
-    }
+  .page {
+  flex: 0 0 100%;
+  height: 100vh;
+  scroll-snap-align: start;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-y: auto;
+  padding: 15px;
+  box-sizing: border-box;
+}
 
     .page1 {
       background: linear-gradient(135deg, #0f2027, #203a43);
@@ -373,22 +375,125 @@ function calculateRecovery() {
 </<div class="container">
 
   <section class="page page1">
-    <!-- Mn Recovery Section yahan paste karo -->
-  </section>
+<div style="width:100%; max-width:380px; margin:auto;">
+
+<h2>🔥 Mn Addition Calculator</h2>
+
+<input type="number" id="metalWeight" placeholder="Metal Weight (kg)">
+<input type="number" id="currentMn" placeholder="Current Mn %">
+<input type="number" id="targetMn" placeholder="Target Mn %">
+<input type="number" id="recovery" placeholder="Expected Recovery %">
+<input type="number" id="alloyMn" placeholder="Alloy Mn %">
+
+<button onclick="calculateMn()">Calculate Mn Required</button>
+
+<div id="mnResult"></div>
+
+<hr>
+
+<h2>⚙ Mn Recovery Predictor</h2>
+
+<input type="number" id="feo" placeholder="FeO %">
+<input type="number" id="temp" placeholder="Bath Temp °C">
+<input type="number" id="taptemp" placeholder="Tap Temp °C">
+
+<select id="slag">
+<option value="reducing">Reducing Slag</option>
+<option value="normal">Normal Slag</option>
+<option value="oxidizing">Oxidizing Slag</option>
+</select>
+
+<button onclick="calculateRecovery()">Predict Recovery</button>
+
+<div id="recoveryResult"></div>
+
+</div>
+</section>
 
   <section class="page page2">
-    <!-- FeO Lab Method Section yahan paste karo -->
-  </section>
+<div style="width:100%; max-width:380px; margin:auto;">
+
+<h2>🧪 FeO Lab Testing (KMnO₄ Method)</h2>
+
+<p><b>Sample Weight:</b> 0.5 g slag</p>
+<p><b>Titrant:</b> 0.1N KMnO₄</p>
+<p><b>Acid Medium:</b> Dilute H₂SO₄</p>
+
+<p><b>Procedure:</b></p>
+<p>1. Grind fresh slag sample.</p>
+<p>2. Weigh 0.5g accurately.</p>
+<p>3. Dissolve in dilute H₂SO₄.</p>
+<p>4. Heat mildly.</p>
+<p>5. Titrate with KMnO₄ till pink endpoint.</p>
+
+<hr>
+
+<p><b>Accurate Formula:</b></p>
+<p>FeO% = (V × N × 7.99 × 100) / W</p>
+
+<p><b>Shortcut (0.5g & 0.1N):</b></p>
+<p>FeO% ≈ V × 1.6</p>
+
+<input type="number" id="titre" placeholder="Enter Titre (ml)">
+<button onclick="calculateFeO()">Calculate FeO</button>
+
+<div id="feoResult"></div>
+
+<hr>
+
+<p><b>Example:</b></p>
+<p>Titre = 10 ml → FeO ≈ 16%</p>
+
+</div>
+</section>
 
   <section class="page page3">
-    <h2>⚙ FeO Reduction Advisor</h2>
-    <p>Reduce FeO before Mn addition.</p>
-  </section>
+<div style="width:100%; max-width:380px; margin:auto;">
 
-  <section class="page page4">
-    <h2>🔥 Mn Best Practice Guide</h2>
-    <p>Add Mn at 1580–1600°C under reducing slag.</p>
-  </section>
+<h2>🔥 Slag & Oxidation Control</h2>
+
+<p><b>Reducing Slag:</b> Black/Dark → Best for Mn</p>
+<p><b>Normal Slag:</b> Brown → Skim before Mn</p>
+<p><b>Oxidizing Slag:</b> Red/Orange → Avoid Mn</p>
+
+<hr>
+
+<p><b>If FeO >15%:</b></p>
+<p>✔ Slag Skim</p>
+<p>✔ 4–6 kg FeSi per ton</p>
+<p>✔ Add Mn at 1580–1600°C</p>
+
+<hr>
+
+<p><b>Tap Temp Rule:</b></p>
+<p>>1670°C → High Mn Oxidation Risk</p>
+<p>>1700°C → Very High Risk</p>
+
+</div>
+</section>
+
+  <script>
+
+function calculateMn() {
+var metal = parseFloat(document.getElementById("metalWeight").value);
+var currentMn = parseFloat(document.getElementById("currentMn").value);
+var targetMn = parseFloat(document.getElementById("targetMn").value);
+var recovery = parseFloat(document.getElementById("recovery").value);
+var alloyMn = parseFloat(document.getElementById("alloyMn").value);
+
+if (isNaN(metal) || isNaN(currentMn) || isNaN(targetMn) || isNaN(recovery) || isNaN(alloyMn)) {
+document.getElementById("mnResult").innerHTML = "Enter all values.";
+return;
+}
+
+var mnRequired = (metal * (targetMn - currentMn) / 100) / (recovery/100);
+var alloyRequired = (mnRequired * 100) / alloyMn;
+
+document.getElementById("mnResult").innerHTML =
+"Add Alloy: " + alloyRequired.toFixed(2) + " kg";
+}
+
+</script>
 
 </div><div class="container">
 
