@@ -153,5 +153,17 @@
       .catch(err => console.log("SW error", err));
   }
 </script>
+  <div class="premium-card">
+  <h2>🔥 Mn Recovery Predictor</h2>
+  <input type="number" id="feo" placeholder="FeO %" />
+  <input type="number" id="temp" placeholder="Temperature °C" />
+  <select id="slag">
+    <option value="normal">Normal Slag</option>
+    <option value="reducing">Reducing</option>
+    <option value="oxidizing">Oxidizing</option>
+  </select>
+  <button onclick="calculateRecovery()">Calculate</button>
+  <div id="recoveryResult"></div>
+</div>
 </body>
 </html>
