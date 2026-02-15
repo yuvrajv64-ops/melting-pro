@@ -4,7 +4,7 @@
   "description": "Offline furnace calculators: Si-Mn required, Mn recovery, FeO from Fe(M) and Carbon adjustment. Developed by Aarav Steel Tech.",
   "start_url": "index.html",
   "scope": "./",
-  "display": "standalone",
+  "display": "fullscreen",
   "theme_color": "#1e3a8a",
   "background_color": "#0f172a",
   "icons": [
