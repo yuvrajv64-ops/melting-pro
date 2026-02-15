@@ -9,7 +9,47 @@
   <link rel="manifest" href="manifest.json">
 
   <!-- Styles -->
-  <link rel="stylesheet" href="style.css">
+  body {
+  margin: 0;
+  overflow: hidden;
+  font-family: Arial;
+}
+
+.container {
+  display: flex;
+  width: 400vw;
+  height: 100vh;
+  overflow-x: scroll;
+  scroll-snap-type: x mandatory;
+}
+
+.page {
+  width: 100vw;
+  height: 100vh;
+  padding: 20px;
+  scroll-snap-align: start;
+  box-sizing: border-box;
+}
+
+/* Different wallpapers */
+.page1 {
+  background: linear-gradient(135deg, #0f2027, #203a43);
+  color: white;
+}
+
+.page2 {
+  background: linear-gradient(135deg, #1f4037, #99f2c8);
+}
+
+.page3 {
+  background: linear-gradient(135deg, #232526, #414345);
+  color: white;
+}
+
+.page4 {
+  background: linear-gradient(135deg, #42275a, #734b6d);
+  color: white;
+}
 </head>
 <body>
 <header>
@@ -251,5 +291,45 @@
     "Estimated FeO: " + feo.toFixed(2) + "%<br>" + advice;
 }
   </script>
-</body>
+</<div class="container">
+
+  <section class="page page1">
+    <!-- Mn Recovery Section yahan paste karo -->
+  </section>
+
+  <section class="page page2">
+    <!-- FeO Lab Method Section yahan paste karo -->
+  </section>
+
+  <section class="page page3">
+    <h2>⚙ FeO Reduction Advisor</h2>
+    <p>Reduce FeO before Mn addition.</p>
+  </section>
+
+  <section class="page page4">
+    <h2>🔥 Mn Best Practice Guide</h2>
+    <p>Add Mn at 1580–1600°C under reducing slag.</p>
+  </section>
+
+</div><div class="container">
+
+  <section class="page page1">
+    <!-- Mn Recovery Section yahan paste karo -->
+  </section>
+
+  <section class="page page2">
+    <!-- FeO Lab Method Section yahan paste karo -->
+  </section>
+
+  <section class="page page3">
+    <h2>⚙ FeO Reduction Advisor</h2>
+    <p>Reduce FeO before Mn addition.</p>
+  </section>
+
+  <section class="page page4">
+    <h2>🔥 Mn Best Practice Guide</h2>
+    <p>Add Mn at 1580–1600°C under reducing slag.</p>
+  </section>
+
+</div>>
 </html>
