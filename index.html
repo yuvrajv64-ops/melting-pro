@@ -66,6 +66,7 @@
       <option value="oxidizing">Oxidizing Slag</option>
     </select>
     <br><br>
+    <input type="number" id="taptemp" placeholder="Tap Temperature °C" />
 
     <button onclick="calculateRecovery()">Calculate</button>
 
@@ -318,11 +319,12 @@
 function calculateRecovery() {
   var feo = parseFloat(document.getElementById("feo").value);
   var temp = parseFloat(document.getElementById("temp").value);
+  var taptemp = parseFloat(document.getElementById("taptemp").value);
   var slag = document.getElementById("slag").value;
 
-  if (isNaN(feo) || isNaN(temp)) {
+  if (isNaN(feo) || isNaN(temp) || isNaN(taptemp)) {
     document.getElementById("recoveryResult").innerHTML =
-      "Enter valid FeO and Temperature.";
+      "Enter valid FeO, Bath Temp and Tap Temp.";
     return;
   }
 
@@ -331,36 +333,40 @@ function calculateRecovery() {
   if (temp < 1550) recovery -= 5;
   if (temp > 1620) recovery -= 3;
 
-  if (slag === "oxidizing") recovery -= 5;
-  if (slag === "reducing") recovery += 3;
-
-  document.getElementById("recoveryResult").innerHTML =
-    "Expected Mn Recovery: " + recovery.toFixed(1) + "%";
-}
-
-function calculateFeO() {
-  var v = parseFloat(document.getElementById("titre").value);
-
-  if (isNaN(v) || v <= 0) {
-    document.getElementById("feoResult").innerHTML =
-      "Enter valid titre value.";
-    return;
+  var oxidationRisk = "";
+  if (taptemp > 1700) {
+    recovery -= 12;
+    oxidationRisk = "🔴 Very High Oxidation Risk (Tap Temp >1700°C)";
+  } else if (taptemp > 1670) {
+    recovery -= 8;
+    oxidationRisk = "🟠 High Oxidation Risk (Tap Temp >1670°C)";
   }
-
-  var feo = v * 1.6;
 
   var advice = "";
 
-  if (feo > 15) {
-    advice = "FeO High → Use FeSi reduction + slag skimming before Mn addition.";
-  } else if (feo >= 12) {
-    advice = "FeO Moderate → Reduce slag before Mn addition.";
+  if (slag === "oxidizing") {
+    recovery -= 5;
+    advice = "Oxidizing Slag: Skim slag + FeSi reduction before Mn.";
+  } else if (slag === "reducing") {
+    recovery += 3;
+    advice = "Reducing Slag: Ideal for Mn addition.";
   } else {
-    advice = "FeO Safe for Mn addition.";
+    advice = "Normal Slag: Skim before Mn addition.";
   }
 
-  document.getElementById("feoResult").innerHTML =
-    "Estimated FeO: " + feo.toFixed(2) + "%<br>" + advice;
+  if (feo > 15) {
+    advice += "<br>FeO High: If carbon fixed, use FeSi + slag skimming.";
+  }
+
+  var statusColor = "green";
+  if (recovery < 60) statusColor = "red";
+  else if (recovery < 70) statusColor = "orange";
+
+  document.getElementById("recoveryResult").innerHTML =
+    "<div style='padding:15px;border-radius:10px;background:" + statusColor + ";color:white'>" +
+    "Expected Mn Recovery: " + recovery.toFixed(1) + "%<br><br>" +
+    oxidationRisk + "<br>" + advice +
+    "</div>";
 }
 
 </script>
