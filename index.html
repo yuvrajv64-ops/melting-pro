@@ -50,12 +50,52 @@
 <div class="container">
 
   <section class="page page1">
-    Page 1 - Mn Recovery
-  </section>
+
+  <div>
+    <h2>🔥 Mn Recovery Predictor</h2>
+
+    <input type="number" id="feo" placeholder="FeO %" />
+    <br><br>
+
+    <input type="number" id="temp" placeholder="Temperature °C" />
+    <br><br>
+
+    <select id="slag">
+      <option value="normal">Normal Slag</option>
+      <option value="reducing">Reducing Slag</option>
+      <option value="oxidizing">Oxidizing Slag</option>
+    </select>
+    <br><br>
+
+    <button onclick="calculateRecovery()">Calculate</button>
+
+    <br><br>
+    <div id="recoveryResult"></div>
+  </div>
+
+</section>
 
   <section class="page page2">
-    Page 2 - FeO Lab
-  </section>
+
+  <div>
+    <h2>🧪 FeO Lab Test Method</h2>
+
+    <p>Sample: 0.5g slag</p>
+    <p>KMnO₄: 0.1N</p>
+    <p>Shortcut: FeO% ≈ V × 1.6</p>
+
+    <br>
+
+    <input type="number" id="titre" placeholder="Enter Titre (ml)">
+    <br><br>
+
+    <button onclick="calculateFeO()">Calculate FeO</button>
+
+    <br><br>
+    <div id="feoResult"></div>
+  </div>
+
+</section>
 
 </div>
 
@@ -274,12 +314,36 @@
   <div id="feoResult"></div>
 </div>
   <script>
-    function calculateFeO() {
+
+function calculateRecovery() {
+  var feo = parseFloat(document.getElementById("feo").value);
+  var temp = parseFloat(document.getElementById("temp").value);
+  var slag = document.getElementById("slag").value;
+
+  if (isNaN(feo) || isNaN(temp)) {
+    document.getElementById("recoveryResult").innerHTML =
+      "Enter valid FeO and Temperature.";
+    return;
+  }
+
+  var recovery = 90 - (1.5 * feo);
+
+  if (temp < 1550) recovery -= 5;
+  if (temp > 1620) recovery -= 3;
+
+  if (slag === "oxidizing") recovery -= 5;
+  if (slag === "reducing") recovery += 3;
+
+  document.getElementById("recoveryResult").innerHTML =
+    "Expected Mn Recovery: " + recovery.toFixed(1) + "%";
+}
+
+function calculateFeO() {
   var v = parseFloat(document.getElementById("titre").value);
 
   if (isNaN(v) || v <= 0) {
     document.getElementById("feoResult").innerHTML =
-      "Please enter valid titre value.";
+      "Enter valid titre value.";
     return;
   }
 
@@ -288,17 +352,18 @@
   var advice = "";
 
   if (feo > 15) {
-    advice = "🔴 FeO High. If carbon fixed, use FeSi reduction + slag skimming before Mn addition.";
+    advice = "FeO High → Use FeSi reduction + slag skimming before Mn addition.";
   } else if (feo >= 12) {
-    advice = "🟡 FeO Moderate. Reduce slag before Mn addition.";
+    advice = "FeO Moderate → Reduce slag before Mn addition.";
   } else {
-    advice = "🟢 FeO Safe for Mn addition.";
+    advice = "FeO Safe for Mn addition.";
   }
 
   document.getElementById("feoResult").innerHTML =
     "Estimated FeO: " + feo.toFixed(2) + "%<br>" + advice;
 }
-  </script>
+
+</script>
 </<div class="container">
 
   <section class="page page1">
