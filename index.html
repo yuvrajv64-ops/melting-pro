@@ -1,381 +1,65 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>MeltingPro</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8">
+<title>MeltingPro</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="manifest" href="manifest.json">
 
-  <link rel="manifest" href="manifest.json">
-
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      font-family: Arial;
-    }
-
-    .container {
-      display: flex;
-      height: 100vh;
-      overflow-x: auto;
-      overflow-y: hidden;
-      scroll-snap-type: x mandatory;
-    }
-
-  .page {
-  flex: 0 0 100%;
-  height: 100vh;
-  scroll-snap-align: start;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow-y: auto;
-  padding: 15px;
-  box-sizing: border-box;
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  overflow:hidden;
 }
+.container{
+  display:flex;
+  height:100vh;
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+}
+.page{
+  flex:0 0 100%;
+  height:100vh;
+  scroll-snap-align:start;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  overflow-y:auto;
+  padding:20px;
+  box-sizing:border-box;
+}
+.page1{background:linear-gradient(135deg,#0f2027,#203a43);color:white;}
+.page2{background:linear-gradient(135deg,#1f4037,#99f2c8);}
+.page3{background:linear-gradient(135deg,#232526,#414345);color:white;}
 
-    .page1 {
-      background: linear-gradient(135deg, #0f2027, #203a43);
-      color: white;
-    }
-
-    .page2 {
-      background: linear-gradient(135deg, #1f4037, #99f2c8);
-      color: black;
-    }
-  </style>
-
+input,select,button{
+  width:100%;
+  padding:10px;
+  margin:6px 0;
+  border-radius:8px;
+  border:none;
+}
+button{
+  background:#ff6600;
+  color:white;
+  font-weight:bold;
+}
+.result-box{
+  padding:12px;
+  margin-top:10px;
+  border-radius:8px;
+}
+</style>
 </head>
 
 <body>
 
 <div class="container">
 
-  <section class="page page1">
-
-  <div>
-    <h2>🔥 Mn Recovery Predictor</h2>
-
-    <input type="number" id="feo" placeholder="FeO %" />
-    <br><br>
-
-    <input type="number" id="temp" placeholder="Temperature °C" />
-    <br><br>
-
-    <select id="slag">
-      <option value="normal">Normal Slag</option>
-      <option value="reducing">Reducing Slag</option>
-      <option value="oxidizing">Oxidizing Slag</option>
-    </select>
-    <br><br>
-    <input type="number" id="taptemp" placeholder="Tap Temperature °C" />
-
-    <button onclick="calculateRecovery()">Calculate</button>
-
-    <br><br>
-    <div id="recoveryResult"></div>
-  </div>
-
-</section>
-
-  <section class="page page2">
-
-  <div>
-    <h2>🧪 FeO Lab Test Method</h2>
-
-    <p>Sample: 0.5g slag</p>
-    <p>KMnO₄: 0.1N</p>
-    <p>Shortcut: FeO% ≈ V × 1.6</p>
-
-    <br>
-
-    <input type="number" id="titre" placeholder="Enter Titre (ml)">
-    <br><br>
-
-    <button onclick="calculateFeO()">Calculate FeO</button>
-
-    <br><br>
-    <div id="feoResult"></div>
-  </div>
-
-</section>
-
-</div>
-
-</body>
-</html>
-  <h1>MeltingPro – Induction Furnace Toolkit <span class="badge">Offline</span></h1>
-  <p>Si-Mn • Mn recovery • FeO from Fe(M) • Carbon up / down (Aarav Steel Tech)</p>
-</header>
-
-<main>
-  <section class="card controls">
-    <div>
-      <label for="calcSel" id="lblCalc">Select calculator / कैलकुलेटर चुनें</label>
-      <select id="calcSel">
-        <option value="simn">Si-Mn required (with recovery)</option>
-        <option value="mnrec">Mn recovery (%)</option>
-        <option value="feo">FeO from Fe(M)</option>
-        <option value="carb">Carbon adjustment (up / down)</option>
-      </select>
-    </div>
-    <button id="langBtn" class="btn-ghost">हिंदी</button>
-  </section>
-
-  <!-- Si-Mn required -->
-  <section class="card calc" id="sec-simn">
-    <h3 id="hSimn">Si-Mn required (with recovery)</h3>
-    <div class="row">
-      <div>
-        <label id="lblHeat">Heat mass (kg)</label>
-        <input id="heatKg" type="number" inputmode="decimal">
-      </div>
-      <div>
-        <label id="lblCurMn">Current Mn %</label>
-        <input id="curMn" type="number" step="0.001" inputmode="decimal">
-      </div>
-    </div>
-    <div class="row">
-      <div>
-        <label id="lblTargetMn">Target Mn %</label>
-        <input id="targetMn" type="number" step="0.001" inputmode="decimal">
-      </div>
-      <div>
-        <label id="lblAlloyMn">Alloy Mn % (Si-Mn)</label>
-        <input id="alloyMn" type="number" step="0.01" inputmode="decimal" value="14">
-      </div>
-    </div>
-    <label id="lblRecMn">Expected Mn recovery %</label>
-    <input id="recMn" type="number" step="0.1" inputmode="decimal" value="75">
-  </section>
-
-  <!-- Mn recovery -->
-  <section class="card calc" id="sec-mnrec" style="display:none">
-    <h3 id="hMnrec">Mn recovery (%)</h3>
-    <div class="row">
-      <div>
-        <label id="lblRecMetal">Metal weight (kg)</label>
-        <input id="rec_metalKg" type="number" inputmode="decimal">
-      </div>
-      <div>
-        <label id="lblRecMnMetal">Mn in metal %</label>
-        <input id="rec_mnMetal" type="number" step="0.001" inputmode="decimal">
-      </div>
-    </div>
-    <div class="row">
-      <div>
-        <label id="lblRecAlloyKg">Alloy weight (kg)</label>
-        <input id="rec_alloyKg" type="number" inputmode="decimal">
-      </div>
-      <div>
-        <label id="lblRecMnAlloy">Mn in alloy % (Si-Mn)</label>
-        <input id="rec_mnAlloy" type="number" step="0.01" inputmode="decimal" value="14">
-      </div>
-    </div>
-  </section>
-
-  <!-- FeO from Fe(M) -->
-  <section class="card calc" id="sec-feo" style="display:none">
-    <h3 id="hFeo">FeO from Fe(M)</h3>
-    <div class="row">
-      <div>
-        <label id="lblFeTot">Fe total % (assumed)</label>
-        <input id="fe_tot" type="number" step="0.01" inputmode="decimal" value="92">
-      </div>
-      <div>
-        <label id="lblFeM">Fe(M) %</label>
-        <input id="fe_m" type="number" step="0.01" inputmode="decimal" value="82">
-      </div>
-    </div>
-    <p class="hint" id="feoHint">
-      Uses relation FeO% = (FeT − Fe(M)) / 0.777  (FeO me Fe ≈ 77.7%)
-    </p>
-  </section>
-
-  <!-- Carbon adjustment -->
-  <section class="card calc" id="sec-carb" style="display:none">
-    <h3 id="hCarb">Carbon adjustment (up / down)</h3>
-    <div class="row">
-      <div>
-        <label id="lblCMetal">Metal weight (kg)</label>
-        <input id="c_metalKg" type="number" inputmode="decimal">
-      </div>
-      <div>
-        <label id="lblCurC">Current C %</label>
-        <input id="c_cur" type="number" step="0.001" inputmode="decimal">
-      </div>
-    </div>
-    <div class="row">
-      <div>
-        <label id="lblTargetC">Target C %</label>
-        <input id="c_target" type="number" step="0.001" inputmode="decimal">
-      </div>
-      <div>
-        <label id="lblMatType">Material type</label>
-        <select id="c_mat">
-          <option value="sponge">Sponge iron (FeO %)</option>
-          <option value="cast">Cast / carburizer (C %)</option>
-        </select>
-      </div>
-    </div>
-    <label id="lblMatPct">FeO % in sponge iron</label>
-    <input id="c_matPct" type="number" step="0.01" inputmode="decimal" value="12">
-    <p class="hint" id="cHint">
-      Sponge iron formula (carbon down): Sponge kg = ΔC% × Metal(kg) × 6 ÷ FeO% 
-    </p>
-  </section>
-
-  <section class="card">
-    <div style="display:flex;gap:8px;flex-wrap:wrap;">
-      <button id="btnCalc" class="btn-primary">Calculate</button>
-      <button id="btnReset" class="btn-ghost">Reset</button>
-    </div>
-    <div id="result" class="result"></div>
-  </section>
-</main>
-
-<footer>Developed by Aarav Steel Tech © 2025 • Designed for induction furnace shops</footer>
-
-<script src="app.js"></script>
-<script>
-  // Service worker registration for offline use
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("service-worker.js")
-      .catch(err => console.log("SW error", err));
-  }
-</script>
-  <div class="premium-card">
-  <h2>🔥 Mn Recovery Predictor</h2>
-  <input type="number" id="feo" placeholder="FeO %" />
-  <input type="number" id="temp" placeholder="Temperature °C" />
-  <select id="slag">
-    <option value="normal">Normal Slag</option>
-    <option value="reducing">Reducing</option>
-    <option value="oxidizing">Oxidizing</option>
-  </select>
-  <button onclick="calculateRecovery()">Calculate</button>
-  <div id="recoveryResult"></div>
-</div>
-  <script>function calculateRecovery() {
-  let feo = parseFloat(document.getElementById("feo").value);
-  let temp = parseFloat(document.getElementById("temp").value);
-  let slag = document.getElementById("slag").value;
-
-  if (isNaN(feo) || isNaN(temp)) {
-    document.getElementById("recoveryResult").innerHTML =
-      "Please enter valid FeO and Temperature.";
-    return;
-  }
-
-  let recovery = 90 - (1.5 * feo);
-
-  if (temp < 1550) recovery -= 5;
-  if (temp > 1620) recovery -= 3;
-
-  if (slag === "oxidizing") recovery -= 5;
-  if (slag === "reducing") recovery += 3;
-
-  let status = "";
-  if (recovery > 70) {
-    status = "🟢 Safe Condition";
-  } else if (recovery >= 60) {
-    status = "🟡 Moderate Risk";
-  } else {
-    status = "🔴 High Oxidation Risk";
-  }
-
-  document.getElementById("recoveryResult").innerHTML =
-    "Expected Mn Recovery: " +
-    recovery.toFixed(1) +
-    "%<br>" +
-    status;
-}</script>
-  <!-- FeO Lab Test Method Section -->
-<div class="premium-card">
-  <h2>🧪 FeO Lab Test Method (KMnO₄ Titration)</h2>
-
-  <p><strong>Principle:</strong> Fe²⁺ in slag is titrated with KMnO₄ in acidic medium.</p>
-
-  <p><strong>Procedure:</strong></p>
-  <p>1. Take fresh slag sample and grind properly.</p>
-  <p>2. Weigh 0.5 g sample (W).</p>
-  <p>3. Dissolve in dilute H₂SO₄.</p>
-  <p>4. Titrate with 0.1N KMnO₄.</p>
-  <p>5. Note titre value (V ml).</p>
-
-  <hr>
-
-  <p><strong>Accurate Formula:</strong></p>
-  <p>FeO% = (V × N × 7.99 × 100) / W</p>
-
-  <p><strong>Shortcut (For 0.5g sample & 0.1N KMnO₄):</strong></p>
-  <p>FeO% ≈ V × 1.6</p>
-
-  <input type="number" id="titre" placeholder="Enter Titre (ml)" />
-  <button onclick="calculateFeO()">Calculate FeO</button>
-
-  <div id="feoResult"></div>
-</div>
-  <script>
-
-function calculateRecovery() {
-  var feo = parseFloat(document.getElementById("feo").value);
-  var temp = parseFloat(document.getElementById("temp").value);
-  var taptemp = parseFloat(document.getElementById("taptemp").value);
-  var slag = document.getElementById("slag").value;
-
-  if (isNaN(feo) || isNaN(temp) || isNaN(taptemp)) {
-    document.getElementById("recoveryResult").innerHTML =
-      "Enter valid FeO, Bath Temp and Tap Temp.";
-    return;
-  }
-
-  var recovery = 90 - (1.5 * feo);
-
-  if (temp < 1550) recovery -= 5;
-  if (temp > 1620) recovery -= 3;
-
-  var oxidationRisk = "";
-  if (taptemp > 1700) {
-    recovery -= 12;
-    oxidationRisk = "🔴 Very High Oxidation Risk (Tap Temp >1700°C)";
-  } else if (taptemp > 1670) {
-    recovery -= 8;
-    oxidationRisk = "🟠 High Oxidation Risk (Tap Temp >1670°C)";
-  }
-
-  var advice = "";
-
-  if (slag === "oxidizing") {
-    recovery -= 5;
-    advice = "Oxidizing Slag: Skim slag + FeSi reduction before Mn.";
-  } else if (slag === "reducing") {
-    recovery += 3;
-    advice = "Reducing Slag: Ideal for Mn addition.";
-  } else {
-    advice = "Normal Slag: Skim before Mn addition.";
-  }
-
-  if (feo > 15) {
-    advice += "<br>FeO High: If carbon fixed, use FeSi + slag skimming.";
-  }
-
-  var statusColor = "green";
-  if (recovery < 60) statusColor = "red";
-  else if (recovery < 70) statusColor = "orange";
-
-  document.getElementById("recoveryResult").innerHTML =
-    "<div style='padding:15px;border-radius:10px;background:" + statusColor + ";color:white'>" +
-    "Expected Mn Recovery: " + recovery.toFixed(1) + "%<br><br>" +
-    oxidationRisk + "<br>" + advice +
-    "</div>";
-}
-
-</script>
-</<div class="container">
-
-  <section class="page page1">
-<div style="width:100%; max-width:380px; margin:auto;">
+<!-- PAGE 1 -->
+<section class="page page1">
+<div style="width:100%;max-width:380px;">
 
 <h2>🔥 Mn Addition Calculator</h2>
 
@@ -385,8 +69,7 @@ function calculateRecovery() {
 <input type="number" id="recovery" placeholder="Expected Recovery %">
 <input type="number" id="alloyMn" placeholder="Alloy Mn %">
 
-<button onclick="calculateMn()">Calculate Mn Required</button>
-
+<button onclick="calculateMn()">Calculate</button>
 <div id="mnResult"></div>
 
 <hr>
@@ -403,117 +86,110 @@ function calculateRecovery() {
 <option value="oxidizing">Oxidizing Slag</option>
 </select>
 
-<button onclick="calculateRecovery()">Predict Recovery</button>
-
+<button onclick="calculateRecovery()">Predict</button>
 <div id="recoveryResult"></div>
 
 </div>
 </section>
 
-  <section class="page page2">
-<div style="width:100%; max-width:380px; margin:auto;">
+<!-- PAGE 2 -->
+<section class="page page2">
+<div style="width:100%;max-width:380px;">
 
-<h2>🧪 FeO Lab Testing (KMnO₄ Method)</h2>
+<h2>🧪 FeO Lab Test (KMnO₄)</h2>
 
-<p><b>Sample Weight:</b> 0.5 g slag</p>
-<p><b>Titrant:</b> 0.1N KMnO₄</p>
-<p><b>Acid Medium:</b> Dilute H₂SO₄</p>
-
-<p><b>Procedure:</b></p>
-<p>1. Grind fresh slag sample.</p>
-<p>2. Weigh 0.5g accurately.</p>
-<p>3. Dissolve in dilute H₂SO₄.</p>
-<p>4. Heat mildly.</p>
-<p>5. Titrate with KMnO₄ till pink endpoint.</p>
-
-<hr>
-
-<p><b>Accurate Formula:</b></p>
-<p>FeO% = (V × N × 7.99 × 100) / W</p>
-
-<p><b>Shortcut (0.5g & 0.1N):</b></p>
-<p>FeO% ≈ V × 1.6</p>
+<p><b>Sample:</b> 0.5g slag</p>
+<p><b>KMnO₄:</b> 0.1N</p>
+<p><b>Shortcut:</b> FeO% ≈ V × 1.6</p>
 
 <input type="number" id="titre" placeholder="Enter Titre (ml)">
 <button onclick="calculateFeO()">Calculate FeO</button>
 
 <div id="feoResult"></div>
 
-<hr>
-
-<p><b>Example:</b></p>
-<p>Titre = 10 ml → FeO ≈ 16%</p>
-
 </div>
 </section>
 
-  <section class="page page3">
-<div style="width:100%; max-width:380px; margin:auto;">
+<!-- PAGE 3 -->
+<section class="page page3">
+<div style="width:100%;max-width:380px;">
 
-<h2>🔥 Slag & Oxidation Control</h2>
+<h2>🔥 Slag & Oxidation Guide</h2>
 
-<p><b>Reducing Slag:</b> Black/Dark → Best for Mn</p>
-<p><b>Normal Slag:</b> Brown → Skim before Mn</p>
-<p><b>Oxidizing Slag:</b> Red/Orange → Avoid Mn</p>
-
-<hr>
+<p><b>Reducing:</b> Black → Best for Mn</p>
+<p><b>Normal:</b> Brown → Skim first</p>
+<p><b>Oxidizing:</b> Red → Avoid Mn</p>
 
 <p><b>If FeO >15%:</b></p>
-<p>✔ Slag Skim</p>
+<p>✔ Slag skim</p>
 <p>✔ 4–6 kg FeSi per ton</p>
 <p>✔ Add Mn at 1580–1600°C</p>
 
-<hr>
-
-<p><b>Tap Temp Rule:</b></p>
-<p>>1670°C → High Mn Oxidation Risk</p>
-<p>>1700°C → Very High Risk</p>
+<p><b>Tap Temp:</b></p>
+<p>>1670°C → High oxidation risk</p>
 
 </div>
 </section>
 
-  <script>
+</div>
 
-function calculateMn() {
-var metal = parseFloat(document.getElementById("metalWeight").value);
-var currentMn = parseFloat(document.getElementById("currentMn").value);
-var targetMn = parseFloat(document.getElementById("targetMn").value);
-var recovery = parseFloat(document.getElementById("recovery").value);
-var alloyMn = parseFloat(document.getElementById("alloyMn").value);
+<script>
 
-if (isNaN(metal) || isNaN(currentMn) || isNaN(targetMn) || isNaN(recovery) || isNaN(alloyMn)) {
-document.getElementById("mnResult").innerHTML = "Enter all values.";
+function calculateMn(){
+var metal=parseFloat(document.getElementById("metalWeight").value);
+var currentMn=parseFloat(document.getElementById("currentMn").value);
+var targetMn=parseFloat(document.getElementById("targetMn").value);
+var recovery=parseFloat(document.getElementById("recovery").value);
+var alloyMn=parseFloat(document.getElementById("alloyMn").value);
+
+if(isNaN(metal)||isNaN(currentMn)||isNaN(targetMn)||isNaN(recovery)||isNaN(alloyMn)){
+document.getElementById("mnResult").innerHTML="Enter all values.";
 return;
 }
 
-var mnRequired = (metal * (targetMn - currentMn) / 100) / (recovery/100);
-var alloyRequired = (mnRequired * 100) / alloyMn;
+var mnRequired=(metal*(targetMn-currentMn)/100)/(recovery/100);
+var alloyRequired=(mnRequired*100)/alloyMn;
 
-document.getElementById("mnResult").innerHTML =
-"Add Alloy: " + alloyRequired.toFixed(2) + " kg";
+document.getElementById("mnResult").innerHTML=
+"Add Alloy: "+alloyRequired.toFixed(2)+" kg";
+}
+
+function calculateFeO(){
+var v=parseFloat(document.getElementById("titre").value);
+if(isNaN(v)){
+document.getElementById("feoResult").innerHTML="Enter titre value.";
+return;
+}
+var feo=v*1.6;
+document.getElementById("feoResult").innerHTML=
+"Estimated FeO: "+feo.toFixed(2)+"%";
+}
+
+function calculateRecovery(){
+var feo=parseFloat(document.getElementById("feo").value);
+var temp=parseFloat(document.getElementById("temp").value);
+var taptemp=parseFloat(document.getElementById("taptemp").value);
+var slag=document.getElementById("slag").value;
+
+if(isNaN(feo)||isNaN(temp)||isNaN(taptemp)){
+document.getElementById("recoveryResult").innerHTML="Enter all values.";
+return;
+}
+
+var recovery=90-(1.5*feo);
+
+if(temp<1550) recovery-=5;
+if(temp>1620) recovery-=3;
+if(taptemp>1670) recovery-=8;
+
+if(slag==="oxidizing") recovery-=5;
+if(slag==="reducing") recovery+=3;
+
+document.getElementById("recoveryResult").innerHTML=
+"Expected Mn Recovery: "+recovery.toFixed(1)+"%";
 }
 
 </script>
 
-</div><div class="container">
-
-  <section class="page page1">
-    <!-- Mn Recovery Section yahan paste karo -->
-  </section>
-
-  <section class="page page2">
-    <!-- FeO Lab Method Section yahan paste karo -->
-  </section>
-
-  <section class="page page3">
-    <h2>⚙ FeO Reduction Advisor</h2>
-    <p>Reduce FeO before Mn addition.</p>
-  </section>
-
-  <section class="page page4">
-    <h2>🔥 Mn Best Practice Guide</h2>
-    <p>Add Mn at 1580–1600°C under reducing slag.</p>
-  </section>
-
-</div>>
+</body>
 </html>
