@@ -3,158 +3,320 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MeltingPro</title>
+<title>MeltingPro - Aarav Steel Tech</title>
 
 <style>
+
 body{
-font-family:Arial;
 margin:0;
-background:linear-gradient(135deg,#0f2027,#203a43);
+font-family:Arial;
+background:#0f2027;
 color:white;
-text-align:center;
-padding:20px;
+overflow:hidden;
 }
+
+.container{
+display:flex;
+height:100vh;
+overflow-x:auto;
+scroll-snap-type:x mandatory;
+}
+
+.page{
+flex:0 0 100%;
+height:100vh;
+overflow-y:auto;
+scroll-snap-align:start;
+padding:20px;
+box-sizing:border-box;
+}
+
+.page1{background:linear-gradient(135deg,#0f2027,#203a43);}
+.page2{background:linear-gradient(135deg,#232526,#414345);}
+.page3{background:linear-gradient(135deg,#1f4037,#99f2c8);color:black;}
+
 .card{
 background:#1e293b;
-padding:20px;
-margin:15px auto;
-border-radius:12px;
-max-width:400px;
-box-shadow:0 0 15px rgba(0,0,0,0.5);
+padding:15px;
+margin-bottom:20px;
+border-radius:10px;
+max-width:450px;
+margin-left:auto;
+margin-right:auto;
 }
-input,select,button{
-width:90%;
-padding:8px;
-margin:5px;
+
+.page3 .card{
+background:white;
+color:black;
+}
+
+.row{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin:8px 0;
+}
+
+.row label{
+width:55%;
+text-align:left;
+font-size:14px;
+}
+
+.row input, .row select{
+width:40%;
+padding:6px;
 border-radius:6px;
 border:none;
 }
+
 button{
-background:#22c55e;
+width:100%;
+padding:8px;
+margin-top:10px;
+border-radius:6px;
+border:none;
+background:#ff6600;
 color:white;
 font-weight:bold;
 cursor:pointer;
 }
+
 .signal{
 font-weight:bold;
-margin-top:10px;
+margin-top:8px;
 }
+
+h2{
+text-align:center;
+margin-top:0;
+}
+
+hr{
+border:0;
+height:1px;
+background:#555;
+margin:15px 0;
+}
+
 </style>
 </head>
 
 <body>
 
-<h2>🔥 MeltingPro Calculators</h2>
+<div class="container">
+
+<!-- ================= PAGE 1 ================= -->
+<section class="page page1">
+
+<h2>🔥 Melting Control</h2>
 
 <div class="card">
 <h3>Mn Addition Calculator</h3>
-<input type="number" id="metal" placeholder="Metal Weight kg">
-<input type="number" id="curMn" placeholder="Current Mn %">
-<input type="number" id="tarMn" placeholder="Target Mn %">
-<input type="number" id="rec" placeholder="Recovery %" value="70">
-<input type="number" id="allMn" placeholder="Alloy Mn %" value="14">
+
+<div class="row"><label>Metal Weight (kg)</label><input type="number" id="metal"></div>
+<div class="row"><label>Current Mn %</label><input type="number" id="curMn"></div>
+<div class="row"><label>Target Mn %</label><input type="number" id="tarMn"></div>
+<div class="row"><label>Expected Recovery %</label><input type="number" id="rec" value="70"></div>
+<div class="row"><label>Alloy Mn %</label><input type="number" id="allMn" value="14"></div>
+
 <button onclick="calcMn()">Calculate</button>
 <div id="mnOut"></div>
 </div>
 
 <div class="card">
 <h3>Carbon Adjustment</h3>
-<input type="number" id="cMetal" placeholder="Metal kg">
-<input type="number" id="cCur" placeholder="Current C %">
-<input type="number" id="cTar" placeholder="Target C %">
+
+<div class="row"><label>Metal Weight (kg)</label><input type="number" id="cMetal"></div>
+<div class="row"><label>Current C %</label><input type="number" id="cCur"></div>
+<div class="row"><label>Target C %</label><input type="number" id="cTar"></div>
+
+<div class="row">
+<label>Adjustment Type</label>
 <select id="cType">
 <option value="sponge">Carbon Down (Sponge)</option>
 <option value="cast">Carbon Up (Cast Iron)</option>
 </select>
-<input type="number" id="cPct" placeholder="FeO% or C%" value="12">
+</div>
+
+<div class="row"><label>FeO% (Sponge) / C% (Cast)</label><input type="number" id="cPct" value="12"></div>
+
 <button onclick="calcCarbon()">Calculate</button>
 <div id="cOut"></div>
 </div>
 
+</section>
+
+<!-- ================= PAGE 2 ================= -->
+<section class="page page2">
+
+<h2>📊 Recovery Intelligence</h2>
+
 <div class="card">
 <h3>Mn Recovery Predictor</h3>
-<input type="number" id="feo" placeholder="FeO %">
-<input type="number" id="temp" placeholder="Bath Temp °C">
-<input type="number" id="tap" placeholder="Tap Temp °C">
+
+<div class="row"><label>FeO %</label><input type="number" id="feo"></div>
+<div class="row"><label>Bath Temp (°C)</label><input type="number" id="temp"></div>
+<div class="row"><label>Tap Temp (°C)</label><input type="number" id="tap"></div>
+
 <button onclick="calcRecovery()">Predict</button>
 <div id="recOut"></div>
 </div>
 
 <div class="card">
-<h3>6 Heat Average Recovery</h3>
-<input type="number" id="h1" placeholder="Heat1 Recovery %">
-<input type="number" id="h2" placeholder="Heat2 Recovery %">
-<input type="number" id="h3" placeholder="Heat3 Recovery %">
-<input type="number" id="h4" placeholder="Heat4 Recovery %">
-<input type="number" id="h5" placeholder="Heat5 Recovery %">
-<input type="number" id="h6" placeholder="Heat6 Recovery %">
-<button onclick="avgRec()">Average</button>
+<h3>6 Heat Recovery Average</h3>
+
+<p>Enter Mn Recovery % of last heats:</p>
+
+<div class="row"><label>Heat 1</label><input type="number" id="h1"></div>
+<div class="row"><label>Heat 2</label><input type="number" id="h2"></div>
+<div class="row"><label>Heat 3</label><input type="number" id="h3"></div>
+<div class="row"><label>Heat 4</label><input type="number" id="h4"></div>
+<div class="row"><label>Heat 5</label><input type="number" id="h5"></div>
+<div class="row"><label>Heat 6</label><input type="number" id="h6"></div>
+
+<button onclick="avgRec()">Calculate Average</button>
 <div id="avgOut"></div>
 </div>
 
+</section>
+
+<!-- ================= PAGE 3 ================= -->
+<section class="page page3">
+
+<h2>🧪 FeO & Slag Science</h2>
+
 <div class="card">
-<h3>FeO Lab Test</h3>
-<input type="number" id="titre" placeholder="Titre ml">
+<h3>FeO Lab Test (KMnO₄ Method)</h3>
+
+<p><b>Principle:</b> Fe²⁺ in slag is titrated with KMnO₄ in acidic medium.</p>
+
+<p><b>Procedure:</b></p>
+<p>1. Take 0.5g finely ground slag sample.</p>
+<p>2. Add dilute H₂SO₄.</p>
+<p>3. Heat mildly to dissolve.</p>
+<p>4. Titrate with 0.1N KMnO₄.</p>
+<p>5. Note light pink endpoint.</p>
+
+<p><b>Accurate Formula:</b></p>
+<p>FeO% = (V × N × 7.99 × 100) / W</p>
+
+<p><b>Shortcut (0.5g & 0.1N):</b> FeO% ≈ V × 1.6</p>
+
+<hr>
+
+<div class="row"><label>Titre (ml)</label><input type="number" id="titre"></div>
+
 <button onclick="calcFeO()">Calculate FeO</button>
 <div id="feoOut"></div>
+</div>
+
+</section>
+
 </div>
 
 <script>
 
 function calcMn(){
-let m=metal.value, c=curMn.value, t=tarMn.value, r=rec.value, a=allMn.value;
-if(!m||!c||!t||!r||!a){mnOut.innerHTML="Enter all values";return;}
+let m=parseFloat(metal.value);
+let c=parseFloat(curMn.value);
+let t=parseFloat(tarMn.value);
+let r=parseFloat(rec.value);
+let a=parseFloat(allMn.value);
+
+if(isNaN(m)||isNaN(c)||isNaN(t)||isNaN(r)||isNaN(a)){
+mnOut.innerHTML="Enter all values";
+return;
+}
+
 let req=(m*(t-c)/100)/(r/100);
 let alloy=req*100/a;
+
 mnOut.innerHTML="Add Alloy: "+alloy.toFixed(2)+" kg";
 }
 
 function calcCarbon(){
-let m=cMetal.value, c=cCur.value, t=cTar.value, type=cType.value, pct=cPct.value;
-if(!m||!c||!t||!pct){cOut.innerHTML="Enter values";return;}
-let delta=t-c;
+let m=parseFloat(cMetal.value);
+let c=parseFloat(cCur.value);
+let t=parseFloat(cTar.value);
+let type=cType.value;
+let pct=parseFloat(cPct.value);
+
+if(isNaN(m)||isNaN(c)||isNaN(t)||isNaN(pct)){
+cOut.innerHTML="Enter all values";
+return;
+}
+
+let diff=Math.abs(t-c);
+
 if(type=="sponge"){
-let sponge=(Math.abs(delta)*m*6)/pct;
-cOut.innerHTML="Add Sponge: "+sponge.toFixed(2)+" kg";
+let sponge=(diff*m*6)/pct;
+cOut.innerHTML="Add Sponge Iron: "+sponge.toFixed(2)+" kg";
 }else{
-let cast=(delta*m)/(pct/100);
+let cast=(diff*m)/(pct/100);
 cOut.innerHTML="Add Cast Iron: "+cast.toFixed(2)+" kg";
 }
 }
 
 function calcRecovery(){
-let f=feo.value, tempv=temp.value, tapv=tap.value;
-if(!f||!tempv||!tapv){recOut.innerHTML="Enter values";return;}
+let f=parseFloat(feo.value);
+let tempv=parseFloat(temp.value);
+let tapv=parseFloat(tap.value);
+
+if(isNaN(f)||isNaN(tempv)||isNaN(tapv)){
+recOut.innerHTML="Enter all values";
+return;
+}
+
 let rec=90-(1.5*f);
+
 if(tempv>1620)rec-=3;
 if(tapv>1670)rec-=8;
+
 let sig="🟢 Stable";
 if(rec<70)sig="🟡 Moderate";
 if(rec<60)sig="🔴 High Oxidation";
+
 recOut.innerHTML="Expected Recovery: "+rec.toFixed(1)+"%<div class='signal'>"+sig+"</div>";
 }
 
 function avgRec(){
 let total=0,count=0;
+
 for(let i=1;i<=6;i++){
-let v=document.getElementById("h"+i).value;
-if(v){total+=parseFloat(v);count++;}
+let v=parseFloat(document.getElementById("h"+i).value);
+if(!isNaN(v)){
+total+=v;
+count++;
 }
-if(count==0){avgOut.innerHTML="Enter data";return;}
+}
+
+if(count==0){
+avgOut.innerHTML="Enter heat data";
+return;
+}
+
 let avg=total/count;
+
 let sig="🟢 Stable";
 if(avg<70)sig="🟡 Moderate";
 if(avg<60)sig="🔴 Unstable";
+
 avgOut.innerHTML="Average: "+avg.toFixed(1)+"%<div class='signal'>"+sig+"</div>";
 }
 
 function calcFeO(){
-let v=titre.value;
-if(!v){feoOut.innerHTML="Enter titre";return;}
+let v=parseFloat(titre.value);
+if(isNaN(v)){
+feoOut.innerHTML="Enter titre value";
+return;
+}
 let feo=v*1.6;
+
 let sig="🟢 Safe";
 if(feo>12)sig="🟡 Moderate";
 if(feo>15)sig="🔴 High FeO";
+
 feoOut.innerHTML="FeO: "+feo.toFixed(2)+"%<div class='signal'>"+sig+"</div>";
 }
 
