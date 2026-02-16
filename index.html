@@ -6,318 +6,244 @@
 <title>MeltingPro - Aarav Steel Tech</title>
 
 <style>
-
-body{
-margin:0;
-font-family:Arial;
-background:#0f2027;
-color:white;
-overflow:hidden;
-}
-
-.container{
-display:flex;
-height:100vh;
-overflow-x:auto;
-scroll-snap-type:x mandatory;
-}
-
-.page{
-flex:0 0 100%;
-height:100vh;
-overflow-y:auto;
-scroll-snap-align:start;
-padding:20px;
-box-sizing:border-box;
-}
-
-.page1{background:linear-gradient(135deg,#0f2027,#203a43);}
-.page2{background:linear-gradient(135deg,#232526,#414345);}
-.page3{background:linear-gradient(135deg,#1f4037,#99f2c8);color:black;}
-
-.card{
-background:#1e293b;
-padding:15px;
-margin-bottom:20px;
-border-radius:10px;
-max-width:450px;
-margin-left:auto;
-margin-right:auto;
-}
-
-.page3 .card{
-background:white;
-color:black;
-}
-
-.row{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin:8px 0;
-}
-
-.row label{
-width:55%;
-text-align:left;
-font-size:14px;
-}
-
-.row input, .row select{
-width:40%;
-padding:6px;
-border-radius:6px;
-border:none;
-}
-
-button{
-width:100%;
-padding:8px;
-margin-top:10px;
-border-radius:6px;
-border:none;
-background:#ff6600;
-color:white;
-font-weight:bold;
-cursor:pointer;
-}
-
-.signal{
-font-weight:bold;
-margin-top:8px;
-}
-
-h2{
-text-align:center;
-margin-top:0;
-}
-
-hr{
-border:0;
-height:1px;
-background:#555;
-margin:15px 0;
-}
-
+body{margin:0;font-family:Arial;background:#0f2027;color:white;overflow:hidden}
+.container{display:flex;height:100vh;overflow-x:auto;scroll-snap-type:x mandatory}
+.page{flex:0 0 100%;height:100vh;overflow-y:auto;scroll-snap-align:start;padding:20px;box-sizing:border-box}
+.page1{background:linear-gradient(135deg,#0f2027,#203a43)}
+.page2{background:linear-gradient(135deg,#232526,#414345)}
+.page3{background:linear-gradient(135deg,#1f4037,#99f2c8);color:black}
+.card{background:#1e293b;padding:15px;margin-bottom:20px;border-radius:10px;max-width:480px;margin-left:auto;margin-right:auto}
+.page3 .card{background:white;color:black}
+.row{display:flex;justify-content:space-between;align-items:center;margin:6px 0}
+.row label{width:60%;font-size:14px}
+.row input,.row select{width:38%;padding:6px;border-radius:6px;border:none}
+button{width:100%;padding:8px;margin-top:10px;border-radius:6px;border:none;background:#ff6600;color:white;font-weight:bold;cursor:pointer}
+.signal{font-weight:bold;margin-top:8px}
+h2{text-align:center}
+.langBtn{position:fixed;top:10px;right:10px;background:#ff6600;border:none;padding:6px 10px;border-radius:6px;color:white;font-weight:bold}
+hr{border:0;height:1px;background:#555;margin:15px 0}
 </style>
 </head>
 
 <body>
 
+<button class="langBtn" onclick="toggleLang()">हिंदी</button>
+
 <div class="container">
 
-<!-- ================= PAGE 1 ================= -->
+<!-- PAGE 1 -->
 <section class="page page1">
-
-<h2>🔥 Melting Control</h2>
+<h2 id="title1">🔥 Melting Control</h2>
 
 <div class="card">
-<h3>Mn Addition Calculator</h3>
+<h3 id="mnAddTitle">Mn Addition Calculator</h3>
 
-<div class="row"><label>Metal Weight (kg)</label><input type="number" id="metal"></div>
-<div class="row"><label>Current Mn %</label><input type="number" id="curMn"></div>
-<div class="row"><label>Target Mn %</label><input type="number" id="tarMn"></div>
-<div class="row"><label>Expected Recovery %</label><input type="number" id="rec" value="70"></div>
-<div class="row"><label>Alloy Mn %</label><input type="number" id="allMn" value="14"></div>
+<div class="row"><label id="lbl1">Metal Weight (kg)</label><input type="number" id="metal"></div>
+<div class="row"><label id="lbl2">Current Mn %</label><input type="number" id="curMn"></div>
+<div class="row"><label id="lbl3">Target Mn %</label><input type="number" id="tarMn"></div>
+<div class="row"><label id="lbl4">Expected Recovery %</label><input type="number" id="rec" value="70"></div>
+<div class="row"><label id="lbl5">Alloy Mn %</label><input type="number" id="allMn" value="14"></div>
 
 <button onclick="calcMn()">Calculate</button>
 <div id="mnOut"></div>
 </div>
 
 <div class="card">
-<h3>Carbon Adjustment</h3>
+<h3 id="carbTitle">Carbon Adjustment</h3>
 
-<div class="row"><label>Metal Weight (kg)</label><input type="number" id="cMetal"></div>
-<div class="row"><label>Current C %</label><input type="number" id="cCur"></div>
-<div class="row"><label>Target C %</label><input type="number" id="cTar"></div>
+<div class="row"><label id="lbl6">Metal Weight (kg)</label><input type="number" id="cMetal"></div>
+<div class="row"><label id="lbl7">Current C %</label><input type="number" id="cCur"></div>
+<div class="row"><label id="lbl8">Target C %</label><input type="number" id="cTar"></div>
 
 <div class="row">
-<label>Adjustment Type</label>
+<label id="lbl9">Adjustment Type</label>
 <select id="cType">
-<option value="sponge">Carbon Down (Sponge)</option>
+<option value="sponge">Carbon Down (Sponge Iron)</option>
 <option value="cast">Carbon Up (Cast Iron)</option>
 </select>
 </div>
 
-<div class="row"><label>FeO% (Sponge) / C% (Cast)</label><input type="number" id="cPct" value="12"></div>
+<div class="row"><label id="lbl10">FeO% (Sponge) / C% (Cast)</label><input type="number" id="cPct" value="12"></div>
 
 <button onclick="calcCarbon()">Calculate</button>
 <div id="cOut"></div>
 </div>
-
 </section>
 
-<!-- ================= PAGE 2 ================= -->
+<!-- PAGE 2 -->
 <section class="page page2">
-
-<h2>📊 Recovery Intelligence</h2>
+<h2 id="title2">📊 Recovery Intelligence</h2>
 
 <div class="card">
-<h3>Mn Recovery Predictor</h3>
+<h3 id="recTitle">Mn Recovery Predictor</h3>
 
 <div class="row"><label>FeO %</label><input type="number" id="feo"></div>
-<div class="row"><label>Bath Temp (°C)</label><input type="number" id="temp"></div>
-<div class="row"><label>Tap Temp (°C)</label><input type="number" id="tap"></div>
+<div class="row"><label>Bath Temp °C</label><input type="number" id="temp"></div>
+<div class="row"><label>Tap Temp °C</label><input type="number" id="tap"></div>
+
+<div class="row">
+<label id="slagLbl">Slag Nature</label>
+<select id="slag">
+<option value="reducing">Reducing</option>
+<option value="normal">Normal</option>
+<option value="oxidizing">Oxidizing</option>
+</select>
+</div>
 
 <button onclick="calcRecovery()">Predict</button>
 <div id="recOut"></div>
 </div>
 
 <div class="card">
-<h3>6 Heat Recovery Average</h3>
-
-<p>Enter Mn Recovery % of last heats:</p>
-
-<div class="row"><label>Heat 1</label><input type="number" id="h1"></div>
-<div class="row"><label>Heat 2</label><input type="number" id="h2"></div>
-<div class="row"><label>Heat 3</label><input type="number" id="h3"></div>
-<div class="row"><label>Heat 4</label><input type="number" id="h4"></div>
-<div class="row"><label>Heat 5</label><input type="number" id="h5"></div>
-<div class="row"><label>Heat 6</label><input type="number" id="h6"></div>
-
-<button onclick="avgRec()">Calculate Average</button>
+<h3 id="avgTitle">Heatwise Mn Recovery Analysis</h3>
+<div id="heatBlock"></div>
+<button onclick="calcAvgRecovery()">Calculate Average</button>
 <div id="avgOut"></div>
 </div>
 
 </section>
 
-<!-- ================= PAGE 3 ================= -->
+<!-- PAGE 3 -->
 <section class="page page3">
-
-<h2>🧪 FeO & Slag Science</h2>
+<h2 id="title3">🧪 FeO & Slag Science</h2>
 
 <div class="card">
-<h3>FeO Lab Test (KMnO₄ Method)</h3>
+<h3 id="feoTitle">FeO Lab Test (Slag & Sponge)</h3>
 
-<p><b>Principle:</b> Fe²⁺ in slag is titrated with KMnO₄ in acidic medium.</p>
+<p id="proc1">Same KMnO₄ titration method for slag & sponge iron.</p>
 
-<p><b>Procedure:</b></p>
-<p>1. Take 0.5g finely ground slag sample.</p>
-<p>2. Add dilute H₂SO₄.</p>
-<p>3. Heat mildly to dissolve.</p>
-<p>4. Titrate with 0.1N KMnO₄.</p>
-<p>5. Note light pink endpoint.</p>
+<p><b id="proc2">Procedure:</b></p>
+<p>1. Grind sample finely.</p>
+<p>2. Dry if moisture present.</p>
+<p>3. Take 0.5g sample.</p>
+<p>4. Add dilute H₂SO₄.</p>
+<p>5. Heat mildly.</p>
+<p>6. Titrate with 0.1N KMnO₄.</p>
+<p>7. Light pink endpoint.</p>
 
-<p><b>Accurate Formula:</b></p>
-<p>FeO% = (V × N × 7.99 × 100) / W</p>
-
-<p><b>Shortcut (0.5g & 0.1N):</b> FeO% ≈ V × 1.6</p>
+<p><b>Formula:</b> FeO% = (V × 1.6)</p>
 
 <hr>
 
 <div class="row"><label>Titre (ml)</label><input type="number" id="titre"></div>
-
 <button onclick="calcFeO()">Calculate FeO</button>
 <div id="feoOut"></div>
-</div>
 
+</div>
 </section>
 
 </div>
 
 <script>
 
-function calcMn(){
-let m=parseFloat(metal.value);
-let c=parseFloat(curMn.value);
-let t=parseFloat(tarMn.value);
-let r=parseFloat(rec.value);
-let a=parseFloat(allMn.value);
-
-if(isNaN(m)||isNaN(c)||isNaN(t)||isNaN(r)||isNaN(a)){
-mnOut.innerHTML="Enter all values";
-return;
+/* ---------- Heat Input Dynamic ---------- */
+for(let i=1;i<=6;i++){
+document.getElementById("heatBlock").innerHTML+=
+"<div class='row'><label>Heat "+i+" Metal (kg)</label><input type='number' id='m"+i+"'></div>"+
+"<div class='row'><label>Heat "+i+" Mn Increase %</label><input type='number' id='inc"+i+"'></div>"+
+"<div class='row'><label>Heat "+i+" Alloy (kg)</label><input type='number' id='a"+i+"'></div>"+
+"<div class='row'><label>Heat "+i+" Alloy Mn %</label><input type='number' id='am"+i+"' value='14'></div><hr>";
 }
 
+/* ---------- Mn Addition ---------- */
+function calcMn(){
+let m=metal.value,c=curMn.value,t=tarMn.value,r=rec.value,a=allMn.value;
+if(!m||!c||!t||!r||!a){mnOut.innerHTML="Enter all values";return;}
 let req=(m*(t-c)/100)/(r/100);
 let alloy=req*100/a;
-
 mnOut.innerHTML="Add Alloy: "+alloy.toFixed(2)+" kg";
 }
 
+/* ---------- Carbon ---------- */
 function calcCarbon(){
-let m=parseFloat(cMetal.value);
-let c=parseFloat(cCur.value);
-let t=parseFloat(cTar.value);
-let type=cType.value;
-let pct=parseFloat(cPct.value);
+let m=cMetal.value,c=cCur.value,t=cTar.value,type=cType.value,p=cPct.value;
+if(!m||!c||!t||!p){cOut.innerHTML="Enter values";return;}
+let diff=t-c;
 
-if(isNaN(m)||isNaN(c)||isNaN(t)||isNaN(pct)){
-cOut.innerHTML="Enter all values";
-return;
-}
-
-let diff=Math.abs(t-c);
-
-if(type=="sponge"){
-let sponge=(diff*m*6)/pct;
-cOut.innerHTML="Add Sponge Iron: "+sponge.toFixed(2)+" kg";
-}else{
-let cast=(diff*m)/(pct/100);
+if(type=="cast"){
+let cast=(diff*m)/(p/100);
 cOut.innerHTML="Add Cast Iron: "+cast.toFixed(2)+" kg";
+}else{
+let sponge=(Math.abs(diff)*m*6)/p;
+cOut.innerHTML="Add Sponge Iron: "+sponge.toFixed(2)+" kg";
 }
 }
 
+/* ---------- Recovery Predictor ---------- */
 function calcRecovery(){
-let f=parseFloat(feo.value);
-let tempv=parseFloat(temp.value);
-let tapv=parseFloat(tap.value);
-
-if(isNaN(f)||isNaN(tempv)||isNaN(tapv)){
-recOut.innerHTML="Enter all values";
-return;
-}
+let f=feo.value,tempv=temp.value,tapv=tap.value,s=slag.value;
+if(!f||!tempv||!tapv){recOut.innerHTML="Enter all values";return;}
 
 let rec=90-(1.5*f);
-
 if(tempv>1620)rec-=3;
 if(tapv>1670)rec-=8;
+if(s=="oxidizing")rec-=5;
+if(s=="reducing")rec+=3;
 
-let sig="🟢 Stable";
-if(rec<70)sig="🟡 Moderate";
-if(rec<60)sig="🔴 High Oxidation";
+let sig="🟢 Best Condition";
+let advice="Ideal for Mn addition.";
 
-recOut.innerHTML="Expected Recovery: "+rec.toFixed(1)+"%<div class='signal'>"+sig+"</div>";
+if(rec<70){sig="🟡 Moderate Risk";advice="Skim slag & control temperature.";}
+if(rec<60){sig="🔴 High Oxidation";advice="Reduce FeO before Mn addition.";}
+
+recOut.innerHTML="Expected Recovery: "+rec.toFixed(1)+"%<div class='signal'>"+sig+"</div><div>"+advice+"</div>";
 }
 
-function avgRec(){
+/* ---------- Heat Average ---------- */
+function calcAvgRecovery(){
 let total=0,count=0;
 
 for(let i=1;i<=6;i++){
-let v=parseFloat(document.getElementById("h"+i).value);
-if(!isNaN(v)){
-total+=v;
+let m=parseFloat(document.getElementById("m"+i).value);
+let inc=parseFloat(document.getElementById("inc"+i).value);
+let a=parseFloat(document.getElementById("a"+i).value);
+let am=parseFloat(document.getElementById("am"+i).value);
+
+if(!isNaN(m)&&!isNaN(inc)&&!isNaN(a)&&!isNaN(am)){
+let rec=((inc/100*m)/(a*(am/100)))*100;
+total+=rec;
 count++;
 }
 }
 
-if(count==0){
-avgOut.innerHTML="Enter heat data";
-return;
-}
+if(count==0){avgOut.innerHTML="Enter heat data";return;}
 
 let avg=total/count;
 
 let sig="🟢 Stable";
-if(avg<70)sig="🟡 Moderate";
+if(avg<70)sig="🟡 Fluctuating";
 if(avg<60)sig="🔴 Unstable";
 
-avgOut.innerHTML="Average: "+avg.toFixed(1)+"%<div class='signal'>"+sig+"</div>";
+avgOut.innerHTML="Average Recovery: "+avg.toFixed(1)+"%<div class='signal'>"+sig+"</div>";
 }
 
+/* ---------- FeO ---------- */
 function calcFeO(){
-let v=parseFloat(titre.value);
-if(isNaN(v)){
-feoOut.innerHTML="Enter titre value";
-return;
-}
+let v=titre.value;
+if(!v){feoOut.innerHTML="Enter titre";return;}
 let feo=v*1.6;
-
 let sig="🟢 Safe";
 if(feo>12)sig="🟡 Moderate";
 if(feo>15)sig="🔴 High FeO";
-
 feoOut.innerHTML="FeO: "+feo.toFixed(2)+"%<div class='signal'>"+sig+"</div>";
+}
+
+/* ---------- Language Toggle ---------- */
+let hindi=false;
+function toggleLang(){
+hindi=!hindi;
+
+if(hindi){
+document.getElementById("title1").innerHTML="🔥 पिघलन नियंत्रण";
+document.getElementById("title2").innerHTML="📊 रिकवरी विश्लेषण";
+document.getElementById("title3").innerHTML="🧪 FeO परीक्षण";
+document.querySelector(".langBtn").innerHTML="English";
+}else{
+document.getElementById("title1").innerHTML="🔥 Melting Control";
+document.getElementById("title2").innerHTML="📊 Recovery Intelligence";
+document.getElementById("title3").innerHTML="🧪 FeO & Slag Science";
+document.querySelector(".langBtn").innerHTML="हिंदी";
+}
 }
 
 </script>
