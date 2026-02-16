@@ -72,6 +72,60 @@ button{background:#ff6600;color:white;font-weight:bold}
 
 <div class="card">
 <h3>🔥 Mn Recovery Predictor</h3>
+  <div class="card">
+<h3>📊 6 Heat Recovery Average</h3>
+
+<p>Enter last 6 heat data:</p>
+
+<div id="heatInputs">
+
+<input type="number" id="h1_metal" placeholder="Heat1 Metal kg">
+<input type="number" id="h1_inc" placeholder="Heat1 Mn Increase %">
+<input type="number" id="h1_alloy" placeholder="Heat1 Alloy kg">
+<input type="number" id="h1_allmn" placeholder="Heat1 Alloy Mn %">
+
+<hr>
+
+<input type="number" id="h2_metal" placeholder="Heat2 Metal kg">
+<input type="number" id="h2_inc" placeholder="Heat2 Mn Increase %">
+<input type="number" id="h2_alloy" placeholder="Heat2 Alloy kg">
+<input type="number" id="h2_allmn" placeholder="Heat2 Alloy Mn %">
+
+<hr>
+
+<input type="number" id="h3_metal" placeholder="Heat3 Metal kg">
+<input type="number" id="h3_inc" placeholder="Heat3 Mn Increase %">
+<input type="number" id="h3_alloy" placeholder="Heat3 Alloy kg">
+<input type="number" id="h3_allmn" placeholder="Heat3 Alloy Mn %">
+
+<hr>
+
+<input type="number" id="h4_metal" placeholder="Heat4 Metal kg">
+<input type="number" id="h4_inc" placeholder="Heat4 Mn Increase %">
+<input type="number" id="h4_alloy" placeholder="Heat4 Alloy kg">
+<input type="number" id="h4_allmn" placeholder="Heat4 Alloy Mn %">
+
+<hr>
+
+<input type="number" id="h5_metal" placeholder="Heat5 Metal kg">
+<input type="number" id="h5_inc" placeholder="Heat5 Mn Increase %">
+<input type="number" id="h5_alloy" placeholder="Heat5 Alloy kg">
+<input type="number" id="h5_allmn" placeholder="Heat5 Alloy Mn %">
+
+<hr>
+
+<input type="number" id="h6_metal" placeholder="Heat6 Metal kg">
+<input type="number" id="h6_inc" placeholder="Heat6 Mn Increase %">
+<input type="number" id="h6_alloy" placeholder="Heat6 Alloy kg">
+<input type="number" id="h6_allmn" placeholder="Heat6 Alloy Mn %">
+
+</div>
+
+<button onclick="calcAvgRecovery()">Calculate Average</button>
+
+<div id="avgOut"></div>
+
+</div>
 <input type="number" id="feo" placeholder="FeO %">
 <input type="number" id="temp" placeholder="Bath Temp °C">
 <select id="slag">
@@ -189,7 +243,50 @@ slagAdvice.innerHTML="🟡 Moderate FeO → Skim before Mn.";
 slagAdvice.innerHTML="🟢 Safe Slag Condition.";
 }
 }
+<script>
 
+function heatRecovery(metal, inc, alloy, allmn){
+if(isNaN(metal)||isNaN(inc)||isNaN(alloy)||isNaN(allmn)) return null;
+return ((inc/100*metal)/(alloy*(allmn/100)))*100;
+}
+
+function calcAvgRecovery(){
+
+let total=0;
+let count=0;
+
+for(let i=1;i<=6;i++){
+
+let metal=parseFloat(document.getElementById("h"+i+"_metal").value);
+let inc=parseFloat(document.getElementById("h"+i+"_inc").value);
+let alloy=parseFloat(document.getElementById("h"+i+"_alloy").value);
+let allmn=parseFloat(document.getElementById("h"+i+"_allmn").value);
+
+let rec=heatRecovery(metal,inc,alloy,allmn);
+
+if(rec!==null){
+total+=rec;
+count++;
+}
+}
+
+if(count==0){
+document.getElementById("avgOut").innerHTML="Enter at least one heat data.";
+return;
+}
+
+let avg=total/count;
+
+let signal="";
+if(avg>70) signal="🟢 Stable Process";
+else if(avg>=60) signal="🟡 Moderate Stability";
+else signal="🔴 Process Unstable";
+
+document.getElementById("avgOut").innerHTML=
+"Average Recovery: "+avg.toFixed(1)+"%<br>"+signal;
+}
+</script>
+  
 </script>
 
 </body>
