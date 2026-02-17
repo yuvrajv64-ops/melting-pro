@@ -1,160 +1,217 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MeltingPro Industrial</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MeltingPro 3.0 – Furnace Intelligence System</title>
 
 <style>
 body{
 margin:0;
-font-family:Arial;
-background:linear-gradient(135deg,#0f2027,#203a43);
-color:white;
+font-family:Arial, sans-serif;
+background:#111;
+color:#eee;
 }
 
-.header{
+header{
+background:#000;
 padding:15px;
 text-align:center;
-background:#111;
 font-size:18px;
+font-weight:bold;
+color:#ff7b00;
 }
 
-.lang{
-position:absolute;
-right:10px;
-top:10px;
+.tabs{
+display:flex;
+background:#1a1a1a;
+}
+
+.tabs button{
+flex:1;
+padding:12px;
+background:#1a1a1a;
+border:none;
+color:#ccc;
+font-weight:bold;
 cursor:pointer;
-background:#ff9800;
-padding:5px 10px;
-border-radius:6px;
-color:black;
 }
 
-.container{
-padding:15px;
-max-width:420px;
-margin:auto;
+.tabs button.active{
+background:#ff7b00;
+color:#000;
 }
 
-.card{
-background:#1b2b34;
-padding:15px;
-margin-bottom:20px;
-border-radius:12px;
-box-shadow:0 0 10px #000;
+.section{
+display:none;
+padding:20px;
 }
 
-input,select{
+.section.active{
+display:block;
+}
+
+input, select{
 width:100%;
 padding:8px;
 margin:6px 0;
-border-radius:6px;
+background:#222;
 border:1px solid #555;
+color:#fff;
 }
 
-button{
-width:100%;
-padding:10px;
-background:#ff9800;
+button.calc{
+background:#ff7b00;
 border:none;
-border-radius:8px;
+padding:10px;
+width:100%;
 font-weight:bold;
 cursor:pointer;
+margin-top:8px;
 }
 
 .result{
 margin-top:10px;
-font-weight:bold;
+padding:10px;
+background:#222;
+border-left:5px solid #ff7b00;
 }
 
-.signal{
-font-size:20px;
-margin-top:5px;
+.signal-green{color:#00ff66;font-weight:bold;}
+.signal-yellow{color:#ffff00;font-weight:bold;}
+.signal-red{color:#ff3333;font-weight:bold;}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:10px;
+}
+
+table td, table th{
+border:1px solid #444;
+padding:6px;
+text-align:center;
 }
 </style>
 </head>
 
 <body>
 
-<div class="header">
-MeltingPro – Industrial Toolkit
-<div class="lang" onclick="toggleLang()" id="langBtn">हिंदी</div>
+<header>
+MeltingPro 3.0 – Furnace Intelligence System
+</header>
+
+<div class="tabs">
+<button class="active" onclick="showTab(0)">Dashboard</button>
+<button onclick="showTab(1)">Carbon</button>
+<button onclick="showTab(2)">FeO Lab</button>
+<button onclick="showTab(3)">Analyzer</button>
 </div>
 
-<div class="container">
+<!-- DASHBOARD -->
+<div class="section active">
 
-<div class="card">
-<h3 id="mnTitle">Mn Addition Calculator</h3>
-
-<label>Metal (kg)</label>
-<input id="metal">
-
-<label>Current Mn %</label>
-<input id="curMn">
-
-<label>Target Mn %</label>
-<input id="tarMn">
-
-<label>Recovery %</label>
-<input id="rec">
-
-<label>Alloy Mn %</label>
-<input id="allMn">
-
-<button onclick="calcMn()">Calculate</button>
+<h3>Mn Addition</h3>
+<input id="metal" placeholder="Metal Weight (kg)">
+<input id="curMn" placeholder="Current Mn %">
+<input id="tarMn" placeholder="Target Mn %">
+<input id="rec" placeholder="Expected Recovery %">
+<input id="allMn" placeholder="Alloy Mn %">
+<button class="calc" onclick="calcMn()">Calculate Mn Required</button>
 <div id="mnOut" class="result"></div>
+
+<hr>
+
+<h3>Recovery Predictor</h3>
+<input id="feo" placeholder="FeO %">
+<input id="temp" placeholder="Bath Temp °C">
+<input id="tap" placeholder="Tap Temp °C">
+<select id="slag">
+<option value="reducing">Reducing</option>
+<option value="normal">Normal</option>
+<option value="oxidizing">Oxidizing</option>
+</select>
+<button class="calc" onclick="calcRecovery()">Predict</button>
+<div id="recOut" class="result"></div>
+
 </div>
 
-<div class="card">
-<h3>FeO Lab Test</h3>
+<!-- CARBON -->
+<div class="section">
 
-<label>Titre (ml)</label>
-<input id="titre">
+<h3>Carbon UP (Cast Iron)</h3>
+<input id="cMetalUp" placeholder="Metal Weight (kg)">
+<input id="cCurUp" placeholder="Current C %">
+<input id="cTarUp" placeholder="Target C %">
+<input id="castPct" placeholder="Cast Iron C %">
+<button class="calc" onclick="carbonUp()">Calculate</button>
+<div id="cUpOut" class="result"></div>
 
-<label>Normality (N)</label>
-<input id="norm">
+<hr>
 
-<label>Sample Weight (g)</label>
-<input id="wt">
+<h3>Carbon DOWN (Sponge Iron)</h3>
+<input id="cMetalDn" placeholder="Metal Weight (kg)">
+<input id="cCurDn" placeholder="Current C %">
+<input id="cTarDn" placeholder="Target C %">
+<input id="feoSp" placeholder="Sponge FeO %">
+<button class="calc" onclick="carbonDown()">Calculate</button>
+<div id="cDnOut" class="result"></div>
 
-<button onclick="calcFeO()">Calculate FeO</button>
+</div>
+
+<!-- FEO LAB -->
+<div class="section">
+
+<h3>Wet KMnO₄ Method</h3>
+<p>Formula:</p>
+<p>FeO% = (V × N × 7.99 × 100) / W</p>
+<p>Shortcut (0.5g sample, 0.1N): FeO ≈ V × 1.6</p>
+
+<input id="titre" placeholder="Titre Value (ml)">
+<button class="calc" onclick="calcFeO()">Calculate FeO</button>
 <div id="feoOut" class="result"></div>
+
+<hr>
+
+<h3>FeO Interpretation</h3>
+<p><span class="signal-green">Below 10%</span> → Safe Slag</p>
+<p><span class="signal-yellow">10–15%</span> → Moderate</p>
+<p><span class="signal-red">Above 15%</span> → Oxidizing Risk</p>
+
 </div>
 
-<div class="card">
-<h3>6 Heat Avg Recovery</h3>
-<input id="h1" placeholder="Heat1 Recovery%">
-<input id="h2" placeholder="Heat2 Recovery%">
-<input id="h3" placeholder="Heat3 Recovery%">
-<input id="h4" placeholder="Heat4 Recovery%">
-<input id="h5" placeholder="Heat5 Recovery%">
-<input id="h6" placeholder="Heat6 Recovery%">
+<!-- ANALYZER -->
+<div class="section">
 
-<button onclick="calcAvg()">Calculate Avg</button>
+<h3>6 Heat Recovery Analyzer</h3>
+
+<table>
+<tr>
+<th>Heat</th>
+<th>Metal kg</th>
+<th>Mn Rise %</th>
+<th>Alloy kg</th>
+<th>Alloy Mn %</th>
+</tr>
+
+<tbody id="heatRows">
+</tbody>
+</table>
+
+<button class="calc" onclick="calcAvg()">Calculate Average</button>
 <div id="avgOut" class="result"></div>
-</div>
-
-<div class="card">
-<h3>Recovery Explanation</h3>
-<p>Max practical Mn recovery: 75–82%.</p>
-<p>Rest Mn goes to slag as MnO and oxidation loss.</p>
-</div>
 
 </div>
 
 <script>
 
-let lang="en";
-
-function toggleLang(){
-if(lang=="en"){
-lang="hi";
-document.getElementById("langBtn").innerText="English";
-document.getElementById("mnTitle").innerText="Mn मिलाना कैलकुलेटर";
-}else{
-location.reload();
-}
+function showTab(n){
+let tabs=document.querySelectorAll(".tabs button");
+let sections=document.querySelectorAll(".section");
+tabs.forEach(t=>t.classList.remove("active"));
+sections.forEach(s=>s.classList.remove("active"));
+tabs[n].classList.add("active");
+sections[n].classList.add("active");
 }
 
 function calcMn(){
@@ -164,61 +221,107 @@ let t=parseFloat(tarMn.value);
 let r=parseFloat(rec.value);
 let a=parseFloat(allMn.value);
 
-if(isNaN(m)||isNaN(c)||isNaN(t)||isNaN(r)||isNaN(a)){
-mnOut.innerHTML="Enter all values";
-return;
-}
+if(isNaN(m)||isNaN(c)||isNaN(t)||isNaN(r)||isNaN(a)){mnOut.innerHTML="Enter values";return;}
 
-let req=(m*(t-c)/100)/(r/100);
-let alloy=(req*100)/a;
+let mnReq=(m*(t-c)/100)/(r/100);
+let alloy=(mnReq*100)/a;
 
 mnOut.innerHTML="Add Alloy: "+alloy.toFixed(2)+" kg";
 }
 
-function calcFeO(){
-let V=parseFloat(titre.value);
-let N=parseFloat(norm.value);
-let W=parseFloat(wt.value);
+function calcRecovery(){
+let f=parseFloat(feo.value);
+let tp=parseFloat(tap.value);
+let sl=slag.value;
 
-if(isNaN(V)||isNaN(N)||isNaN(W)){
-feoOut.innerHTML="Enter all values";
-return;
-}
+if(isNaN(f)||isNaN(tp)){recOut.innerHTML="Enter values";return;}
 
-let feo=(V*N*7.99*100)/W;
+let rec=90-(1.5*f);
+
+if(tp>1700) rec-=12;
+else if(tp>1670) rec-=8;
+
+if(sl=="oxidizing") rec-=5;
+if(sl=="reducing") rec+=3;
 
 let signal="";
-if(feo>15) signal=" 🔴 High Oxidizing Slag";
-else if(feo>=12) signal=" 🟡 Moderate";
-else signal=" 🟢 Safe Reducing";
+if(rec>70) signal="<span class='signal-green'>Safe</span>";
+else if(rec>=60) signal="<span class='signal-yellow'>Moderate</span>";
+else signal="<span class='signal-red'>High Risk</span>";
 
-feoOut.innerHTML="FeO: "+feo.toFixed(2)+"%"+signal;
+recOut.innerHTML="Expected Recovery: "+rec.toFixed(1)+"%<br>"+signal;
+}
+
+function carbonUp(){
+let m=parseFloat(cMetalUp.value);
+let c=parseFloat(cCurUp.value);
+let t=parseFloat(cTarUp.value);
+let pct=parseFloat(castPct.value);
+
+if(isNaN(m)||isNaN(c)||isNaN(t)||isNaN(pct)){cUpOut.innerHTML="Enter values";return;}
+
+let kg=(m*(t-c)/100)/(pct/100);
+cUpOut.innerHTML="Add Cast Iron: "+kg.toFixed(2)+" kg";
+}
+
+function carbonDown(){
+let m=parseFloat(cMetalDn.value);
+let c=parseFloat(cCurDn.value);
+let t=parseFloat(cTarDn.value);
+let f=parseFloat(feoSp.value);
+
+if(isNaN(m)||isNaN(c)||isNaN(t)||isNaN(f)){cDnOut.innerHTML="Enter values";return;}
+
+let kg=(m*(c-t)*6)/f;
+cDnOut.innerHTML="Add Sponge Iron: "+kg.toFixed(2)+" kg";
+}
+
+function calcFeO(){
+let v=parseFloat(titre.value);
+if(isNaN(v)){feoOut.innerHTML="Enter titre";return;}
+let fe=v*1.6;
+feoOut.innerHTML="FeO: "+fe.toFixed(2)+"%";
+}
+
+for(let i=1;i<=6;i++){
+let row="<tr><td>"+i+"</td>"+
+"<td><input id='m"+i+"'></td>"+
+"<td><input id='r"+i+"'></td>"+
+"<td><input id='a"+i+"'></td>"+
+"<td><input id='p"+i+"'></td></tr>";
+heatRows.innerHTML+=row;
 }
 
 function calcAvg(){
 let total=0,count=0;
 
 for(let i=1;i<=6;i++){
-let v=parseFloat(document.getElementById("h"+i).value);
-if(!isNaN(v)){total+=v;count++;}
+let m=parseFloat(document.getElementById("m"+i).value);
+let inc=parseFloat(document.getElementById("r"+i).value);
+let a=parseFloat(document.getElementById("a"+i).value);
+let pct=parseFloat(document.getElementById("p"+i).value);
+
+if(!isNaN(m)&&!isNaN(inc)&&!isNaN(a)&&!isNaN(pct)){
+let rec=((inc/100*m)/(a*(pct/100)))*100;
+total+=rec;
+count++;
+}
 }
 
-if(count==0){
-avgOut.innerHTML="Enter at least one heat.";
-return;
-}
+if(count==0){avgOut.innerHTML="Enter heat data";return;}
 
 let avg=total/count;
 
-let sig="";
-if(avg>70) sig=" 🟢 Stable";
-else if(avg>=60) sig=" 🟡 Moderate";
-else sig=" 🔴 Unstable";
+let signal="";
+if(avg>70) signal="<span class='signal-green'>Stable</span>";
+else if(avg>=60) signal="<span class='signal-yellow'>Moderate</span>";
+else signal="<span class='signal-red'>Unstable</span>";
 
-avgOut.innerHTML="Average Recovery: "+avg.toFixed(1)+"%"+sig;
+avgOut.innerHTML="Average Recovery: "+avg.toFixed(1)+"%<br>"+signal;
 }
 
 </script>
 
 </body>
 </html>
+
