@@ -120,6 +120,17 @@ MeltingPro 3.0 – Furnace Intelligence System
 <button class="calc" onclick="calcMn()">Calculate Mn Required</button>
 <div id="mnOut" class="result"></div>
 
+  <hr>
+<h4>Slag Nature Identification</h4>
+
+<p><b>Reducing Slag:</b></p>
+<p>Dark color, fluid, low spark → Best Mn Recovery</p>
+
+<p><b>Normal Slag:</b></p>
+<p>Brown, medium viscosity → Skim before Mn</p>
+
+<p><b>Oxidizing Slag:</b></p>
+<p>Red glow, sticky → High Mn loss</p>
 <hr>
 
 <h3>Recovery Predictor</h3>
@@ -134,6 +145,14 @@ MeltingPro 3.0 – Furnace Intelligence System
 <button class="calc" onclick="calcRecovery()">Predict</button>
 <div id="recOut" class="result"></div>
 
+  <hr>
+<h4>What Does Recovery % Mean?</h4>
+<p>If Recovery = 68%</p>
+<p>→ 32% Mn lost in slag & oxidation.</p>
+<p>Loss reasons:</p>
+<p>• High FeO</p>
+<p>• High Tap Temperature</p>
+<p>• Oxidizing Slag</p>
 </div>
 
 <!-- CARBON -->
@@ -159,24 +178,51 @@ MeltingPro 3.0 – Furnace Intelligence System
 
 </div>
 
-<!-- FEO LAB -->
 <div class="section">
 
-<h3>Wet KMnO₄ Method</h3>
-<p>Formula:</p>
-<p>FeO% = (V × N × 7.99 × 100) / W</p>
-<p>Shortcut (0.5g sample, 0.1N): FeO ≈ V × 1.6</p>
+<h3>FeO Wet Lab Method (KMnO₄ Titration)</h3>
 
-<input id="titre" placeholder="Titre Value (ml)">
+<p><b>Principle:</b> Fe²⁺ in slag reacts with KMnO₄ in acidic medium.</p>
+
+<p><b>Procedure:</b></p>
+<p>1. Take fresh slag sample and grind properly.</p>
+<p>2. Weigh 0.5 g sample accurately (W).</p>
+<p>3. Add dilute H₂SO₄.</p>
+<p>4. Heat mildly to dissolve Fe²⁺.</p>
+<p>5. Titrate with 0.1N KMnO₄.</p>
+<p>6. Note titre value (V ml).</p>
+
+<hr>
+
+<p><b>Accurate Formula:</b></p>
+<p>FeO% = (V × N × 7.99 × 100) / W</p>
+
+<p><b>Shortcut (0.5g sample + 0.1N):</b></p>
+<p>FeO% ≈ V × 1.6</p>
+
+<input id="titre" placeholder="Enter Titre Value (ml)">
 <button class="calc" onclick="calcFeO()">Calculate FeO</button>
 <div id="feoOut" class="result"></div>
 
 <hr>
 
-<h3>FeO Interpretation</h3>
-<p><span class="signal-green">Below 10%</span> → Safe Slag</p>
-<p><span class="signal-yellow">10–15%</span> → Moderate</p>
-<p><span class="signal-red">Above 15%</span> → Oxidizing Risk</p>
+<h3>Sponge Iron FeO Check</h3>
+
+<p><b>Indirect Method:</b></p>
+<p>FeO % = Total Fe % − Metallic Fe %</p>
+
+<p>Example:</p>
+<p>Total Fe = 90%</p>
+<p>Fe(M) = 82%</p>
+<p>FeO = 8%</p>
+
+<hr>
+
+<h3>FeO Interpretation Guide</h3>
+
+<p><span class="signal-green">Below 10%</span> → Reducing / Safe</p>
+<p><span class="signal-yellow">10–15%</span> → Moderate Oxidation</p>
+<p><span class="signal-red">Above 15%</span> → High Oxidation Risk</p>
 
 </div>
 
@@ -250,6 +296,21 @@ else if(rec>=60) signal="<span class='signal-yellow'>Moderate</span>";
 else signal="<span class='signal-red'>High Risk</span>";
 
 recOut.innerHTML="Expected Recovery: "+rec.toFixed(1)+"%<br>"+signal;
+  let advice="";
+
+if(f>15){
+advice+="FeO High → Skim slag + Add FeSi before Mn.<br>";
+}
+
+if(tp>1670){
+advice+="High Tap Temp → Reduce below 1665°C.<br>";
+}
+
+if(sl=="oxidizing"){
+advice+="Oxidizing Slag → Avoid Mn addition now.<br>";
+}
+
+recOut.innerHTML+="<br>"+advice;
 }
 
 function carbonUp(){
