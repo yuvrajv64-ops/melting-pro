@@ -1,18 +1,38 @@
-const CACHE_NAME = "meltingpro-cache-v1";
-const OFFLINE_URLS = [
-  "index.html",
-  "manifest.json",
-  "style.css",
-  "app.js",
-  "icon-A-192.png",
-  "icon-gear-512.png"
+const CACHE_NAME = "meltingpro-cache-v2";
+
+const urlsToCache = [
+  "./",
+  "./index.html",
+  "./manifest.json"
 ];
 
-self.addEventListener("install", (event) => {
+self.addEventListener("install", event => {
+  self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(OFFLINE_URLS);
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        return cache.addAll(urlsToCache);
+      })
+  );
+});
+
+self.addEventListener("activate", event => {
+  event.waitUntil(
+    caches.keys().then(keys => {
+      return Promise.all(
+        keys.filter(key => key !== CACHE_NAME)
+            .map(key => caches.delete(key))
+      );
     })
   );
-  self.skipWaiting();
+  self.clients.claim();
+});
+
+self.addEventListener("fetch", event => {
+  event.respondWith(
+    caches.match(event.request)
+      .then(response => {
+        return response || fetch(event.request);
+      })
+  );
 });
