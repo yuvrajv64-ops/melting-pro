@@ -1,18 +1,15 @@
-const CACHE_NAME = "meltingpro-cache-v2";
-
-const urlsToCache = [
-  "./",
-  "./index.html",
-  "./manifest.json"
-];
+const CACHE_NAME = "meltingpro-v3";
 
 self.addEventListener("install", event => {
   self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        return cache.addAll(urlsToCache);
-      })
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll([
+        "./",
+        "./index.html",
+        "./manifest.json"
+      ]);
+    })
   );
 });
 
@@ -32,7 +29,16 @@ self.addEventListener("fetch", event => {
   event.respondWith(
     caches.match(event.request)
       .then(response => {
-        return response || fetch(event.request);
+        if (response) {
+          return response;
+        }
+        return fetch(event.request)
+          .then(networkResponse => {
+            return caches.open(CACHE_NAME).then(cache => {
+              cache.put(event.request, networkResponse.clone());
+              return networkResponse;
+            });
+          });
       })
   );
 });
