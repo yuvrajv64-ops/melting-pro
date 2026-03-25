@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MeltingPro 3.0 – Furnace Intelligence</title>
+<title>MeltingPro 4.0 – Smart Furnace AI</title>
 
 <style>
 body{margin:0;font-family:Arial;background:#0f172a;color:#e5e7eb;}
@@ -13,7 +13,6 @@ header{background:#020617;padding:15px;text-align:center;color:#f97316;font-weig
 .tabs button.active{background:#f97316;color:#000;}
 .section{display:none;padding:15px;}
 .section.active{display:block;}
-
 .card{background:#111827;padding:12px;border-radius:10px;margin-top:12px;}
 input,select{width:100%;padding:10px;margin:6px 0;background:#1e293b;border:none;color:#fff;border-radius:6px;}
 button{background:#f97316;border:none;padding:10px;width:100%;border-radius:8px;font-weight:bold;}
@@ -24,11 +23,12 @@ button{background:#f97316;border:none;padding:10px;width:100%;border-radius:8px;
 
 <body>
 
-<header>🔥 MeltingPro 3.0 – Smart Furnace</header>
+<header>🔥 MeltingPro 4.0 – Furnace AI System</header>
 
 <div class="tabs">
 <button class="active" onclick="showTab(0)">Dashboard</button>
 <button onclick="showTab(1)">Analyzer</button>
+<button onclick="showTab(2)">Lab</button>
 </div>
 
 <!-- DASHBOARD -->
@@ -36,13 +36,13 @@ button{background:#f97316;border:none;padding:10px;width:100%;border-radius:8px;
 
 <div class="card">
 <h3>🔥 Metal Calculator</h3>
-<input id="topDia" placeholder="Top Dia">
-<input id="bottomDia" placeholder="Bottom Dia">
-<input id="height" placeholder="Height">
-<input id="taper" placeholder="Taper">
+<input id="topDia" placeholder="Top Dia (inch)">
+<input id="bottomDia" placeholder="Bottom Dia (inch)">
+<input id="height" placeholder="Straight Height (inch)">
+<input id="taper" placeholder="Taper Height (inch)">
 <button onclick="calcMetal()">Calculate</button>
 <div id="metalOut" class="result"></div>
-<div class="note">Density 7.5 t/m³ | Fill factor 0.85</div>
+<div class="note">Density 7.2 t/m³ | Fill factor 0.80 (plant actual)</div>
 </div>
 
 <div class="card">
@@ -52,17 +52,28 @@ button{background:#f97316;border:none;padding:10px;width:100%;border-radius:8px;
 <input id="totalHeight" placeholder="Height">
 <button onclick="calcRamming()">Calculate</button>
 <div id="ramOut" class="result"></div>
-<div class="note">Density 2.7 t/m³ | +5% extra</div>
+<div class="note">Density 2.65 t/m³</div>
 </div>
 
 <div class="card">
-<h3>Mn Input (Hidden Logic)</h3>
-<input id="metal" placeholder="Metal">
-<input id="curMn" placeholder="Current Mn">
-<input id="tarMn" placeholder="Target Mn">
+<h3>⚙ Mn Calculator</h3>
+<input id="metal" placeholder="Metal (kg)">
+<input id="curMn" placeholder="Current Mn %">
+<input id="tarMn" placeholder="Target Mn %">
 <input id="rec" placeholder="Recovery %">
-<input id="allMn" placeholder="Alloy %">
-<button onclick="saveMn()">Save Data</button>
+<input id="allMn" placeholder="Alloy Mn %">
+<button onclick="calcMn()">Calculate</button>
+<div id="mnOut" class="result"></div>
+</div>
+
+<div class="card">
+<h3>⚡ Carbon Control</h3>
+<input id="cMetal" placeholder="Metal">
+<input id="cCur" placeholder="Current C">
+<input id="cTar" placeholder="Target C">
+<input id="feoSp" placeholder="Sponge FeO">
+<button onclick="carbonDown()">Carbon Down</button>
+<div id="cOut" class="result"></div>
 </div>
 
 </div>
@@ -71,34 +82,47 @@ button{background:#f97316;border:none;padding:10px;width:100%;border-radius:8px;
 <div class="section">
 
 <div class="card">
-<h3>🧠 Furnace Analysis</h3>
+<h3>🧠 Furnace AI Analysis</h3>
 
 <input id="feo" placeholder="FeO %">
-<input id="temp" placeholder="Temp">
-
-<select id="slag">
-<option value="reducing">Reducing</option>
-<option value="normal">Normal</option>
-<option value="oxidizing">Oxidizing</option>
-</select>
+<input id="temp" placeholder="Temp °C">
+<input id="cao" placeholder="CaO %">
+<input id="sio2" placeholder="SiO2 %">
 
 <button onclick="runAnalysis()">🔥 Full Analysis</button>
 
 <div id="aiOut" class="result"></div>
+</div>
 
 </div>
 
+<!-- LAB -->
+<div class="section">
+
 <div class="card">
-<h4>📊 Learning Data</h4>
-<input id="actualRec" placeholder="Actual Recovery %">
-<button onclick="saveLearning()">Save Heat</button>
+<h3>🧪 FeO Method</h3>
+<p>FeO% ≈ V × 1.6 (KMnO₄)</p>
+</div>
+
+<div class="card">
+<h3>🧪 SiO₂ Method</h3>
+<p>Gravimetric: residue weighing</p>
+</div>
+
+<div class="card">
+<h3>🧪 CaO</h3>
+<p>EDTA → CaO% ≈ V × 2.8</p>
+</div>
+
+<div class="card">
+<h3>🧪 MgO</h3>
+<p>EDTA → MgO% ≈ V × 2.0</p>
 </div>
 
 </div>
 
 <script>
 
-// TAB
 function showTab(n){
 let t=document.querySelectorAll(".tabs button");
 let s=document.querySelectorAll(".section");
@@ -115,25 +139,32 @@ let d2=bottomDia.value*0.0254;
 let h1=height.value*0.0254;
 let h2=taper.value*0.0254;
 
-let v=(3.14*(d1/2)**2*h1)+(3.14*h2/3*((d1/2)**2+(d2/2)**2+(d1/2)*(d2/2)));
-let ton=v*7.5;
+let r1=d1/2, r2=d2/2;
 
-metalOut.innerHTML="🔥 "+ton.toFixed(2)+" Ton";
+let v1=Math.PI*r1*r1*h1;
+let v2=(Math.PI*h2/3)*(r1*r1+r2*r2+r1*r2);
+
+let total=(v1+v2)*7.2*0.80;
+
+metalOut.innerHTML="🔥 "+total.toFixed(2)+" Ton";
 }
 
 // RAMMING
 function calcRamming(){
-let s=shellDia.value;
-let f=farmaDia.value;
-let h=totalHeight.value;
+let s=shellDia.value*0.0254;
+let f=farmaDia.value*0.0254;
+let h=totalHeight.value*0.0254;
 
-let lining=(s-f)/2;
+let outer=Math.PI*(s/2)**2*h;
+let inner=Math.PI*(f/2)**2*h;
 
-ramOut.innerHTML="🧱 Lining: "+lining+" inch";
+let ton=(outer-inner)*2.65*1.05;
+
+ramOut.innerHTML="🧱 "+ton.toFixed(2)+" Ton";
 }
 
-// SAVE MN
-function saveMn(){
+// MN
+function calcMn(){
 let m=metal.value;
 let c=curMn.value;
 let t=tarMn.value;
@@ -143,76 +174,46 @@ let a=allMn.value;
 let mn=(m*(t-c)/100)/(r/100);
 let alloy=(mn*100)/a;
 
-window.mnData={mn:mn,alloy:alloy};
-
-alert("✅ Mn Data Saved");
+mnOut.innerHTML="🔥 Mn: "+mn.toFixed(2)+" kg<br>🧪 Alloy: "+alloy.toFixed(2)+" kg";
 }
 
-// LEARNING SAVE
-function saveLearning(){
-let feoVal=feo.value;
-let tempVal=temp.value;
-let slagVal=slag.value;
-let actual=actualRec.value;
+// CARBON
+function carbonDown(){
+let m=cMetal.value;
+let c=cCur.value;
+let t=cTar.value;
+let f=feoSp.value;
 
-let data=JSON.parse(localStorage.getItem("heat"))||[];
-
-data.push({feo:feoVal,temp:tempVal,slag:slagVal,actual:actual});
-
-localStorage.setItem("heat",JSON.stringify(data));
-
-alert("✅ Saved");
+let kg=(m*(c-t)*6)/f;
+cOut.innerHTML="Add Sponge: "+kg.toFixed(2)+" kg";
 }
 
-// LEARNING
-function learn(feo,temp,slag){
-let data=JSON.parse(localStorage.getItem("heat"))||[];
-let sum=0,count=0;
-
-data.forEach(d=>{
-if(Math.abs(d.feo-feo)<3 && Math.abs(d.temp-temp)<30 && d.slag==slag){
-sum+=parseFloat(d.actual);
-count++;
-}
-});
-
-return count?sum/count:null;
-}
-
-// ANALYSIS
+// AI
 function runAnalysis(){
-
-if(!window.mnData){
-aiOut.innerHTML="⚠ Save Mn first";
-return;
-}
 
 let feoVal=parseFloat(feo.value);
 let tempVal=parseFloat(temp.value);
-let slagVal=slag.value;
+let caoVal=parseFloat(cao.value);
+let sio2Val=parseFloat(sio2.value);
+
+let basicity=caoVal/sio2Val;
+
+let slag="Normal";
+if(feoVal<10) slag="Reducing";
+else if(feoVal>15) slag="Oxidizing";
 
 let rec=90-(1.5*feoVal);
 
-if(tempVal>1700) rec-=12;
-else if(tempVal>1670) rec-=8;
+let out="🧪 Slag: "+slag+"<br>";
+out+="📊 Basicity: "+basicity.toFixed(2)+"<br>";
 
-if(slagVal=="oxidizing") rec-=5;
-if(slagVal=="reducing") rec+=3;
-
-let learned=learn(feoVal,tempVal,slagVal);
-if(learned) rec=(rec+learned)/2;
-
-let out="🔥 Mn: "+mnData.mn.toFixed(1)+" kg<br>";
-out+="⚙ Recovery: "+rec.toFixed(1)+" %<br>";
-out+="🧪 Alloy: "+mnData.alloy.toFixed(1)+" kg<br><br>";
+if(basicity<1.8) out+="➕ Add Lime<br>";
+if(basicity>2.5) out+="➕ Add Silica<br>";
 
 if(feoVal>15) out+="🔴 High FeO<br>";
 if(tempVal>1670) out+="🔴 High Temp<br>";
-if(slagVal=="oxidizing") out+="🔴 Oxidizing Slag<br>";
 
-if(learned) out+="🤖 AI Learning Applied<br>";
-
-out+="💡 Add Mn after slag cleaning";
+out+="💡 Maintain basic slag & low FeO";
 
 aiOut.innerHTML=out;
 }
