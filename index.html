@@ -133,6 +133,40 @@ MeltingPro 3.0 – Furnace Intelligence System
 <p>Red glow, sticky → High Mn loss</p>
 <hr>
 
+  <hr>
+
+<h3>🔥 Metal Calculator</h3>
+
+<select id="mode" onchange="switchMode()">
+<option value="custom">Custom Furnace</option>
+<option value="standard">Standard Furnace</option>
+</select>
+
+<div id="customInputs">
+<input id="topDia" placeholder="Top Dia (inch)">
+<input id="bottomDia" placeholder="Bottom Dia (inch)">
+<input id="height" placeholder="Straight Height (inch)">
+<input id="taper" placeholder="Taper Height (inch)">
+</div>
+
+<div id="standardInputs" style="display:none;">
+<input id="furnaceTon" placeholder="Furnace Size (Ton)">
+</div>
+
+<button class="calc" onclick="calcMetal()">Calculate Metal</button>
+<div id="metalOut" class="result"></div>
+
+<hr>
+
+<h3>🧱 Ramming Mass Calculator</h3>
+
+<input id="shellDia" placeholder="Shell Dia (inch)">
+<input id="farmaDia" placeholder="Farma Dia (inch)">
+<input id="totalHeight" placeholder="Total Height (inch)">
+
+<button class="calc" onclick="calcRamming()">Calculate</button>
+<div id="ramOut" class="result"></div>
+  
 <h3>Recovery Predictor</h3>
 <input id="feo" placeholder="FeO %">
 <input id="temp" placeholder="Bath Temp °C">
@@ -381,6 +415,104 @@ else signal="<span class='signal-red'>Unstable</span>";
 avgOut.innerHTML="Average Recovery: "+avg.toFixed(1)+"%<br>"+signal;
 }
 
+  // 🔘 MODE SWITCH
+function switchMode(){
+let mode=document.getElementById("mode").value;
+
+if(mode==="standard"){
+document.getElementById("standardInputs").style.display="block";
+document.getElementById("customInputs").style.display="none";
+}
+else{
+document.getElementById("standardInputs").style.display="none";
+document.getElementById("customInputs").style.display="block";
+}
+}
+
+
+// 🔥 METAL
+function calcMetal(){
+
+let mode=document.getElementById("mode").value;
+
+if(mode==="standard"){
+
+let ton=parseFloat(document.getElementById("furnaceTon").value);
+
+if(isNaN(ton)){
+metalOut.innerHTML="Enter value";
+return;
+}
+
+metalOut.innerHTML=
+"🔥 Estimated: "+ton+" Ton<br>"+
+"📦 Practical: "+(ton*0.85).toFixed(2)+" Ton";
+
+}
+else{
+
+let d1=parseFloat(topDia.value);
+let d2=parseFloat(bottomDia.value);
+let h1=parseFloat(height.value);
+let h2=parseFloat(taper.value);
+
+if(isNaN(d1)||isNaN(d2)||isNaN(h1)||isNaN(h2)){
+metalOut.innerHTML="Enter all values";
+return;
+}
+
+d1*=0.0254; d2*=0.0254;
+h1*=0.0254; h2*=0.0254;
+
+let r1=d1/2, r2=d2/2;
+
+let v1=3.1416*r1*r1*h1;
+let v2=(3.1416*h2/3)*(r1*r1+r2*r2+r1*r2);
+
+let total=(v1+v2)*7500/1000;
+let practical=total*0.85;
+
+metalOut.innerHTML=
+"🔥 Total: "+total.toFixed(2)+" Ton<br>"+
+"📦 Practical: "+practical.toFixed(2)+" Ton";
+}
+}
+
+
+// 🧱 RAMMING
+function calcRamming(){
+
+let shell=parseFloat(shellDia.value);
+let farma=parseFloat(farmaDia.value);
+let h=parseFloat(totalHeight.value);
+
+if(isNaN(shell)||isNaN(farma)||isNaN(h)){
+ramOut.innerHTML="Enter values";
+return;
+}
+
+let lining=(shell-farma)/2;
+
+shell*=0.0254; 
+farma*=0.0254; 
+h*=0.0254;
+
+let vOut=3.1416*(shell/2)**2*h;
+let vIn=3.1416*(farma/2)**2*h;
+
+let ton=(vOut-vIn)*2700/1000;
+
+let status="";
+if(lining>3) status="🟢 Safe";
+else if(lining>=2) status="🟡 Warning";
+else status="🔴 Danger: Puncture Risk 🔥";
+
+ramOut.innerHTML=
+"🧱 Lining: "+lining.toFixed(2)+" inch<br>"+
+"🧱 Ramming: "+ton.toFixed(2)+" Ton<br>"+
+"📦 Recommended: "+(ton*1.05).toFixed(2)+" Ton<br><br>"+status;
+  }
+  
 </script>
 
 </body>
