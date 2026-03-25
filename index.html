@@ -590,6 +590,73 @@ ramOut.innerHTML=
 "📦 Recommended: "+(ton*1.05).toFixed(2)+" Ton<br><br>"+status;
   }
 
+  // 🤖 AUTO MN SUGGESTION
+function calcAutoMn(){
+
+let m=parseFloat(document.getElementById("mnMetal").value);
+let c=parseFloat(document.getElementById("mnCur").value);
+let t=parseFloat(document.getElementById("mnTar").value);
+let feo=parseFloat(document.getElementById("mnFeo").value);
+let temp=parseFloat(document.getElementById("mnTemp").value);
+let slag=document.getElementById("mnSlag").value;
+
+if(isNaN(m)||isNaN(c)||isNaN(t)||isNaN(feo)||isNaN(temp)){
+document.getElementById("mnOut").innerHTML="Enter all values";
+return;
+}
+
+// Mn required
+let mnReq=(m*(t-c)/100);
+
+// recovery
+let rec=90-(1.5*feo);
+
+if(temp>1700) rec-=10;
+if(slag=="oxidizing") rec-=8;
+if(slag=="reducing") rec+=3;
+
+if(rec<50) rec=50;
+
+// alloy (65%)
+let alloy=(mnReq/(rec/100))/0.65;
+
+// output
+document.getElementById("mnOut").innerHTML=
+"🔥 Required Mn: "+mnReq.toFixed(2)+" kg<br>"+
+"⚙ Expected Recovery: "+rec.toFixed(1)+" %<br>"+
+"🧪 Add Alloy: "+alloy.toFixed(2)+" kg";
+
+
+// 🔥 AI SUGGESTION
+let ai="";
+
+if(feo>15){
+ai+="🔴 High FeO → Skim slag before Mn<br>";
+}
+
+if(temp>1670){
+ai+="🔴 High Temp → Mn loss risk<br>";
+}
+
+if(slag=="oxidizing"){
+ai+="🔴 Oxidizing slag → Delay Mn addition<br>";
+}
+
+if(rec>70){
+ai+="🟢 Good → Safe Mn addition<br>";
+}
+else if(rec>=60){
+ai+="🟡 Moderate → Take precautions<br>";
+}
+else{
+ai+="🔴 Low recovery → High Mn loss<br>";
+}
+
+ai+="<br>💡 Add Mn after slag cleaning & temperature control";
+
+document.getElementById("aiOut").innerHTML=ai;
+  }
+  
 </script>
 
 </body>
