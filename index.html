@@ -36,13 +36,26 @@ button{background:#f97316;border:none;padding:10px;width:100%;border-radius:8px;
 
 <div class="card">
 <h3>🔥 Metal Calculator</h3>
-<input id="topDia" placeholder="Top Dia (inch)">
-<input id="bottomDia" placeholder="Bottom Dia (inch)">
-<input id="height" placeholder="Straight Height (inch)">
-<input id="taper" placeholder="Taper Height (inch)">
+
+<select id="metalMode" onchange="toggleMetalMode()">
+<option value="auto">Auto</option>
+<option value="manual">Manual</option>
+</select>
+
+<div id="autoMetal">
+<input id="topDia" placeholder="Top Dia">
+<input id="bottomDia" placeholder="Bottom Dia">
+<input id="height" placeholder="Height">
+<input id="taper" placeholder="Taper">
+</div>
+
+<div id="manualMetal" style="display:none;">
+<input id="manualMetalTon" placeholder="Metal Ton">
+</div>
+
 <button onclick="calcMetal()">Calculate</button>
 <div id="metalOut" class="result"></div>
-<div class="note">Density 7.2 t/m³ | Fill factor 0.80 (plant actual)</div>
+<div class="note">Density 7.2 t/m³ | Fill factor 0.80</div>
 </div>
 
 <div class="card">
@@ -52,28 +65,44 @@ button{background:#f97316;border:none;padding:10px;width:100%;border-radius:8px;
 <input id="totalHeight" placeholder="Height">
 <button onclick="calcRamming()">Calculate</button>
 <div id="ramOut" class="result"></div>
-<div class="note">Density 2.65 t/m³</div>
 </div>
 
 <div class="card">
 <h3>⚙ Mn Calculator</h3>
-<input id="metal" placeholder="Metal (kg)">
-<input id="curMn" placeholder="Current Mn %">
-<input id="tarMn" placeholder="Target Mn %">
-<input id="rec" placeholder="Recovery %">
-<input id="allMn" placeholder="Alloy Mn %">
+<input id="metal" placeholder="Metal">
+<input id="curMn" placeholder="Current Mn">
+<input id="tarMn" placeholder="Target Mn">
+<input id="rec" placeholder="Recovery">
+<input id="allMn" placeholder="Alloy %">
 <button onclick="calcMn()">Calculate</button>
 <div id="mnOut" class="result"></div>
 </div>
 
 <div class="card">
 <h3>⚡ Carbon Control</h3>
+
+<select id="carbonMode" onchange="toggleCarbon()">
+<option value="down">Carbon Down</option>
+<option value="up">Carbon Up</option>
+</select>
+
+<div id="carbonDown">
 <input id="cMetal" placeholder="Metal">
 <input id="cCur" placeholder="Current C">
 <input id="cTar" placeholder="Target C">
-<input id="feoSp" placeholder="Sponge FeO">
-<button onclick="carbonDown()">Carbon Down</button>
+<input id="feoSp" placeholder="FeO">
+</div>
+
+<div id="carbonUp" style="display:none;">
+<input id="cMetalUp" placeholder="Metal">
+<input id="cCurUp" placeholder="Current C">
+<input id="cTarUp" placeholder="Target C">
+<input id="castPct" placeholder="Cast Iron %">
+</div>
+
+<button onclick="calcCarbon()">Calculate</button>
 <div id="cOut" class="result"></div>
+
 </div>
 
 </div>
@@ -100,23 +129,33 @@ button{background:#f97316;border:none;padding:10px;width:100%;border-radius:8px;
 <div class="section">
 
 <div class="card">
-<h3>🧪 FeO Method</h3>
-<p>FeO% ≈ V × 1.6 (KMnO₄)</p>
+<h3>🧪 FeO (KMnO₄)</h3>
+<p>1. 0.5g sample</p>
+<p>2. H₂SO₄ dissolve</p>
+<p>3. Heat</p>
+<p>4. KMnO₄ titration</p>
+<p>5. Pink endpoint</p>
+<p><b>FeO% ≈ V × 1.6</b></p>
 </div>
 
 <div class="card">
-<h3>🧪 SiO₂ Method</h3>
-<p>Gravimetric: residue weighing</p>
+<h3>🧪 SiO₂</h3>
+<p>1. HCl + HNO₃ dissolve</p>
+<p>2. Evaporate</p>
+<p>3. Filter residue</p>
+<p><b>SiO₂% = residue ×100 / sample</b></p>
 </div>
 
 <div class="card">
 <h3>🧪 CaO</h3>
-<p>EDTA → CaO% ≈ V × 2.8</p>
+<p>EDTA titration</p>
+<p><b>CaO% ≈ V × 2.8</b></p>
 </div>
 
 <div class="card">
 <h3>🧪 MgO</h3>
-<p>EDTA → MgO% ≈ V × 2.0</p>
+<p>EDTA titration</p>
+<p><b>MgO% ≈ V × 2.0</b></p>
 </div>
 
 </div>
@@ -133,20 +172,29 @@ s[n].classList.add("active");
 }
 
 // METAL
+function toggleMetalMode(){
+let m=metalMode.value;
+autoMetal.style.display=(m==="manual")?"none":"block";
+manualMetal.style.display=(m==="manual")?"block":"none";
+}
+
 function calcMetal(){
+if(metalMode.value==="manual"){
+let t=manualMetalTon.value;
+metalOut.innerHTML="🔥 "+parseFloat(t).toFixed(2)+" Ton";
+return;
+}
+
 let d1=topDia.value*0.0254;
 let d2=bottomDia.value*0.0254;
 let h1=height.value*0.0254;
 let h2=taper.value*0.0254;
 
-let r1=d1/2, r2=d2/2;
+let r1=d1/2,r2=d2/2;
+let v=(Math.PI*r1*r1*h1)+(Math.PI*h2/3*(r1*r1+r2*r2+r1*r2));
+let ton=v*7.2*0.80;
 
-let v1=Math.PI*r1*r1*h1;
-let v2=(Math.PI*h2/3)*(r1*r1+r2*r2+r1*r2);
-
-let total=(v1+v2)*7.2*0.80;
-
-metalOut.innerHTML="🔥 "+total.toFixed(2)+" Ton";
+metalOut.innerHTML="🔥 "+ton.toFixed(2)+" Ton";
 }
 
 // RAMMING
@@ -155,54 +203,42 @@ let s=shellDia.value*0.0254;
 let f=farmaDia.value*0.0254;
 let h=totalHeight.value*0.0254;
 
-let outer=Math.PI*(s/2)**2*h;
-let inner=Math.PI*(f/2)**2*h;
-
-let ton=(outer-inner)*2.65*1.05;
+let v=(Math.PI*(s/2)**2 - Math.PI*(f/2)**2)*h;
+let ton=v*2.65*1.05;
 
 ramOut.innerHTML="🧱 "+ton.toFixed(2)+" Ton";
 }
 
 // MN
 function calcMn(){
-let m=metal.value;
-let c=curMn.value;
-let t=tarMn.value;
-let r=rec.value;
-let a=allMn.value;
-
+let m=metal.value,c=curMn.value,t=tarMn.value,r=rec.value,a=allMn.value;
 let mn=(m*(t-c)/100)/(r/100);
 let alloy=(mn*100)/a;
-
-mnOut.innerHTML="🔥 Mn: "+mn.toFixed(2)+" kg<br>🧪 Alloy: "+alloy.toFixed(2)+" kg";
+mnOut.innerHTML="🧪 Alloy: "+alloy.toFixed(2)+" kg";
 }
 
 // CARBON
-function carbonDown(){
-let m=cMetal.value;
-let c=cCur.value;
-let t=cTar.value;
-let f=feoSp.value;
+function toggleCarbon(){
+carbonDown.style.display=(carbonMode.value==="up")?"none":"block";
+carbonUp.style.display=(carbonMode.value==="up")?"block":"none";
+}
 
-let kg=(m*(c-t)*6)/f;
-cOut.innerHTML="Add Sponge: "+kg.toFixed(2)+" kg";
+function calcCarbon(){
+if(carbonMode.value==="down"){
+let kg=(cMetal.value*(cCur.value-cTar.value)*6)/feoSp.value;
+cOut.innerHTML="⬇ Sponge: "+kg.toFixed(2)+" kg";
+}else{
+let kg=(cMetalUp.value*(cTarUp.value-cCurUp.value)/100)/(castPct.value/100);
+cOut.innerHTML="⬆ Cast Iron: "+kg.toFixed(2)+" kg";
+}
 }
 
 // AI
 function runAnalysis(){
+let feoV=feo.value,tempV=temp.value,caoV=cao.value,sio2V=sio2.value;
 
-let feoVal=parseFloat(feo.value);
-let tempVal=parseFloat(temp.value);
-let caoVal=parseFloat(cao.value);
-let sio2Val=parseFloat(sio2.value);
-
-let basicity=caoVal/sio2Val;
-
-let slag="Normal";
-if(feoVal<10) slag="Reducing";
-else if(feoVal>15) slag="Oxidizing";
-
-let rec=90-(1.5*feoVal);
+let basicity=caoV/sio2V;
+let slag=feoV<10?"Reducing":feoV>15?"Oxidizing":"Normal";
 
 let out="🧪 Slag: "+slag+"<br>";
 out+="📊 Basicity: "+basicity.toFixed(2)+"<br>";
@@ -210,10 +246,10 @@ out+="📊 Basicity: "+basicity.toFixed(2)+"<br>";
 if(basicity<1.8) out+="➕ Add Lime<br>";
 if(basicity>2.5) out+="➕ Add Silica<br>";
 
-if(feoVal>15) out+="🔴 High FeO<br>";
-if(tempVal>1670) out+="🔴 High Temp<br>";
+if(feoV>15) out+="🔴 High FeO<br>";
+if(tempV>1670) out+="🔴 High Temp<br>";
 
-out+="💡 Maintain basic slag & low FeO";
+out+="💡 Maintain low FeO & basic slag";
 
 aiOut.innerHTML=out;
 }
@@ -222,4 +258,3 @@ aiOut.innerHTML=out;
 
 </body>
 </html>
-
