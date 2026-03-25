@@ -1,4 +1,4 @@
-const CACHE_NAME = "meltingpro-v3";
+const CACHE_NAME = "meltingpro-v4";
 
 self.addEventListener("install", event => {
   self.skipWaiting();
