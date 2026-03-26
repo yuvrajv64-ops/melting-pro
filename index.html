@@ -446,23 +446,93 @@ cOut.innerHTML="⬆ Cast Iron: "+kg.toFixed(2)+" kg";
 }
 }
 
-// AI
+// 🔥 AI SMART RECOVERY PREDICTOR
 function runAnalysis(){
-let feoV=feo.value,tempV=temp.value,caoV=cao.value,sio2V=sio2.value;
 
-let basicity=caoV/sio2V;
-let slag=feoV<10?"Reducing":feoV>15?"Oxidizing":"Normal";
+let feoV=parseFloat(feo.value);
+let tempV=parseFloat(temp.value);
+let caoV=parseFloat(cao.value);
+let sio2V=parseFloat(sio2.value);
 
-let out="🧪 Slag: "+slag+"<br>";
-out+="📊 Basicity: "+basicity.toFixed(2)+"<br>";
+// ❗ FeO required
+if(isNaN(feoV)){
+aiOut.innerHTML="Enter at least FeO %";
+return;
+}
 
-if(basicity<1.8) out+="➕ Add Lime<br>";
-if(basicity>2.5) out+="➕ Add Silica<br>";
+// 🔥 BASE RECOVERY
+let rec=90-(1.5*feoV);
+let mode="Basic (FeO based)";
 
-if(feoV>15) out+="🔴 High FeO<br>";
-if(tempV>1670) out+="🔴 High Temp<br>";
+// 🔥 TEMPERATURE EFFECT
+if(!isNaN(tempV)){
+mode="Advanced";
+if(tempV>1700) rec-=10;
+else if(tempV>1670) rec-=6;
+}
 
-out+="💡 Maintain basic slag";
+// 🔥 BASICITY
+let basicity=null;
+if(!isNaN(caoV)&&!isNaN(sio2V)&&sio2V!=0){
+basicity=caoV/sio2V;
+mode="Advanced";
+
+if(basicity<1.8) rec-=5;
+else if(basicity>2.5) rec+=2;
+}
+
+// LIMIT
+if(rec<50) rec=50;
+if(rec>85) rec=85;
+
+// 🔥 STATUS
+let signal="";
+if(rec>70) signal="🟢 Safe";
+else if(rec>=60) signal="🟡 Moderate";
+else signal="🔴 High Loss";
+
+// 🔥 OUTPUT
+let out="";
+out+="⚙ Expected Recovery: "+rec.toFixed(1)+" %<br>";
+out+="📊 Mode: "+mode+"<br>";
+out+="📈 Status: "+signal+"<br>";
+
+if(basicity!=null){
+out+="📉 Basicity: "+basicity.toFixed(2)+"<br>";
+}
+
+out+="<br>💡 Suggestions:<br>";
+
+// FeO आधारित
+if(feoV>15){
+out+="🔴 High FeO → Slag skim + FeSi add<br>";
+}
+else if(feoV<10){
+out+="🟢 Low FeO → Best for Mn addition<br>";
+}
+else{
+out+="🟡 Medium FeO → Add Mn carefully<br>";
+}
+
+// Temp
+if(!isNaN(tempV) && tempV>1670){
+out+="🔴 High Temp → Reduce below 1665°C<br>";
+}
+
+// Basicity
+if(basicity!=null){
+if(basicity<1.8){
+out+="➕ Low basicity → Add Lime<br>";
+}
+else if(basicity>2.5){
+out+="➕ High basicity → Add Silica<br>";
+}
+}
+
+// fallback
+if(mode==="Basic (FeO based)"){
+out+="⚠ Only FeO used → Add more inputs for accuracy";
+}
 
 aiOut.innerHTML=out;
 }
