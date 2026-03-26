@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MeltingPro 6.0 – Furnace AI System</title>
+<title>MeltingPro 7.0 – Furnace AI System</title>
 
 <style>
 body{margin:0;font-family:Arial;background:#0f172a;color:#e5e7eb;}
@@ -23,7 +23,7 @@ button{background:#f97316;border:none;padding:10px;width:100%;border-radius:8px;
 
 <body>
 
-<header>🔥 MeltingPro 6.0 – Smart Furnace AI</header>
+<header>🔥 MeltingPro 7.0 – Smart Furnace AI</header>
 
 <div class="tabs">
 <button class="active" onclick="showTab(0)">Dashboard</button>
@@ -36,27 +36,43 @@ button{background:#f97316;border:none;padding:10px;width:100%;border-radius:8px;
 
 <!-- METAL -->
 <div class="card">
-<h3>🔥 Metal Calculator</h3>
+<h3>🔥 Metal Calculator (AI)</h3>
 
 <select id="metalMode" onchange="toggleMetalMode()">
 <option value="auto">Auto</option>
 <option value="manual">Manual</option>
 </select>
 
+<input id="fillFactor" placeholder="Fill Factor (0.75–0.90)">
+<select id="metalType">
+<option value="7.2">Mixed Metal</option>
+<option value="7.8">Heavy Scrap</option>
+<option value="6.8">Sponge Mix</option>
+</select>
+
 <div id="autoMetal">
-<input id="topDia" placeholder="Top Dia (inch)">
-<input id="bottomDia" placeholder="Bottom Dia (inch)">
-<input id="height" placeholder="Height (inch)">
-<input id="taper" placeholder="Taper (inch)">
+<input id="topDia" placeholder="Top Dia">
+<input id="bottomDia" placeholder="Bottom Dia">
+<input id="height" placeholder="Height">
+<input id="taper" placeholder="Taper">
 </div>
 
 <div id="manualMetal" style="display:none;">
-<input id="manualMetalTon" placeholder="Metal (Ton)">
+<input id="manualMetalTon" placeholder="Metal Ton">
 </div>
 
 <button onclick="calcMetal()">Calculate</button>
+
 <div id="metalOut" class="result"></div>
 <div id="metalSuggest" class="note"></div>
+
+<hr>
+
+<h4>📊 Calibration</h4>
+<input id="actualMetal" placeholder="Actual Metal">
+<button onclick="saveCalibration()">Save</button>
+<div id="calibOut" class="note"></div>
+
 </div>
 
 <!-- RAMMING -->
@@ -76,22 +92,22 @@ button{background:#f97316;border:none;padding:10px;width:100%;border-radius:8px;
 
 <select id="mnCalcMode" onchange="toggleMnMode()">
 <option value="alloy">Alloy Required</option>
-<option value="recovery">Find Recovery %</option>
+<option value="recovery">Find Recovery</option>
 </select>
 
 <div id="mnAlloyMode">
-<input id="metal" placeholder="Metal (kg)">
-<input id="curMn" placeholder="Current Mn %">
-<input id="tarMn" placeholder="Target Mn %">
+<input id="metal" placeholder="Metal">
+<input id="curMn" placeholder="Current Mn">
+<input id="tarMn" placeholder="Target Mn">
 <input id="rec" placeholder="Recovery %">
-<input id="allMn" placeholder="Alloy Mn %">
+<input id="allMn" placeholder="Alloy %">
 </div>
 
 <div id="mnRecoveryMode" style="display:none;">
-<input id="metal2" placeholder="Metal (kg)">
+<input id="metal2" placeholder="Metal">
 <input id="mnRise" placeholder="Mn Rise %">
-<input id="alloyKg" placeholder="Alloy Added (kg)">
-<input id="alloyPct" placeholder="Alloy Mn %">
+<input id="alloyKg" placeholder="Alloy kg">
+<input id="alloyPct" placeholder="Alloy %">
 </div>
 
 <button onclick="calcMn()">Calculate</button>
@@ -126,6 +142,7 @@ button{background:#f97316;border:none;padding:10px;width:100%;border-radius:8px;
 <button onclick="calcCarbon()">Calculate</button>
 <div id="cOut" class="result"></div>
 <div id="cSuggest" class="note"></div>
+
 </div>
 
 </div>
@@ -144,6 +161,7 @@ button{background:#f97316;border:none;padding:10px;width:100%;border-radius:8px;
 <button onclick="runAnalysis()">🔥 Full Analysis</button>
 
 <div id="aiOut" class="result"></div>
+
 </div>
 
 </div>
@@ -152,78 +170,38 @@ button{background:#f97316;border:none;padding:10px;width:100%;border-radius:8px;
 <div class="section">
 
 <div class="card">
-<h3>🧪 FeO (KMnO₄ – BIS Detailed)</h3>
-<p><b>Reagents Preparation:</b></p>
-<p>• 0.1N KMnO₄: 3.16g KMnO₄ / L distilled water</p>
-<p>• Dilute H₂SO₄ (1:1)</p>
-
-<p><b>Procedure:</b></p>
-<p>1. 0.5g slag sample weigh</p>
-<p>2. Flask me add karo</p>
-<p>3. H₂SO₄ add karo</p>
-<p>4. Heat (Fe²⁺ dissolve)</p>
-<p>5. KMnO₄ titrate karo</p>
-<p>6. Light pink endpoint</p>
-
-<p><b>Reaction:</b></p>
-<p>Fe²⁺ → Fe³⁺ oxidation</p>
-
-<p><b>Formula:</b></p>
-<p>FeO% = (V × N × 7.99 × 100) / W</p>
-<p><b>Shortcut:</b> FeO% ≈ V × 1.6</p>
+<h3>🧪 FeO (BIS)</h3>
+<p>0.1N KMnO₄ prepare (3.16g/L)</p>
+<p>0.5g sample + H₂SO₄</p>
+<p>Heat → titrate</p>
+<p>Endpoint: pink</p>
+<p><b>FeO% ≈ V × 1.6</b></p>
 </div>
 
 <div class="card">
-<h3>🧪 SiO₂ (Gravimetric – BIS)</h3>
-<p><b>Reagents:</b> HCl, HNO₃</p>
-
-<p><b>Procedure:</b></p>
-<p>1. Sample dissolve karo</p>
-<p>2. Evaporate to dryness</p>
-<p>3. Silica gel banega</p>
-<p>4. Filter + wash</p>
-<p>5. Ignite at 1000°C</p>
-<p>6. Weigh residue</p>
-
-<p><b>Formula:</b></p>
-<p>SiO₂% = residue ×100 / sample</p>
+<h3>🧪 SiO₂</h3>
+<p>Acid dissolve → dry → filter</p>
+<p><b>Residue method</b></p>
 </div>
 
 <div class="card">
-<h3>🧪 CaO (EDTA – BIS)</h3>
-<p><b>Reagents:</b> EDTA, NH₄OH buffer, Murexide</p>
-
-<p><b>Procedure:</b></p>
-<p>1. Sample dissolve karo</p>
-<p>2. pH ~12 adjust karo</p>
-<p>3. Indicator add karo</p>
-<p>4. EDTA titrate karo</p>
-
-<p><b>Endpoint:</b> Pink → Purple</p>
-
-<p><b>Formula:</b></p>
-<p>CaO% = V × 2.8</p>
+<h3>🧪 CaO</h3>
+<p>EDTA + Murexide</p>
+<p>pH 12</p>
+<p><b>CaO ≈ V × 2.8</b></p>
 </div>
 
 <div class="card">
-<h3>🧪 MgO (EDTA – BIS)</h3>
-<p><b>Reagents:</b> EDTA, EBT indicator</p>
-
-<p><b>Procedure:</b></p>
-<p>1. Same solution use karo</p>
-<p>2. Indicator add karo</p>
-<p>3. EDTA titration</p>
-
-<p><b>Endpoint:</b> Wine red → Blue</p>
-
-<p><b>Formula:</b></p>
-<p>MgO% = V × 2.0</p>
+<h3>🧪 MgO</h3>
+<p>EDTA + EBT</p>
+<p><b>MgO ≈ V × 2.0</b></p>
 </div>
 
 </div>
 
 <script>
 
+// TAB
 function showTab(n){
 let t=document.querySelectorAll(".tabs button");
 let s=document.querySelectorAll(".section");
@@ -240,6 +218,10 @@ manualMetal.style.display=(metalMode.value==="manual")?"block":"none";
 }
 
 function calcMetal(){
+
+let fill=parseFloat(fillFactor.value)||0.80;
+let density=parseFloat(metalType.value);
+
 let ton;
 
 if(metalMode.value==="manual"){
@@ -252,11 +234,32 @@ let h2=taper.value*0.0254;
 
 let r1=d1/2,r2=d2/2;
 let v=(Math.PI*r1*r1*h1)+(Math.PI*h2/3*(r1*r1+r2*r2+r1*r2));
-ton=v*7.2*0.80;
+
+let base=v*density*fill;
+let eff=(fill<0.75)?0.90:(fill>0.85?0.98:0.95);
+
+ton=base*eff;
 }
 
+// calibration
+let factor=localStorage.getItem("metalFactor");
+if(factor) ton=ton*factor;
+
+window.lastMetal=ton;
+
 metalOut.innerHTML="🔥 "+ton.toFixed(2)+" Ton";
-metalSuggest.innerHTML = ton>18?"⚠ Overload Risk":"✔ Safe";
+metalSuggest.innerHTML=ton>18?"🔴 Overload":"🟢 Optimal";
+}
+
+// SAVE CALIBRATION
+function saveCalibration(){
+let actual=parseFloat(actualMetal.value);
+let calc=window.lastMetal;
+
+let factor=actual/calc;
+localStorage.setItem("metalFactor",factor);
+
+calibOut.innerHTML="Saved Factor: "+factor.toFixed(3);
 }
 
 // RAMMING
@@ -269,7 +272,7 @@ let v=(Math.PI*(s/2)**2 - Math.PI*(f/2)**2)*h;
 let ton=v*2.65*1.05;
 
 ramOut.innerHTML="🧱 "+ton.toFixed(2)+" Ton";
-ramSuggest.innerHTML = (shellDia.value-farmaDia.value)/2<2?"🔴 Puncture Risk":"✔ Safe";
+ramSuggest.innerHTML=(shellDia.value-farmaDia.value)/2<2?"🔴 Risk":"🟢 Safe";
 }
 
 // MN
@@ -281,23 +284,17 @@ mnRecoveryMode.style.display=(mnCalcMode.value==="recovery")?"block":"none";
 function calcMn(){
 
 if(mnCalcMode.value==="alloy"){
-
 let m=metal.value,c=curMn.value,t=tarMn.value,r=rec.value,a=allMn.value;
 let mn=(m*(t-c)/100)/(r/100);
 let alloy=(mn*100)/a;
 
-mnOut.innerHTML="🧪 Alloy Required: "+alloy.toFixed(2)+" kg";
-mnSuggest.innerHTML = r<60?"🔴 Low recovery":"✔ Good recovery";
-
+mnOut.innerHTML="🧪 Alloy: "+alloy.toFixed(2)+" kg";
 }
 else{
-
 let m=metal2.value,rise=mnRise.value,alloy=alloyKg.value,pct=alloyPct.value;
 let rec=((rise/100*m)/(alloy*(pct/100)))*100;
 
 mnOut.innerHTML="⚙ Recovery: "+rec.toFixed(1)+" %";
-mnSuggest.innerHTML = rec<60?"🔴 Poor recovery":"✔ Good recovery";
-
 }
 }
 
@@ -311,11 +308,9 @@ function calcCarbon(){
 if(carbonMode.value==="down"){
 let kg=(cMetal.value*(cCur.value-cTar.value)*6)/feoSp.value;
 cOut.innerHTML="⬇ Sponge: "+kg.toFixed(2)+" kg";
-cSuggest.innerHTML="High FeO helps decarburization";
 }else{
 let kg=(cMetalUp.value*(cTarUp.value-cCurUp.value)/100)/(castPct.value/100);
 cOut.innerHTML="⬆ Cast Iron: "+kg.toFixed(2)+" kg";
-cSuggest.innerHTML="Add gradually";
 }
 }
 
@@ -335,7 +330,7 @@ if(basicity>2.5) out+="➕ Add Silica<br>";
 if(feoV>15) out+="🔴 High FeO<br>";
 if(tempV>1670) out+="🔴 High Temp<br>";
 
-out+="💡 Maintain basic slag & low FeO";
+out+="💡 Maintain basic slag";
 
 aiOut.innerHTML=out;
 }
@@ -343,4 +338,4 @@ aiOut.innerHTML=out;
 </script>
 
 </body>
-</html>
+  </html>
