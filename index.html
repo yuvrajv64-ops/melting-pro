@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MeltingPro 5.0 – Smart Furnace AI</title>
+<title>MeltingPro 5.5 – Furnace AI System</title>
 
 <style>
 body{margin:0;font-family:Arial;background:#0f172a;color:#e5e7eb;}
@@ -23,7 +23,7 @@ button{background:#f97316;border:none;padding:10px;width:100%;border-radius:8px;
 
 <body>
 
-<header>🔥 MeltingPro 5.0 – Furnace AI System</header>
+<header>🔥 MeltingPro 5.5 – Smart Furnace AI</header>
 
 <div class="tabs">
 <button class="active" onclick="showTab(0)">Dashboard</button>
@@ -44,14 +44,14 @@ button{background:#f97316;border:none;padding:10px;width:100%;border-radius:8px;
 </select>
 
 <div id="autoMetal">
-<input id="topDia" placeholder="Top Dia">
-<input id="bottomDia" placeholder="Bottom Dia">
-<input id="height" placeholder="Height">
-<input id="taper" placeholder="Taper">
+<input id="topDia" placeholder="Top Dia (inch)">
+<input id="bottomDia" placeholder="Bottom Dia (inch)">
+<input id="height" placeholder="Height (inch)">
+<input id="taper" placeholder="Taper (inch)">
 </div>
 
 <div id="manualMetal" style="display:none;">
-<input id="manualMetalTon" placeholder="Metal Ton">
+<input id="manualMetalTon" placeholder="Enter Metal (Ton)">
 </div>
 
 <button onclick="calcMetal()">Calculate</button>
@@ -76,14 +76,14 @@ button{background:#f97316;border:none;padding:10px;width:100%;border-radius:8px;
 
 <select id="mnMode">
 <option value="manual">Manual Recovery</option>
-<option value="auto">Auto (AI Based)</option>
+<option value="auto">Auto Recovery (FeO + Temp)</option>
 </select>
 
-<input id="metal" placeholder="Metal">
-<input id="curMn" placeholder="Current Mn">
-<input id="tarMn" placeholder="Target Mn">
+<input id="metal" placeholder="Metal (kg)">
+<input id="curMn" placeholder="Current Mn %">
+<input id="tarMn" placeholder="Target Mn %">
 <input id="rec" placeholder="Recovery %">
-<input id="allMn" placeholder="Alloy %">
+<input id="allMn" placeholder="Alloy Mn %">
 
 <button onclick="calcMn()">Calculate</button>
 
@@ -118,7 +118,6 @@ button{background:#f97316;border:none;padding:10px;width:100%;border-radius:8px;
 
 <div id="cOut" class="result"></div>
 <div id="cSuggest" class="note"></div>
-
 </div>
 
 </div>
@@ -137,7 +136,6 @@ button{background:#f97316;border:none;padding:10px;width:100%;border-radius:8px;
 <button onclick="runAnalysis()">🔥 Full Analysis</button>
 
 <div id="aiOut" class="result"></div>
-
 </div>
 
 </div>
@@ -146,39 +144,29 @@ button{background:#f97316;border:none;padding:10px;width:100%;border-radius:8px;
 <div class="section">
 
 <div class="card">
-<h3>🧪 FeO (KMnO₄ Method)</h3>
-<p>1. 0.5g slag sample lo</p>
-<p>2. Dilute H₂SO₄ add karo</p>
-<p>3. Heat karo (Fe²⁺ dissolve)</p>
-<p>4. KMnO₄ se titrate karo</p>
-<p>5. Light pink endpoint</p>
-<p><b>FeO% ≈ V × 1.6</b></p>
+<h3>🧪 FeO (KMnO₄ – BIS)</h3>
+<p><b>Reagents:</b> 0.1N KMnO₄, H₂SO₄ (1:1)</p>
+<p><b>Procedure:</b> 0.5g sample + acid → heat → titrate</p>
+<p><b>Endpoint:</b> Light pink</p>
+<p><b>Formula:</b> FeO% = V × 1.6</p>
 </div>
 
 <div class="card">
 <h3>🧪 SiO₂ (Gravimetric)</h3>
-<p>1. Sample HCl + HNO₃ me dissolve</p>
-<p>2. Evaporate to dryness</p>
-<p>3. Silica gel bachega</p>
-<p>4. Filter + ignite</p>
-<p><b>SiO₂% = residue ×100 / sample</b></p>
+<p>HCl + HNO₃ dissolve → dry → filter → weigh</p>
+<p>SiO₂% = residue ×100 / sample</p>
 </div>
 
 <div class="card">
 <h3>🧪 CaO (EDTA)</h3>
-<p>1. Sample dissolve karo</p>
-<p>2. pH ~12 karo (NH₄OH)</p>
-<p>3. Murexide indicator</p>
-<p>4. EDTA titration</p>
-<p><b>CaO% ≈ V × 2.8</b></p>
+<p>pH 12 → Murexide → EDTA titration</p>
+<p>CaO% ≈ V × 2.8</p>
 </div>
 
 <div class="card">
 <h3>🧪 MgO (EDTA)</h3>
-<p>1. Same solution use karo</p>
-<p>2. EBT indicator</p>
-<p>3. EDTA titration</p>
-<p><b>MgO% ≈ V × 2.0</b></p>
+<p>EBT indicator → EDTA titration</p>
+<p>MgO% ≈ V × 2.0</p>
 </div>
 
 </div>
@@ -218,8 +206,7 @@ ton=v*7.2*0.80;
 }
 
 metalOut.innerHTML="🔥 "+ton.toFixed(2)+" Ton";
-
-metalSuggest.innerHTML = ton>18 ? "⚠ Overload risk" : "✔ Safe loading";
+metalSuggest.innerHTML = ton>18?"⚠ Overload Risk":"✔ Safe";
 }
 
 // RAMMING
@@ -232,16 +219,28 @@ let v=(Math.PI*(s/2)**2 - Math.PI*(f/2)**2)*h;
 let ton=v*2.65*1.05;
 
 ramOut.innerHTML="🧱 "+ton.toFixed(2)+" Ton";
-
-ramSuggest.innerHTML = (shellDia.value-farmaDia.value)/2 <2 ? "🔴 Puncture Risk" : "✔ Safe lining";
+ramSuggest.innerHTML = (shellDia.value-farmaDia.value)/2<2?"🔴 Puncture Risk":"✔ Safe";
 }
 
 // MN
 function calcMn(){
-let m=metal.value,c=curMn.value,t=tarMn.value,r=rec.value,a=allMn.value;
+
+let m=parseFloat(metal.value);
+let c=parseFloat(curMn.value);
+let t=parseFloat(tarMn.value);
+let r=parseFloat(rec.value);
+let a=parseFloat(allMn.value);
 
 if(mnMode.value==="auto"){
-r=75; // default AI avg
+let feoV=parseFloat(document.getElementById("feo").value)||12;
+let tempV=parseFloat(document.getElementById("temp").value)||1650;
+
+r=90-(1.5*feoV);
+
+if(tempV>1700) r-=12;
+else if(tempV>1670) r-=8;
+
+if(r<50) r=50;
 }
 
 let mn=(m*(t-c)/100)/(r/100);
@@ -249,7 +248,7 @@ let alloy=(mn*100)/a;
 
 mnOut.innerHTML="🧪 Alloy: "+alloy.toFixed(2)+" kg";
 
-mnSuggest.innerHTML = r<60 ? "🔴 Low recovery risk" : "✔ Good condition";
+mnSuggest.innerHTML = r<60?"🔴 Low recovery":"✔ Good recovery";
 }
 
 // CARBON
@@ -259,16 +258,14 @@ carbonUp.style.display=(carbonMode.value==="up")?"block":"none";
 }
 
 function calcCarbon(){
-let kg;
-
 if(carbonMode.value==="down"){
-kg=(cMetal.value*(cCur.value-cTar.value)*6)/feoSp.value;
+let kg=(cMetal.value*(cCur.value-cTar.value)*6)/feoSp.value;
 cOut.innerHTML="⬇ Sponge: "+kg.toFixed(2)+" kg";
-cSuggest.innerHTML="FeO high → faster decarburization";
+cSuggest.innerHTML="High FeO → faster carbon drop";
 }else{
-kg=(cMetalUp.value*(cTarUp.value-cCurUp.value)/100)/(castPct.value/100);
+let kg=(cMetalUp.value*(cTarUp.value-cCurUp.value)/100)/(castPct.value/100);
 cOut.innerHTML="⬆ Cast Iron: "+kg.toFixed(2)+" kg";
-cSuggest.innerHTML="Add gradually for uniform carbon";
+cSuggest.innerHTML="Add gradually";
 }
 }
 
@@ -296,4 +293,4 @@ aiOut.innerHTML=out;
 </script>
 
 </body>
-                      </html>
+                 </html>
