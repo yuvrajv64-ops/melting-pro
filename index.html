@@ -2,7 +2,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MeltingPro Final AI</title><style>
+<title>MeltingPro Ultimate</title><style>
 body{margin:0;font-family:Arial;background:#0f172a;color:#e5e7eb;}
 header{background:#020617;padding:15px;text-align:center;color:#f97316;font-weight:bold;}
 .tabs{display:flex;background:#1e293b;}
@@ -14,40 +14,69 @@ header{background:#020617;padding:15px;text-align:center;color:#f97316;font-weig
 input,select{width:100%;padding:10px;margin:6px 0;background:#1e293b;border:none;color:#fff;border-radius:6px;}
 button{background:#f97316;border:none;padding:10px;width:100%;border-radius:8px;font-weight:bold;}
 .result{margin-top:10px;padding:10px;background:#1e293b;border-left:4px solid #f97316;}
-</style></head><body><header>🔥 MeltingPro – Smart Furnace AI</header><div class="tabs">
-<button class="active" onclick="showTab(0)">Dashboard</button>
-<button onclick="showTab(1)">Analyzer</button>
-<button onclick="showTab(2)">Lab</button>
+</style></head><body><header>🔥 MeltingPro – Furnace AI</header><div class="tabs">
+<button class="active" onclick="tab(0)">Dashboard</button>
+<button onclick="tab(1)">Analyzer</button>
+<button onclick="tab(2)">Lab</button>
 </div><!-- DASHBOARD --><div class="section active"><div class="card">
-<h3>♻ Scrap Planning AI</h3><input id="bath" value="14" placeholder="Total Heat (ton)"><select id="grade">
+<h3>🔥 Metal Calculator</h3>
+<input id="metalTon" placeholder="Metal Ton">
+<button onclick="calcMetal()">Calculate</button>
+<div id="metalOut" class="result"></div>
+</div><div class="card">
+<h3>🧱 Ramming Mass</h3>
+<input id="shellDia" placeholder="Shell Dia">
+<input id="farmaDia" placeholder="Farma Dia">
+<input id="height" placeholder="Height">
+<button onclick="calcRamming()">Calculate</button>
+<div id="ramOut" class="result"></div>
+</div><div class="card">
+<h3>⚙ Mn Calculator</h3>
+<input id="curMn" placeholder="Current Mn">
+<input id="tarMn" placeholder="Target Mn">
+<input id="bathMn" placeholder="Metal Ton">
+<input id="recMn" placeholder="Recovery %">
+<input id="allMn" placeholder="Alloy %">
+<button onclick="calcMn()">Calculate</button>
+<div id="mnOut" class="result"></div>
+</div><div class="card">
+<h3>⚡ Carbon Control</h3>
+<input id="cCur" placeholder="Current C">
+<input id="cTar" placeholder="Target C">
+<input id="cMetal" placeholder="Metal Ton">
+<input id="feoSp" placeholder="FeO">
+<button onclick="calcCarbon()">Calculate</button>
+<div id="cOut" class="result"></div>
+</div><div class="card">
+<h3>♻ Scrap Planning AI</h3><input id="bath" value="14"><select id="grade">
 <option value="Fe500">Fe500</option>
 <option value="Fe500D">Fe500D</option>
 <option value="E250BR">E250BR</option>
 <option value="Fe500XLS">Fe500 XLS</option>
-</select><h4>Current Bath</h4>
-<input id="bMn" placeholder="Mn %">
-<input id="bSi" placeholder="Si %">
-<input id="bP" placeholder="P %"><h4>Scrap Composition</h4>
-<input id="sMn" placeholder="Scrap Mn %">
-<input id="sSi" placeholder="Scrap Si %">
-<input id="sP" placeholder="Scrap P %"><button onclick="scrapAI()">🔥 Calculate Scrap Mix</button>
+</select><input id="bMn" placeholder="Bath Mn">
+<input id="bSi" placeholder="Bath Si">
+<input id="bP" placeholder="Bath P"><input id="sMn" placeholder="Scrap Mn">
+<input id="sSi" placeholder="Scrap Si">
+<input id="sP" placeholder="Scrap P"><button onclick="scrapAI()">Calculate Scrap</button>
 
 <div id="scrapOut" class="result"></div>
-</div></div><!-- ANALYZER --><div class="section"><div class="card">
-<h3>🧠 Furnace AI Control</h3><input id="feo" placeholder="FeO %">
-<input id="temp" placeholder="Temp °C">
-<input id="cao" placeholder="CaO %">
-<input id="sio2" placeholder="SiO2 %"><button onclick="runAnalysis()">🔥 Full Analysis</button>
+</div><button onclick="startVoice()">🎤 Hindi Voice</button>
 
-<div id="aiOut" class="result"></div></div></div><!-- LAB --><div class="section">
+</div><!-- ANALYZER --><div class="section">
+<div class="card"><h3>🧠 Furnace AI Analyzer</h3><input id="feo" placeholder="FeO">
+<input id="temp" placeholder="Temp"><button onclick="runAnalysis()">Analyze</button>
+<button onclick="speakResult()">🔊 Speak</button>
+
+<div id="aiOut" class="result"></div></div>
+</div><!-- LAB --><div class="section">
 <div class="card">
-<h3>🧪 Lab Methods</h3>
-<p>All BIS testing methods included</p>
+<h3>🧪 Lab</h3>
+<p>FeO, FeT, CaO, MgO, SiO₂ methods available</p>
 </div>
 </div><script>
 
 // TAB
-function showTab(n){
+function tab(n){
 let t=document.querySelectorAll(".tabs button");
 let s=document.querySelectorAll(".section");
 t.forEach(x=>x.classList.remove("active"));
@@ -56,104 +85,93 @@ t[n].classList.add("active");
 s[n].classList.add("active");
 }
 
+// METAL
+function calcMetal(){
+metalOut.innerHTML="Metal: "+metalTon.value+" ton";
+}
+
+// RAMMING
+function calcRamming(){
+let val=(shellDia.value-farmaDia.value)*height.value*0.001;
+ramOut.innerHTML="Ramming: "+val.toFixed(2)+" ton";
+}
+
+// MN
+function calcMn(){
+let kg=((tarMn.value-curMn.value)*bathMn.value*10)/(recMn.value/100);
+mnOut.innerHTML="SiMn: "+kg.toFixed(0)+" kg";
+}
+
+// CARBON
+function calcCarbon(){
+let kg=(cMetal.value*(cCur.value-cTar.value)*6)/feoSp.value;
+cOut.innerHTML="Sponge: "+kg.toFixed(0)+" kg";
+}
+
 // SCRAP AI
 function scrapAI(){
-
-try{
-
 let bath=parseFloat(document.getElementById("bath").value)||14;
-
 let Mn=parseFloat(document.getElementById("bMn").value)||0;
 let Si=parseFloat(document.getElementById("bSi").value)||0;
 let P=parseFloat(document.getElementById("bP").value)||0;
-
 let sMn=parseFloat(document.getElementById("sMn").value)||0;
 
-let grade=document.getElementById("grade").value;
-
-// TARGET
-let tMn=0.6, tSi=0.2, tP=0.04;
-
-if(grade==="E250BR"){
-tMn=0.5; tSi=0.15;
-}
-
-// VALIDATION
 if(sMn<=0){
-scrapOut.innerHTML="❌ Enter scrap Mn %";
+scrapOut.innerHTML="Enter scrap Mn";
 return;
 }
 
-// CALC
-let reqMn=(tMn-Mn)*bath;
-let scrapTon=reqMn/sMn;
+let req=(0.6-Mn)*bath;
+let ton=req/sMn;
 
-scrapTon=Math.max(0,Math.min(scrapTon,5));
+let msg="Scrap: "+ton.toFixed(2)+" ton<br>";
 
-let msg="<b>🎯 Scrap Plan:</b><br>";
-msg+="Use Scrap: "+scrapTon.toFixed(2)+" ton<br>";
-msg+="Remaining: "+(bath-scrapTon).toFixed(2)+" ton<br>";
-
-if(P>tP){
-msg+="❌ High P → Use sponge<br>";
-}
-
-if(Si<tSi){
-msg+="➕ Add high-Si scrap<br>";
-}
+if(P>0.04) msg+="High P → Sponge use<br>";
+if(Si<0.2) msg+="Add high-Si scrap<br>";
 
 scrapOut.innerHTML=msg;
-
-}catch(e){
-scrapOut.innerHTML="❌ Error in scrap calc";
-}
 }
 
 // ANALYZER
 function runAnalysis(){
+let feoV=parseFloat(feo.value)||0;
+let tempV=parseFloat(temp.value)||0;
 
-try{
+let msg="";
 
-let feo=parseFloat(document.getElementById("feo").value)||0;
-let temp=parseFloat(document.getElementById("temp").value)||0;
-let cao=parseFloat(document.getElementById("cao").value)||0;
-let sio2=parseFloat(document.getElementById("sio2").value)||0;
-
-let rec=90-(1.5*feo);
-
-if(temp>1700) rec-=10;
-else if(temp>1670) rec-=6;
-
-if(cao && sio2){
-let b=cao/sio2;
-if(b<1.8) rec-=5;
-else if(b>2.5) rec+=2;
+if(feoV>15){
+msg+="Remix77 add + Slag remove<br>";
+msg+="FeSi avoid<br>";
 }
 
-rec=Math.max(50,Math.min(85,rec));
-
-let msg="⚙ Recovery: "+rec.toFixed(1)+"%<br>";
-
-if(feo>15){
-msg+="🔴 High FeO<br>";
-msg+="➕ Remix77 add<br>";
-msg+="⏱ Slag remove<br>";
-msg+="⚠ FeSi avoid<br>";
+if(feoV<10){
+msg+="Best for SiMn<br>";
 }
 
-if(feo<10){
-msg+="🟢 Best for SiMn<br>";
-}
-
-if(temp>1670){
-msg+="🌡 Reduce temperature<br>";
+if(tempV>1670){
+msg+="Reduce temperature<br>";
 }
 
 aiOut.innerHTML=msg;
-
-}catch(e){
-aiOut.innerHTML="❌ Error in analysis";
 }
+
+// VOICE INPUT
+function startVoice(){
+let r=new(window.SpeechRecognition||window.webkitSpeechRecognition)();
+r.lang="hi-IN";
+r.start();
+
+r.onresult=function(e){
+let t=e.results[0][0].transcript;
+aiOut.innerHTML="🎤 "+t;
+};
+}
+
+// VOICE OUTPUT
+function speakResult(){
+let s=new SpeechSynthesisUtterance(aiOut.innerText);
+s.lang="hi-IN";
+speechSynthesis.speak(s);
 }
 
 </script></body>
