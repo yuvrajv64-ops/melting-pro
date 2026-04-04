@@ -2,7 +2,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MeltingPro Ultimate</title><style>
+<title>MeltingPro Ultimate AI</title><style>
 body{margin:0;font-family:Arial;background:#0f172a;color:#e5e7eb;}
 header{background:#020617;padding:15px;text-align:center;color:#f97316;font-weight:bold;}
 .tabs{display:flex;background:#1e293b;}
@@ -14,64 +14,56 @@ header{background:#020617;padding:15px;text-align:center;color:#f97316;font-weig
 input,select{width:100%;padding:10px;margin:6px 0;background:#1e293b;border:none;color:#fff;border-radius:6px;}
 button{background:#f97316;border:none;padding:10px;width:100%;border-radius:8px;font-weight:bold;}
 .result{margin-top:10px;padding:10px;background:#1e293b;border-left:4px solid #f97316;}
-</style></head><body><header>🔥 MeltingPro – Furnace AI</header><div class="tabs">
+</style></head><body><header>🔥 MeltingPro Ultimate Furnace AI</header><div class="tabs">
 <button class="active" onclick="tab(0)">Dashboard</button>
 <button onclick="tab(1)">Analyzer</button>
 <button onclick="tab(2)">Lab</button>
-</div><!-- DASHBOARD --><div class="section active"><div class="card">
-<h3>🔥 Metal Calculator</h3>
-<input id="metalTon" placeholder="Metal Ton">
-<button onclick="calcMetal()">Calculate</button>
-<div id="metalOut" class="result"></div>
-</div><div class="card">
-<h3>🧱 Ramming Mass</h3>
-<input id="shellDia" placeholder="Shell Dia">
-<input id="farmaDia" placeholder="Farma Dia">
-<input id="height" placeholder="Height">
-<button onclick="calcRamming()">Calculate</button>
-<div id="ramOut" class="result"></div>
-</div><div class="card">
-<h3>⚙ Mn Calculator</h3>
-<input id="curMn" placeholder="Current Mn">
-<input id="tarMn" placeholder="Target Mn">
-<input id="bathMn" placeholder="Metal Ton">
-<input id="recMn" placeholder="Recovery %">
-<input id="allMn" placeholder="Alloy %">
-<button onclick="calcMn()">Calculate</button>
-<div id="mnOut" class="result"></div>
-</div><div class="card">
-<h3>⚡ Carbon Control</h3>
-<input id="cCur" placeholder="Current C">
-<input id="cTar" placeholder="Target C">
-<input id="cMetal" placeholder="Metal Ton">
-<input id="feoSp" placeholder="FeO">
-<button onclick="calcCarbon()">Calculate</button>
-<div id="cOut" class="result"></div>
-</div><div class="card">
-<h3>♻ Scrap Planning AI</h3><input id="bath" value="14"><select id="grade">
+</div><!-- ================= DASHBOARD ================= --><div class="section active"><div class="card">
+<h3>🔥 Final Chemistry + Auto Control</h3><select id="grade">
 <option value="Fe500">Fe500</option>
 <option value="Fe500D">Fe500D</option>
 <option value="E250BR">E250BR</option>
 <option value="Fe500XLS">Fe500 XLS</option>
-</select><input id="bMn" placeholder="Bath Mn">
-<input id="bSi" placeholder="Bath Si">
-<input id="bP" placeholder="Bath P"><input id="sMn" placeholder="Scrap Mn">
-<input id="sSi" placeholder="Scrap Si">
-<input id="sP" placeholder="Scrap P"><button onclick="scrapAI()">Calculate Scrap</button>
+</select><input id="bathTon" placeholder="Bath Ton (e.g 14)">
+<input id="scrapTon" placeholder="Scrap Ton">
+<input id="alloyKg" placeholder="SiMn kg"><h4>Bath</h4>
+<input id="bMn" placeholder="Mn">
+<input id="bSi" placeholder="Si">
+<input id="bC" placeholder="C">
+<input id="bP" placeholder="P">
+<input id="bCr" placeholder="Cr">
+<input id="bCu" placeholder="Cu">
+<input id="bNi" placeholder="Ni"><h4>Scrap</h4>
+<input id="sMn" placeholder="Mn">
+<input id="sSi" placeholder="Si">
+<input id="sC" placeholder="C">
+<input id="sP" placeholder="P">
+<input id="sCr" placeholder="Cr">
+<input id="sCu" placeholder="Cu">
+<input id="sNi" placeholder="Ni"><h4>SiMn</h4>
+<input id="aMn" value="60" placeholder="Mn%">
+<input id="aSi" value="14" placeholder="Si%">
+<input id="aC" value="2" placeholder="C%"><button onclick="finalChemistry()">🔥 Run AI</button>
 
-<div id="scrapOut" class="result"></div>
+<div id="finalOut" class="result"></div>
 </div><button onclick="startVoice()">🎤 Hindi Voice</button>
 
-</div><!-- ANALYZER --><div class="section">
-<div class="card"><h3>🧠 Furnace AI Analyzer</h3><input id="feo" placeholder="FeO">
-<input id="temp" placeholder="Temp"><button onclick="runAnalysis()">Analyze</button>
-<button onclick="speakResult()">🔊 Speak</button>
+</div><!-- ================= ANALYZER ================= --><div class="section">
+<div class="card"><h3>🧠 Furnace Analyzer</h3><input id="feo" placeholder="FeO %">
+<input id="temp" placeholder="Temp °C">
+<input id="cao" placeholder="CaO">
+<input id="sio2" placeholder="SiO2"><button onclick="runAnalysis()">Analyze</button>
+<button onclick="speak()">🔊 Speak</button>
 
 <div id="aiOut" class="result"></div></div>
-</div><!-- LAB --><div class="section">
+</div><!-- ================= LAB ================= --><div class="section">
 <div class="card">
-<h3>🧪 Lab</h3>
-<p>FeO, FeT, CaO, MgO, SiO₂ methods available</p>
+<h3>🧪 Lab Guide</h3>
+<p><b>FeO:</b> KMnO4 titration → FeO ≈ V×1.6</p>
+<p><b>FeT:</b> Dichromate → Fe ≈ V×1.117</p>
+<p><b>CaO:</b> EDTA → CaO ≈ V×2.8</p>
+<p><b>MgO:</b> EDTA → MgO ≈ V×2.0</p>
+<p><b>Tip:</b> Fresh sample = accurate result</p>
 </div>
 </div><script>
 
@@ -85,93 +77,86 @@ t[n].classList.add("active");
 s[n].classList.add("active");
 }
 
-// METAL
-function calcMetal(){
-metalOut.innerHTML="Metal: "+metalTon.value+" ton";
+// ================= FINAL AI =================
+function finalChemistry(){
+
+let bathTon=parseFloat(bathTon.value)||0;
+let scrapTon=parseFloat(scrapTon.value)||0;
+let alloyKg=parseFloat(alloyKg.value)||0;
+
+let total=bathTon+scrapTon+(alloyKg/1000);
+
+// ===== FINAL =====
+let fMn=((bMn.value*bathTon)+(sMn.value*scrapTon)+(aMn.value*(alloyKg/1000)))/total;
+let fSi=((bSi.value*bathTon)+(sSi.value*scrapTon)+(aSi.value*(alloyKg/1000)))/total;
+let fC=((bC.value*bathTon)+(sC.value*scrapTon)+(aC.value*(alloyKg/1000)))/total;
+let fP=((bP.value*bathTon)+(sP.value*scrapTon))/total;
+
+let fCr=((bCr.value*bathTon)+(sCr.value*scrapTon))/total;
+let fCu=((bCu.value*bathTon)+(sCu.value*scrapTon))/total;
+let fNi=((bNi.value*bathTon)+(sNi.value*scrapTon))/total;
+
+let sum3=fCr+fCu+fNi;
+
+// ===== TARGET =====
+let targetMn=0.6;
+let needMn=(targetMn-fMn)*total*1000;
+let siMnKg=needMn/(aMn.value/100);
+
+// ===== OUTPUT =====
+let msg="<b>🔥 Final Chemistry</b><br>";
+msg+=`Mn: ${fMn.toFixed(3)}<br>`;
+msg+=`Si: ${fSi.toFixed(3)}<br>`;
+msg+=`C: ${fC.toFixed(3)}<br>`;
+msg+=`P: ${fP.toFixed(3)}<br>`;
+msg+=`Cr+Cu+Ni: ${sum3.toFixed(3)}<br><br>`;
+
+// ===== PASS FAIL =====
+let pass=true;
+
+if(fP>0.045){pass=false; msg+="❌ P High<br>";}
+if(sum3>0.7){pass=false; msg+="❌ Alloy High<br>";}
+
+msg+= pass?"🟢 PASS":"🔴 FAIL";
+
+// ===== EXACT ADDITION =====
+msg+="<br><br><b>⚙ Required Additions:</b><br>";
+
+if(fMn<targetMn){
+msg+=`➕ SiMn: ${siMnKg.toFixed(0)} kg<br>`;
 }
 
-// RAMMING
-function calcRamming(){
-let val=(shellDia.value-farmaDia.value)*height.value*0.001;
-ramOut.innerHTML="Ramming: "+val.toFixed(2)+" ton";
+if(fSi>0.25){
+msg+="⚠ FeSi avoid<br>";
 }
 
-// MN
-function calcMn(){
-let kg=((tarMn.value-curMn.value)*bathMn.value*10)/(recMn.value/100);
-mnOut.innerHTML="SiMn: "+kg.toFixed(0)+" kg";
+if(fP>0.04){
+msg+="➕ Use Sponge / Low P scrap<br>";
 }
 
-// CARBON
-function calcCarbon(){
-let kg=(cMetal.value*(cCur.value-cTar.value)*6)/feoSp.value;
-cOut.innerHTML="Sponge: "+kg.toFixed(0)+" kg";
+msg+="🧱 Lime: 20–30 kg (if slag acidic)<br>";
+msg+="🔥 Remix77: If FeO high<br>";
+
+finalOut.innerHTML=msg;
 }
 
-// SCRAP AI
-function scrapAI(){
-let bath=parseFloat(document.getElementById("bath").value)||14;
-let Mn=parseFloat(document.getElementById("bMn").value)||0;
-let Si=parseFloat(document.getElementById("bSi").value)||0;
-let P=parseFloat(document.getElementById("bP").value)||0;
-let sMn=parseFloat(document.getElementById("sMn").value)||0;
-
-if(sMn<=0){
-scrapOut.innerHTML="Enter scrap Mn";
-return;
-}
-
-let req=(0.6-Mn)*bath;
-let ton=req/sMn;
-
-let msg="Scrap: "+ton.toFixed(2)+" ton<br>";
-
-if(P>0.04) msg+="High P → Sponge use<br>";
-if(Si<0.2) msg+="Add high-Si scrap<br>";
-
-scrapOut.innerHTML=msg;
-}
-
-// ANALYZER
+// ================= ANALYZER =================
 function runAnalysis(){
-let feoV=parseFloat(feo.value)||0;
-let tempV=parseFloat(temp.value)||0;
-
 let msg="";
-
-if(feoV>15){
-msg+="Remix77 add + Slag remove<br>";
-msg+="FeSi avoid<br>";
-}
-
-if(feoV<10){
-msg+="Best for SiMn<br>";
-}
-
-if(tempV>1670){
-msg+="Reduce temperature<br>";
-}
-
+if(feo.value>15) msg+="Remix77 + slag remove<br>";
+if(temp.value>1670) msg+="Reduce temp<br>";
 aiOut.innerHTML=msg;
 }
 
-// VOICE INPUT
+// ================= VOICE =================
 function startVoice(){
 let r=new(window.SpeechRecognition||window.webkitSpeechRecognition)();
-r.lang="hi-IN";
-r.start();
-
-r.onresult=function(e){
-let t=e.results[0][0].transcript;
-aiOut.innerHTML="🎤 "+t;
-};
+r.lang="hi-IN"; r.start();
+r.onresult=e=>aiOut.innerHTML=e.results[0][0].transcript;
 }
 
-// VOICE OUTPUT
-function speakResult(){
-let s=new SpeechSynthesisUtterance(aiOut.innerText);
-s.lang="hi-IN";
-speechSynthesis.speak(s);
+function speak(){
+speechSynthesis.speak(new SpeechSynthesisUtterance(aiOut.innerText));
 }
 
 </script></body>
