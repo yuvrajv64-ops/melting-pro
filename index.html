@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MeltingPro 7.0 – Furnace AI System</title>
-
-<style>
+<title>MeltingPro Final AI</title><style>
 body{margin:0;font-family:Arial;background:#0f172a;color:#e5e7eb;}
 header{background:#020617;padding:15px;text-align:center;color:#f97316;font-weight:bold;}
 .tabs{display:flex;background:#1e293b;}
@@ -16,322 +13,38 @@ header{background:#020617;padding:15px;text-align:center;color:#f97316;font-weig
 .card{background:#111827;padding:12px;border-radius:10px;margin-top:12px;}
 input,select{width:100%;padding:10px;margin:6px 0;background:#1e293b;border:none;color:#fff;border-radius:6px;}
 button{background:#f97316;border:none;padding:10px;width:100%;border-radius:8px;font-weight:bold;}
-.result{margin-top:10px;padding:10px;background:#1e293b;border-left:4px solid #f97316;border-radius:6px;}
-.note{font-size:12px;color:#9ca3af;}
-</style>
-</head>
-
-<body>
-
-<header>🔥 MeltingPro 7.0 – Smart Furnace AI</header>
-
-<div class="tabs">
+.result{margin-top:10px;padding:10px;background:#1e293b;border-left:4px solid #f97316;}
+</style></head><body><header>🔥 MeltingPro – Smart Furnace AI</header><div class="tabs">
 <button class="active" onclick="showTab(0)">Dashboard</button>
 <button onclick="showTab(1)">Analyzer</button>
 <button onclick="showTab(2)">Lab</button>
-</div>
+</div><!-- DASHBOARD --><div class="section active"><div class="card">
+<h3>♻ Scrap Planning AI</h3><input id="bath" value="14" placeholder="Total Heat (ton)"><select id="grade">
+<option value="Fe500">Fe500</option>
+<option value="Fe500D">Fe500D</option>
+<option value="E250BR">E250BR</option>
+<option value="Fe500XLS">Fe500 XLS</option>
+</select><h4>Current Bath</h4>
+<input id="bMn" placeholder="Mn %">
+<input id="bSi" placeholder="Si %">
+<input id="bP" placeholder="P %"><h4>Scrap Composition</h4>
+<input id="sMn" placeholder="Scrap Mn %">
+<input id="sSi" placeholder="Scrap Si %">
+<input id="sP" placeholder="Scrap P %"><button onclick="scrapAI()">🔥 Calculate Scrap Mix</button>
 
-<!-- DASHBOARD -->
-<div class="section active">
-
-<!-- METAL -->
-<div class="card">
-<h3>🔥 Metal Calculator (AI)</h3>
-
-<select id="metalMode" onchange="toggleMetalMode()">
-<option value="auto">Auto</option>
-<option value="manual">Manual</option>
-</select>
-
-<input id="fillFactor" placeholder="Fill Factor (0.75–0.90)">
-<select id="metalType">
-<option value="7.2">Mixed Metal</option>
-<option value="7.8">Heavy Scrap</option>
-<option value="6.8">Sponge Mix</option>
-</select>
-
-<div id="autoMetal">
-<input id="topDia" placeholder="Top Dia">
-<input id="bottomDia" placeholder="Bottom Dia">
-<input id="height" placeholder="Height">
-<input id="taper" placeholder="Taper">
-</div>
-
-<div id="manualMetal" style="display:none;">
-<input id="manualMetalTon" placeholder="Metal Ton">
-</div>
-
-<button onclick="calcMetal()">Calculate</button>
-
-<div id="metalOut" class="result"></div>
-<div id="metalSuggest" class="note"></div>
-
-<hr>
-
-<h4>📊 Calibration</h4>
-<input id="actualMetal" placeholder="Actual Metal">
-<button onclick="saveCalibration()">Save</button>
-<div id="calibOut" class="note"></div>
-
-</div>
-
-<!-- RAMMING -->
-<div class="card">
-<h3>🧱 Ramming Mass</h3>
-<input id="shellDia" placeholder="Shell Dia">
-<input id="farmaDia" placeholder="Farma Dia">
-<input id="totalHeight" placeholder="Height">
-<button onclick="calcRamming()">Calculate</button>
-<div id="ramOut" class="result"></div>
-<div id="ramSuggest" class="note"></div>
-</div>
-
-<!-- MN -->
-<div class="card">
-<h3>⚙ Mn Calculator</h3>
-
-<select id="mnCalcMode" onchange="toggleMnMode()">
-<option value="alloy">Alloy Required</option>
-<option value="recovery">Find Recovery</option>
-</select>
-
-<div id="mnAlloyMode">
-<input id="metal" placeholder="Metal">
-<input id="curMn" placeholder="Current Mn">
-<input id="tarMn" placeholder="Target Mn">
-<input id="rec" placeholder="Recovery %">
-<input id="allMn" placeholder="Alloy %">
-</div>
-
-<div id="mnRecoveryMode" style="display:none;">
-<input id="metal2" placeholder="Metal">
-<input id="mnRise" placeholder="Mn Rise %">
-<input id="alloyKg" placeholder="Alloy kg">
-<input id="alloyPct" placeholder="Alloy %">
-</div>
-
-<button onclick="calcMn()">Calculate</button>
-
-<div id="mnOut" class="result"></div>
-<div id="mnSuggest" class="note"></div>
-</div>
-
-<!-- CARBON -->
-<div class="card">
-<h3>⚡ Carbon Control</h3>
-
-<select id="carbonMode" onchange="toggleCarbon()">
-<option value="down">Carbon Down</option>
-<option value="up">Carbon Up</option>
-</select>
-
-<div id="carbonDown">
-<input id="cMetal" placeholder="Metal">
-<input id="cCur" placeholder="Current C">
-<input id="cTar" placeholder="Target C">
-<input id="feoSp" placeholder="FeO">
-</div>
-
-<div id="carbonUp" style="display:none;">
-<input id="cMetalUp" placeholder="Metal">
-<input id="cCurUp" placeholder="Current C">
-<input id="cTarUp" placeholder="Target C">
-<input id="castPct" placeholder="Cast Iron %">
-</div>
-
-<button onclick="calcCarbon()">Calculate</button>
-<div id="cOut" class="result"></div>
-<div id="cSuggest" class="note"></div>
-
-</div>
-
-</div>
-
-<!-- ANALYZER -->
-<div class="section">
-
-<div class="card">
-<h3>🧠 Furnace AI Analysis</h3>
-
-<input id="feo" placeholder="FeO %">
+<div id="scrapOut" class="result"></div>
+</div></div><!-- ANALYZER --><div class="section"><div class="card">
+<h3>🧠 Furnace AI Control</h3><input id="feo" placeholder="FeO %">
 <input id="temp" placeholder="Temp °C">
 <input id="cao" placeholder="CaO %">
-<input id="sio2" placeholder="SiO2 %">
+<input id="sio2" placeholder="SiO2 %"><button onclick="runAnalysis()">🔥 Full Analysis</button>
 
-<button onclick="runAnalysis()">🔥 Full Analysis</button>
-
-<div id="aiOut" class="result"></div>
-
-</div>
-
-</div>
-
-<!-- LAB -->
-<div class="section">
-
+<div id="aiOut" class="result"></div></div></div><!-- LAB --><div class="section">
 <div class="card">
-<h3>🧪 FeO (KMnO₄ Method – BIS Full)</h3>
-
-<p><b>Principle:</b> Fe²⁺ is oxidized by KMnO₄ in acidic medium.</p>
-
-<p><b>Reagents:</b></p>
-<p>• 0.1N KMnO₄ → 3.16g/L (standardize before use)</p>
-<p>• Dilute H₂SO₄ (1:1)</p>
-<p>• Distilled water</p>
-
-<p><b>Procedure:</b></p>
-<p>1. 0.5g fresh finely ground sample weigh karo</p>
-<p>2. Conical flask me lo</p>
-<p>3. 20–30 ml H₂SO₄ add karo</p>
-<p>4. Mild heat (Fe²⁺ dissolve)</p>
-<p>5. Immediately KMnO₄ titration karo</p>
-<p>6. Light pink endpoint (30 sec stable)</p>
-
-<p><b>Reaction:</b></p>
-<p>5Fe²⁺ + MnO₄⁻ + 8H⁺ → 5Fe³⁺ + Mn²⁺</p>
-
-<p><b>Formula:</b></p>
-<p>FeO% = (V × N × 7.99 × 100) / W</p>
-
-<p><b>Shortcut:</b> FeO ≈ V × 1.6</p>
-
-<p><b>Precautions:</b></p>
-<p>• Fresh sample use karo</p>
-<p>• Air exposure avoid karo</p>
-<p>• Delay mat karo</p>
+<h3>🧪 Lab Methods</h3>
+<p>All BIS testing methods included</p>
 </div>
-
-
-<div class="card">
-<h3>🧪 Total Iron (FeT – Dichromate BIS Full)</h3>
-
-<p><b>Principle:</b> All Fe converted to Fe²⁺ then titrated with K₂Cr₂O₇</p>
-
-<p><b>Reagents:</b></p>
-<p>• 0.1N K₂Cr₂O₇ → 4.903g/L</p>
-<p>• SnCl₂ solution (10%)</p>
-<p>• HgCl₂ solution</p>
-<p>• Diphenylamine indicator</p>
-<p>• HCl (1:1)</p>
-
-<p><b>Procedure:</b></p>
-<p>1. 0.5g sample weigh karo</p>
-<p>2. HCl me dissolve karo</p>
-<p>3. Heat till complete dissolution</p>
-<p>4. SnCl₂ dropwise add karo (yellow color disappear)</p>
-<p>5. HgCl₂ add karo (excess SnCl₂ remove)</p>
-<p>6. Cool karo</p>
-<p>7. Indicator add karo</p>
-<p>8. Dichromate se titration</p>
-
-<p><b>Endpoint:</b> Green → Violet</p>
-
-<p><b>Formula:</b></p>
-<p>Fe% = (V × N × 5.585 × 100) / W</p>
-
-<p><b>Shortcut:</b> FeT ≈ V × 1.117</p>
-
-<p><b>Precautions:</b></p>
-<p>• SnCl₂ excess avoid karo</p>
-<p>• HgCl₂ immediately add karo</p>
-</div>
-
-
-<div class="card">
-<h3>🧪 Sponge Iron FeO (Indirect Method)</h3>
-
-<p><b>Principle:</b></p>
-<p>FeO calculated from Total Fe and Metallic Fe</p>
-
-<p><b>Formula:</b></p>
-<p>FeO% = (FeT – FeM) × 1.286</p>
-
-<p><b>Example:</b></p>
-<p>FeT = 90%, FeM = 82%</p>
-<p>FeO = 10.29%</p>
-
-<p><b>Note:</b></p>
-<p>Direct KMnO₄ method not accurate for sponge iron</p>
-</div>
-
-
-<div class="card">
-<h3>🧪 SiO₂ (Gravimetric BIS Full)</h3>
-
-<p><b>Reagents:</b></p>
-<p>• HCl, HNO₃</p>
-
-<p><b>Procedure:</b></p>
-<p>1. Sample dissolve karo (acid)</p>
-<p>2. Evaporate to dryness</p>
-<p>3. Bake (100–120°C)</p>
-<p>4. Add HCl + water</p>
-<p>5. Filter silica residue</p>
-<p>6. Ignite at 1000°C</p>
-<p>7. Weigh residue</p>
-
-<p><b>Formula:</b></p>
-<p>SiO₂% = residue ×100 / sample</p>
-
-<p><b>Note:</b> High accuracy method</p>
-</div>
-
-
-<div class="card">
-<h3>🧪 CaO (EDTA BIS Full)</h3>
-
-<p><b>Reagents:</b></p>
-<p>• 0.01M EDTA</p>
-<p>• NH₄OH buffer (pH 12)</p>
-<p>• Murexide indicator</p>
-
-<p><b>Procedure:</b></p>
-<p>1. Sample dissolve karo</p>
-<p>2. pH ~12 adjust karo</p>
-<p>3. Indicator add karo</p>
-<p>4. EDTA titration</p>
-
-<p><b>Endpoint:</b> Pink → Purple</p>
-
-<p><b>Formula:</b></p>
-<p>CaO% = (V × N × 28 × 100) / W</p>
-
-<p><b>Shortcut:</b> CaO ≈ V × 2.8</p>
-</div>
-
-
-<div class="card">
-<h3>🧪 MgO (EDTA BIS Full)</h3>
-
-<p><b>Reagents:</b></p>
-<p>• EDTA</p>
-<p>• EBT indicator</p>
-
-<p><b>Procedure:</b></p>
-<p>1. Same solution use karo</p>
-<p>2. Indicator add karo</p>
-<p>3. EDTA titration</p>
-
-<p><b>Endpoint:</b> Wine red → Blue</p>
-
-<p><b>Formula:</b></p>
-<p>MgO% = (V × N × 20.15 × 100) / W</p>
-
-<p><b>Shortcut:</b> MgO ≈ V × 2.0</p>
-</div>
-
-
-<div class="card">
-<h3>📌 Practical Testing Guide</h3>
-
-<p>✔ Slag → FeO direct KMnO₄ method</p>
-<p>✔ Sponge Iron → FeT & FeM method</p>
-<p>✔ Mill Scale → Approx KMnO₄ (error possible)</p>
-
-<p><b>Tip:</b> Fresh sample = best accuracy</p>
-</div>
-
-<script>
+</div><script>
 
 // TAB
 function showTab(n){
@@ -343,201 +56,105 @@ t[n].classList.add("active");
 s[n].classList.add("active");
 }
 
-// METAL
-function toggleMetalMode(){
-autoMetal.style.display=(metalMode.value==="manual")?"none":"block";
-manualMetal.style.display=(metalMode.value==="manual")?"block":"none";
+// SCRAP AI
+function scrapAI(){
+
+try{
+
+let bath=parseFloat(document.getElementById("bath").value)||14;
+
+let Mn=parseFloat(document.getElementById("bMn").value)||0;
+let Si=parseFloat(document.getElementById("bSi").value)||0;
+let P=parseFloat(document.getElementById("bP").value)||0;
+
+let sMn=parseFloat(document.getElementById("sMn").value)||0;
+
+let grade=document.getElementById("grade").value;
+
+// TARGET
+let tMn=0.6, tSi=0.2, tP=0.04;
+
+if(grade==="E250BR"){
+tMn=0.5; tSi=0.15;
 }
 
-function calcMetal(){
-
-let fill=parseFloat(fillFactor.value)||0.80;
-let density=parseFloat(metalType.value);
-
-let ton;
-
-if(metalMode.value==="manual"){
-ton=parseFloat(manualMetalTon.value);
-}else{
-let d1=topDia.value*0.0254;
-let d2=bottomDia.value*0.0254;
-let h1=height.value*0.0254;
-let h2=taper.value*0.0254;
-
-let r1=d1/2,r2=d2/2;
-let v=(Math.PI*r1*r1*h1)+(Math.PI*h2/3*(r1*r1+r2*r2+r1*r2));
-
-let base=v*density*fill;
-let eff=(fill<0.75)?0.90:(fill>0.85?0.98:0.95);
-
-ton=base*eff;
-}
-
-// calibration
-let factor=localStorage.getItem("metalFactor");
-if(factor) ton=ton*factor;
-
-window.lastMetal=ton;
-
-metalOut.innerHTML="🔥 "+ton.toFixed(2)+" Ton";
-metalSuggest.innerHTML=ton>18?"🔴 Overload":"🟢 Optimal";
-}
-
-// SAVE CALIBRATION
-function saveCalibration(){
-let actual=parseFloat(actualMetal.value);
-let calc=window.lastMetal;
-
-let factor=actual/calc;
-localStorage.setItem("metalFactor",factor);
-
-calibOut.innerHTML="Saved Factor: "+factor.toFixed(3);
-}
-
-// RAMMING
-function calcRamming(){
-let s=shellDia.value*0.0254;
-let f=farmaDia.value*0.0254;
-let h=totalHeight.value*0.0254;
-
-let v=(Math.PI*(s/2)**2 - Math.PI*(f/2)**2)*h;
-let ton=v*2.65*1.05;
-
-ramOut.innerHTML="🧱 "+ton.toFixed(2)+" Ton";
-ramSuggest.innerHTML=(shellDia.value-farmaDia.value)/2<2?"🔴 Risk":"🟢 Safe";
-}
-
-// MN
-function toggleMnMode(){
-mnAlloyMode.style.display=(mnCalcMode.value==="recovery")?"none":"block";
-mnRecoveryMode.style.display=(mnCalcMode.value==="recovery")?"block":"none";
-}
-
-function calcMn(){
-
-if(mnCalcMode.value==="alloy"){
-let m=metal.value,c=curMn.value,t=tarMn.value,r=rec.value,a=allMn.value;
-let mn=(m*(t-c)/100)/(r/100);
-let alloy=(mn*100)/a;
-
-mnOut.innerHTML="🧪 Alloy: "+alloy.toFixed(2)+" kg";
-}
-else{
-let m=metal2.value,rise=mnRise.value,alloy=alloyKg.value,pct=alloyPct.value;
-let rec=((rise/100*m)/(alloy*(pct/100)))*100;
-
-mnOut.innerHTML="⚙ Recovery: "+rec.toFixed(1)+" %";
-}
-}
-
-// CARBON
-function toggleCarbon(){
-carbonDown.style.display=(carbonMode.value==="up")?"none":"block";
-carbonUp.style.display=(carbonMode.value==="up")?"block":"none";
-}
-
-function calcCarbon(){
-if(carbonMode.value==="down"){
-let kg=(cMetal.value*(cCur.value-cTar.value)*6)/feoSp.value;
-cOut.innerHTML="⬇ Sponge: "+kg.toFixed(2)+" kg";
-}else{
-let kg=(cMetalUp.value*(cTarUp.value-cCurUp.value)/100)/(castPct.value/100);
-cOut.innerHTML="⬆ Cast Iron: "+kg.toFixed(2)+" kg";
-}
-}
-
-// 🔥 AI SMART RECOVERY PREDICTOR
-function runAnalysis(){
-
-let feoV=parseFloat(feo.value);
-let tempV=parseFloat(temp.value);
-let caoV=parseFloat(cao.value);
-let sio2V=parseFloat(sio2.value);
-
-// ❗ FeO required
-if(isNaN(feoV)){
-aiOut.innerHTML="Enter at least FeO %";
+// VALIDATION
+if(sMn<=0){
+scrapOut.innerHTML="❌ Enter scrap Mn %";
 return;
 }
 
-// 🔥 BASE RECOVERY
-let rec=90-(1.5*feoV);
-let mode="Basic (FeO based)";
+// CALC
+let reqMn=(tMn-Mn)*bath;
+let scrapTon=reqMn/sMn;
 
-// 🔥 TEMPERATURE EFFECT
-if(!isNaN(tempV)){
-mode="Advanced";
-if(tempV>1700) rec-=10;
-else if(tempV>1670) rec-=6;
+scrapTon=Math.max(0,Math.min(scrapTon,5));
+
+let msg="<b>🎯 Scrap Plan:</b><br>";
+msg+="Use Scrap: "+scrapTon.toFixed(2)+" ton<br>";
+msg+="Remaining: "+(bath-scrapTon).toFixed(2)+" ton<br>";
+
+if(P>tP){
+msg+="❌ High P → Use sponge<br>";
 }
 
-// 🔥 BASICITY
-let basicity=null;
-if(!isNaN(caoV)&&!isNaN(sio2V)&&sio2V!=0){
-basicity=caoV/sio2V;
-mode="Advanced";
-
-if(basicity<1.8) rec-=5;
-else if(basicity>2.5) rec+=2;
+if(Si<tSi){
+msg+="➕ Add high-Si scrap<br>";
 }
 
-// LIMIT
-if(rec<50) rec=50;
-if(rec>85) rec=85;
+scrapOut.innerHTML=msg;
 
-// 🔥 STATUS
-let signal="";
-if(rec>70) signal="🟢 Safe";
-else if(rec>=60) signal="🟡 Moderate";
-else signal="🔴 High Loss";
-
-// 🔥 OUTPUT
-let out="";
-out+="⚙ Expected Recovery: "+rec.toFixed(1)+" %<br>";
-out+="📊 Mode: "+mode+"<br>";
-out+="📈 Status: "+signal+"<br>";
-
-if(basicity!=null){
-out+="📉 Basicity: "+basicity.toFixed(2)+"<br>";
-}
-
-out+="<br>💡 Suggestions:<br>";
-
-// FeO आधारित
-if(feoV>15){
-out+="🔴 High FeO → Slag skim + FeSi add<br>";
-}
-else if(feoV<10){
-out+="🟢 Low FeO → Best for Mn addition<br>";
-}
-else{
-out+="🟡 Medium FeO → Add Mn carefully<br>";
-}
-
-// Temp
-if(!isNaN(tempV) && tempV>1670){
-out+="🔴 High Temp → Reduce below 1665°C<br>";
-}
-
-// Basicity
-if(basicity!=null){
-if(basicity<1.8){
-out+="➕ Low basicity → Add Lime<br>";
-}
-else if(basicity>2.5){
-out+="➕ High basicity → Add Silica<br>";
+}catch(e){
+scrapOut.innerHTML="❌ Error in scrap calc";
 }
 }
 
-// fallback
-if(mode==="Basic (FeO based)"){
-out+="⚠ Only FeO used → Add more inputs for accuracy";
+// ANALYZER
+function runAnalysis(){
+
+try{
+
+let feo=parseFloat(document.getElementById("feo").value)||0;
+let temp=parseFloat(document.getElementById("temp").value)||0;
+let cao=parseFloat(document.getElementById("cao").value)||0;
+let sio2=parseFloat(document.getElementById("sio2").value)||0;
+
+let rec=90-(1.5*feo);
+
+if(temp>1700) rec-=10;
+else if(temp>1670) rec-=6;
+
+if(cao && sio2){
+let b=cao/sio2;
+if(b<1.8) rec-=5;
+else if(b>2.5) rec+=2;
 }
 
-aiOut.innerHTML=out;
+rec=Math.max(50,Math.min(85,rec));
+
+let msg="⚙ Recovery: "+rec.toFixed(1)+"%<br>";
+
+if(feo>15){
+msg+="🔴 High FeO<br>";
+msg+="➕ Remix77 add<br>";
+msg+="⏱ Slag remove<br>";
+msg+="⚠ FeSi avoid<br>";
 }
 
-</script>
+if(feo<10){
+msg+="🟢 Best for SiMn<br>";
+}
 
-</body>
+if(temp>1670){
+msg+="🌡 Reduce temperature<br>";
+}
+
+aiOut.innerHTML=msg;
+
+}catch(e){
+aiOut.innerHTML="❌ Error in analysis";
+}
+}
+
+</script></body>
 </html>
