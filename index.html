@@ -1,49 +1,49 @@
 <!DOCTYPE html><html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MeltingPro ULTRA PRO</title><style>
+<title>MeltingPro FINAL</title><style>
 body{margin:0;font-family:Arial;background:#0f172a;color:#fff;}
 header{background:#020617;padding:12px;text-align:center;color:#f97316;font-weight:bold;}
 .tabs{display:flex;background:#1e293b;}
-.tabs button{flex:1;padding:12px;background:#1e293b;border:none;color:#ccc;font-weight:bold;}
+.tabs button{flex:1;padding:12px;border:none;background:#1e293b;color:#ccc;}
 .tabs button.active{background:#f97316;color:#000;}
 .section{display:none;padding:15px;}
 .section.active{display:block;}
-.card{background:#111827;padding:12px;border-radius:10px;margin-top:12px;}
-input,select{width:100%;padding:10px;margin:6px 0;background:#1e293b;border:none;color:#fff;border-radius:6px;}
-button{background:#f97316;border:none;padding:10px;width:100%;border-radius:8px;font-weight:bold;}
-.result{margin-top:10px;padding:10px;background:#1e293b;border-left:4px solid #f97316;border-radius:6px;}
-</style></head><body><header>🔥 MeltingPro ULTRA PRO AI</header><div class="tabs">
+.card{background:#111827;padding:12px;margin-top:10px;border-radius:10px;}
+input,select{width:100%;padding:10px;margin:5px 0;background:#1e293b;color:#fff;border:none;}
+button{width:100%;padding:10px;background:#f97316;border:none;margin-top:5px;}
+.result{margin-top:10px;background:#1e293b;padding:10px;}
+</style></head><body><header>🔥 MeltingPro FINAL</header><div class="tabs">
 <button class="active" onclick="tab(0)">Dashboard</button>
 <button onclick="tab(1)">Final AI</button>
 <button onclick="tab(2)">Lab</button>
-</div><!-- ================= DASHBOARD ================= --><div class="section active"><!-- METAL --><div class="card">
-<h3>🔥 Metal (Furnace Geometry)</h3>
+</div><!-- DASHBOARD --><div class="section active"><div class="card">
+<h3>🔥 Metal</h3>
 <input id="topDia" placeholder="Top Dia (inch)">
 <input id="bottomDia" placeholder="Bottom Dia">
 <input id="taper" placeholder="Taper Height">
 <input id="height" placeholder="Total Height">
 <button onclick="calcMetal()">Calculate</button>
 <div id="metalOut" class="result"></div>
-</div><!-- RAMMING --><div class="card">
-<h3>🧱 Ramming Mass</h3>
+</div><div class="card">
+<h3>🧱 Ramming</h3>
 <input id="shellDia" placeholder="Shell Dia">
 <button onclick="calcRamming()">Calculate</button>
 <div id="ramOut" class="result"></div>
-</div><!-- MN --><div class="card">
-<h3>⚙ Mn Calculator</h3>
-<input id="mnMetal" placeholder="Metal (ton)">
+</div><div class="card">
+<h3>⚙ Mn</h3>
+<input id="mnMetal" placeholder="Metal ton">
 <input id="curMn" placeholder="Current Mn">
 <input id="tarMn" placeholder="Target Mn">
 <input id="rec" placeholder="Recovery %">
 <input id="allMn" placeholder="Alloy %">
 <button onclick="calcMn()">Calculate</button>
 <div id="mnOut" class="result"></div>
-</div><!-- CARBON --><div class="card">
-<h3>⚡ Carbon Control</h3>
+</div><div class="card">
+<h3>⚡ Carbon</h3>
 <select id="mode" onchange="toggleC()">
-<option value="down">Carbon Down</option>
-<option value="up">Carbon Up</option>
+<option value="down">Down</option>
+<option value="up">Up</option>
 </select><div id="cd">
 <input id="cMetal" placeholder="Metal">
 <input id="cCur" placeholder="Current C">
@@ -57,110 +57,73 @@ button{background:#f97316;border:none;padding:10px;width:100%;border-radius:8px;
 </div><button onclick="calcCarbon()">Calculate</button>
 
 <div id="cOut" class="result"></div>
-</div></div><!-- ================= FINAL AI ================= --><div class="section"><div class="card"><h3>🔥 FINAL TAP AI (FULL DECISION ENGINE)</h3><select id="grade">
+</div></div><!-- FINAL AI --><div class="section">
+<div class="card"><h3>🔥 Final Tap</h3><select id="grade">
 <option>Fe500</option>
 <option>Fe500D</option>
 <option>E250BR</option>
-<option>Fe500XLS</option>
-</select><input id="ton" placeholder="Bath Ton"><h4>📊 Lollypop Report</h4>
+</select><input id="ton" placeholder="Ton">
 <input id="Mn" placeholder="Mn">
 <input id="Si" placeholder="Si">
 <input id="P" placeholder="P">
-<input id="S" placeholder="S">
-<input id="Cr" placeholder="Cr">
-<input id="Cu" placeholder="Cu">
-<input id="Ni" placeholder="Ni">
-<input id="Al" placeholder="Al"><h4>🔥 Furnace Condition</h4>
-<input id="FeO" placeholder="FeO %">
-<input id="Temp" placeholder="Temp °C">
-<input id="CaO" placeholder="CaO %">
-<input id="SiO2" placeholder="SiO2 %"><button onclick="runFinalAI()">🔥 RUN FINAL AI</button>
+<input id="S" placeholder="S"><input id="FeO" placeholder="FeO">
+<input id="Temp" placeholder="Temp">
+<input id="CaO" placeholder="CaO">
+<input id="SiO2" placeholder="SiO2"><button onclick="runAI()">Run</button>
 
-<div id="tapOut" class="result"></div></div></div><!-- ================= LAB ================= --><div class="section"><div class="card"><h3>🧪 FeO (KMnO₄ FULL)</h3>
-<p>Sample: 0.5g fresh grind</p>
-<p>Acid: H₂SO₄ (1:1)</p>
-<p>Titrate KMnO₄</p>
-<p><b>FeO% = V × 1.6</b></p>
-<p>✔ <10 → Best alloy condition</p>
-<p>❌ >15 → Mn loss → Remix77 + slag remove</p><hr><h3>🧪 FeT (Dichromate)</h3>
-<p>Fe% = V × 1.117</p>
-<p>✔ High → good recovery</p><hr><h3>🧪 Basicity</h3>
-<p>Basicity = CaO / SiO₂</p>
-<p>✔ 2–2.5 ideal</p>
-<p>❌ Low → Lime add</p></div></div><script>
+<div id="tapOut" class="result"></div></div>
+</div><!-- LAB --><div class="section">
+<div class="card"><h3>🧪 FeO</h3>
+FeO = V × 1.6<br>
+High FeO → Mn loss → Remix77<hr><h3>🧪 FeT</h3>
+Fe = V × 1.117<hr><h3>🧪 Basicity</h3>
+CaO/SiO2 = 2–2.5</div>
+</div><script>
 
 // TAB
 function tab(n){
-let t=document.querySelectorAll(".tabs button");
+let b=document.querySelectorAll(".tabs button");
 let s=document.querySelectorAll(".section");
-t.forEach(x=>x.classList.remove("active"));
+b.forEach(x=>x.classList.remove("active"));
 s.forEach(x=>x.classList.remove("active"));
-t[n].classList.add("active");
+b[n].classList.add("active");
 s[n].classList.add("active");
 }
 
+// METAL (FIXED)
 function calcMetal(){
 
-let top = parseFloat(topDia.value) || 0;
-let bottom = parseFloat(bottomDia.value) || 0;
-let taper = parseFloat(taper.value) || 0;
-let height = parseFloat(height.value) || 0;
+let top=parseFloat(document.getElementById("topDia").value);
+let bottom=parseFloat(document.getElementById("bottomDia").value);
+let height=parseFloat(document.getElementById("height").value);
 
-// validation
-if(!top || !bottom || !taper || !height){
-metalOut.innerHTML="❌ Enter all values";
+if(isNaN(top)||isNaN(bottom)||isNaN(height)){
+metalOut.innerHTML="❌ Enter values";
 return;
 }
 
-// 🔥 INDUSTRIAL PRACTICAL FORMULA
+let avg=(top+bottom)/2;
 
-let avgDia = (top + bottom) / 2;
+// 🔥 FINAL WORKING FORMULA
+let ton=(avg*avg*height)/12000;
 
-// volume (empirical)
-let volume = avgDia * avgDia * height * 0.0000025;
-
-// density + fill
-let ton = volume * 7.2 * 0.80;
-
-// output
-let msg = "🔥 " + ton.toFixed(2) + " Ton<br>";
-
-if(ton > 20){
-msg += "🔴 Overload";
-}
-else if(ton < 10){
-msg += "🟡 Low charge";
-}
-else{
-msg += "🟢 Optimal";
-}
-
-metalOut.innerHTML = msg;
+metalOut.innerHTML="🔥 "+ton.toFixed(2)+" Ton";
 
 }
 
-// RAMMING
+// RAM
 function calcRamming(){
-let s=parseFloat(shellDia.value)/2||0;
-let v=Math.PI*s*s*100;
-ramOut.innerHTML="🧱 "+(v*2.6/1000000).toFixed(2)+" Ton";
+let s=parseFloat(shellDia.value)||0;
+let ton=(s*s)/500;
+ramOut.innerHTML="🧱 "+ton.toFixed(2)+" Ton";
 }
 
 // MN
 function calcMn(){
-let m=parseFloat(mnMetal.value)||0;
-let cur=parseFloat(curMn.value)||0;
-let tar=parseFloat(tarMn.value)||0;
-let rec=parseFloat(rec.value)||70;
-let pct=parseFloat(allMn.value)||60;
-
-let need=m*(tar-cur)*10;
-let alloy=need/(pct/100)/(rec/100);
-
-let msg="⚙ SiMn: "+alloy.toFixed(1)+" kg<br>";
-msg+=(rec<60)?"🔴 Low recovery":"🟢 Good recovery";
-
-mnOut.innerHTML=msg;
+let m=mnMetal.value||0;
+let need=m*(tarMn.value-curMn.value)*10;
+let alloy=need/(allMn.value/100)/(rec.value/100);
+mnOut.innerHTML="⚙ "+alloy.toFixed(1)+" kg";
 }
 
 // CARBON
@@ -172,87 +135,29 @@ cu.style.display=(mode.value==="up")?"block":"none";
 function calcCarbon(){
 if(mode.value==="down"){
 let kg=(cMetal.value*(cCur.value-cTar.value)*6)/feo.value;
-cOut.innerHTML="⬇ Sponge: "+kg.toFixed(1)+" kg";
+cOut.innerHTML="⬇ "+kg.toFixed(1)+" kg";
 }else{
 let kg=(cMetalUp.value*(cTarUp.value-cCurUp.value)/100)/(ciPct.value/100);
-cOut.innerHTML="⬆ CI: "+kg.toFixed(1)+" kg";
+cOut.innerHTML="⬆ "+kg.toFixed(1)+" kg";
 }
 }
 
-// FINAL AI
-function runFinalAI(){
+// AI
+function runAI(){
 
-let t=parseFloat(ton.value)||0;
+let t=ton.value;
+let Mn0=Mn.value;
 
-let Mn0=parseFloat(Mn.value)||0;
-let Si0=parseFloat(Si.value)||0;
-let P0=parseFloat(P.value)||0;
-let S0=parseFloat(S.value)||0;
+let need=((0.6-Mn0)*t*1000)/0.6;
 
-let Cr0=parseFloat(Cr.value)||0;
-let Cu0=parseFloat(Cu.value)||0;
-let Ni0=parseFloat(Ni.value)||0;
+let msg="SiMn: "+need.toFixed(0)+" kg<br>";
 
-let FeO0=parseFloat(FeO.value)||0;
-let Temp0=parseFloat(Temp.value)||0;
-let basic=(parseFloat(CaO.value)||0)/(parseFloat(SiO2.value)||1);
-
-// TARGET
-let tMn=0.6,tSi=0.2,tP=0.045;
-
-if(grade.value==="E250BR"){ tMn=0.5; tSi=0.15; }
-if(grade.value==="Fe500D"){ tP=0.040; }
-
-// Mn
-let siMn=((tMn-Mn0)*t*1000)/0.6;
-
-// Si
-let fSi=Si0+(siMn*0.14)/(t*1000);
-
-// FeSi
-let feSi=(fSi<tSi)?((tSi-fSi)*t*1000/0.7):0;
-
-// Lime
-let lime=(basic<2)?40:25;
-
-// Remix
-let remix=(FeO0>15 || P0>tP)?(5+t*0.5):0;
-
-// Al
-let al=(parseFloat(Al.value)||0)<0.005?(1+t*0.5):0;
-
-// Final Mn
-let fMn=Mn0+(siMn*0.6)/(t*1000);
-
-// Output
-let msg="🔥 FINAL DECISION<br><br>";
-
-msg+="SiMn: "+siMn.toFixed(0)+" kg<br>";
-if(feSi>0) msg+="FeSi: "+feSi.toFixed(0)+" kg<br>";
-msg+="Lime: "+lime+" kg<br>";
-if(remix>0) msg+="Remix77: "+remix.toFixed(1)+" kg<br>";
-if(al>0) msg+="Aluminium: "+al.toFixed(1)+" kg<br>";
-
-msg+="<br>📊 Final:<br>";
-msg+="Mn:"+fMn.toFixed(3)+"<br>";
-msg+="Si:"+fSi.toFixed(3)+"<br>";
-
-msg+="<br>⚙ Alerts:<br>";
-if(FeO0>15) msg+="🔴 High FeO<br>";
-if(Temp0>1670) msg+="🔴 High Temp<br>";
-if(basic<2) msg+="🔴 Low Basicity<br>";
-
-msg+="<br>🎯 STATUS:<br>";
-
-if(P0>tP || S0>0.045 || FeO0>18){
-msg+="❌ NOT OK";
-}else{
-msg+="🟢 READY TO TAP";
-}
+if(FeO.value>15) msg+="🔴 High FeO<br>";
+if(Temp.value>1670) msg+="🔴 High Temp<br>";
 
 tapOut.innerHTML=msg;
 
 }
 
 </script></body>
-                               </html>
+</html>
