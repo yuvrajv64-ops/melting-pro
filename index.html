@@ -99,19 +99,44 @@ t[n].classList.add("active");
 s[n].classList.add("active");
 }
 
-// METAL
 function calcMetal(){
-let r1=parseFloat(topDia.value)/2||0;
-let r2=parseFloat(bottomDia.value)/2||0;
-let h=parseFloat(taper.value)||0;
-let H=parseFloat(height.value)||0;
 
-let v1=(Math.PI*h/3)*(r1*r1+r2*r2+r1*r2);
-let v2=Math.PI*r2*r2*(H-h);
+let top = parseFloat(topDia.value) || 0;
+let bottom = parseFloat(bottomDia.value) || 0;
+let taper = parseFloat(taper.value) || 0;
+let height = parseFloat(height.value) || 0;
 
-let ton=(v1+v2)*7.2/1000000;
+// validation
+if(!top || !bottom || !taper || !height){
+metalOut.innerHTML="❌ Enter all values";
+return;
+}
 
-metalOut.innerHTML="🔥 "+ton.toFixed(2)+" Ton";
+// 🔥 INDUSTRIAL PRACTICAL FORMULA
+
+let avgDia = (top + bottom) / 2;
+
+// volume (empirical)
+let volume = avgDia * avgDia * height * 0.0000025;
+
+// density + fill
+let ton = volume * 7.2 * 0.80;
+
+// output
+let msg = "🔥 " + ton.toFixed(2) + " Ton<br>";
+
+if(ton > 20){
+msg += "🔴 Overload";
+}
+else if(ton < 10){
+msg += "🟡 Low charge";
+}
+else{
+msg += "🟢 Optimal";
+}
+
+metalOut.innerHTML = msg;
+
 }
 
 // RAMMING
