@@ -386,3 +386,25 @@ document.getElementById("aiOut").innerHTML="❌ Error";
 }
 
 }
+function calcMetalFull(){
+
+let top = parseFloat(document.getElementById("topDia").value)||0;
+let bottom = parseFloat(document.getElementById("bottomDia").value)||0;
+let taper = parseFloat(document.getElementById("taper").value)||0;
+let height = parseFloat(document.getElementById("height").value)||0;
+
+let r1 = top/2;
+let r2 = bottom/2;
+
+// Frustum + cylinder
+let v1 = (Math.PI * taper / 3) * (r1r1 + r2r2 + r1r2);
+let v2 = Math.PI * r2r2 * (height - taper);
+
+let volume = v1 + v2;
+
+// density ~7.2
+let ton = volume * 7.2 / 1000000;
+
+document.getElementById("metalOut").innerHTML =
+"🔥 Metal: "+ton.toFixed(2)+" Ton";
+}
