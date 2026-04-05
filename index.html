@@ -18,14 +18,32 @@ button{width:100%;padding:10px;background:#f97316;border:none;margin-top:5px;}
 <button onclick="tab(1)">Final AI</button>
 <button onclick="tab(2)">Lab</button>
 </div><!-- DASHBOARD --><div class="section active"><div class="card">
-<h3>🔥 Metal</h3>
+<h3>🔥 Molten Metal Calculator (Pro)</h3>
+
+<select id="metalMode" onchange="toggleMetalMode()">
+<option value="furnace">Furnace</option>
+<option value="ladle">Ladle</option>
+</select>
+
+<div id="furnaceMode">
 <input id="topDia" placeholder="Top Dia (inch)">
-<input id="bottomDia" placeholder="Bottom Dia">
-<input id="taper" placeholder="Taper Height">
-<input id="height" placeholder="Total Height">
+<input id="bottomDia" placeholder="Bottom Dia (inch)">
+<input id="taper" placeholder="Taper Height (inch)">
+<input id="height" placeholder="Total Height (inch)">
+</div>
+
+<div id="ladleMode" style="display:none;">
+<input id="ladleDia" placeholder="Ladle Dia (inch)">
+<input id="ladleHeight" placeholder="Height (inch)">
+</div>
+
+<input id="actualMetal" placeholder="Actual Metal (ton)">
+<input id="lossPct" placeholder="Loss %">
+
 <button onclick="calcMetal()">Calculate</button>
+
 <div id="metalOut" class="result"></div>
-</div><div class="card">
+  
 <h3>🧱 Ramming</h3>
 <input id="shellDia" placeholder="Shell Dia">
 <button onclick="calcRamming()">Calculate</button>
@@ -91,23 +109,91 @@ s[n].classList.add("active");
 }
 
 // METAL (FIXED)
+function toggleMetalMode(){
+let mode = metalMode.value;
+furnaceMode.style.display = (mode==="furnace")?"block":"none";
+ladleMode.style.display = (mode==="ladle")?"block":"none";
+}
+
 function calcMetal(){
 
-let top=parseFloat(document.getElementById("topDia").value);
-let bottom=parseFloat(document.getElementById("bottomDia").value);
-let height=parseFloat(document.getElementById("height").value);
+try{
 
-if(isNaN(top)||isNaN(bottom)||isNaN(height)){
-metalOut.innerHTML="❌ Enter values";
+let mode = metalMode.value;
+let ton = 0;
+
+// FURNACE
+if(mode==="furnace"){
+
+let top = parseFloat(topDia.value);
+let bottom = parseFloat(bottomDia.value);
+let taper = parseFloat(taper.value);
+let height = parseFloat(height.value);
+
+if(isNaN(top)||isNaN(bottom)||isNaN(taper)||isNaN(height)){
+metalOut.innerHTML="❌ Enter furnace values";
 return;
 }
 
-let avg=(top+bottom)/2;
+let avg = (top + bottom) / 2;
 
-// 🔥 FINAL WORKING FORMULA
-let ton=(avg*avg*height)/12000;
+// taper effect
+let factor = 1 - (taper/height)*0.25;
 
-metalOut.innerHTML="🔥 "+ton.toFixed(2)+" Ton";
+// base calc
+ton = (avg * avg * height)/12000;
+ton = ton * factor;
+
+}
+
+// LADLE
+else{
+
+let dia = parseFloat(ladleDia.value);
+let h = parseFloat(ladleHeight.value);
+
+if(isNaN(dia)||isNaN(h)){
+metalOut.innerHTML="❌ Enter ladle values";
+return;
+}
+
+ton = (dia * dia * h)/15000;
+
+}
+
+// LOSS
+let loss = parseFloat(lossPct.value)||0;
+let afterLoss = ton * (1 - loss/100);
+
+// KG
+let kg = ton * 1000;
+let kgAfter = afterLoss * 1000;
+
+// ACTUAL
+let actual = parseFloat(actualMetal.value);
+
+let msg = "🔥 "+ton.toFixed(2)+" Ton ("+kg.toFixed(0)+" kg)<br>";
+msg += "⚖ After Loss: "+afterLoss.toFixed(2)+" Ton ("+kgAfter.toFixed(0)+" kg)<br>";
+
+if(!isNaN(actual)){
+let diff = actual - ton;
+
+msg += "📊 Actual: "+actual+" Ton<br>";
+
+if(Math.abs(diff)<0.5){
+msg+="🟢 Accurate";
+}else if(diff>0){
+msg+="🟡 Actual higher";
+}else{
+msg+="🔴 Actual lower";
+}
+}
+
+metalOut.innerHTML = msg;
+
+}catch(e){
+metalOut.innerHTML="❌ Error";
+}
 
 }
 
