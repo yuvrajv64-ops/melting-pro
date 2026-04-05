@@ -1,15 +1,54 @@
-// ===== METAL =====
+// 🔥 METAL CALCULATOR (PRO LEVEL)
+
 function calcMetal(){
-let r1=topDia.value/2;
-let r2=bottomDia.value/2;
-let h=taper.value;
-let H=height.value;
 
-let v1=(Math.PIh/3)(r1r1+r2r2+r1r2);
-let v2=Math.PIr2r2(H-h);
+let top = parseFloat(topDia.value) || 0;
+let bottom = parseFloat(bottomDia.value) || 0;
+let taper = parseFloat(taper.value) || 0;
+let height = parseFloat(height.value) || 0;
 
-let ton=(v1+v2)*7.2/1000000;
-metalOut.innerHTML="🔥 "+ton.toFixed(2)+" Ton";
+// inch → meter
+top *= 0.0254;
+bottom *= 0.0254;
+taper *= 0.0254;
+height *= 0.0254;
+
+let r1 = top / 2;
+let r2 = bottom / 2;
+
+// 🔹 Frustum (taper part)
+let v1 = (Math.PI * taper / 3) * (r1r1 + r2r2 + r1*r2);
+
+// 🔹 Cylinder (bottom part)
+let v2 = Math.PI * r2*r2 * (height - taper);
+
+// Total volume
+let volume = v1 + v2;
+
+// 🔹 Density (scrap mix approx)
+let density = 7200; // kg/m³
+
+// 🔹 Fill factor
+let fill = 0.80;
+
+// Ton calculation
+let ton = volume * density * fill / 1000;
+
+// 🔥 Output + suggestion
+let msg = "🔥 Metal: " + ton.toFixed(2) + " Ton<br>";
+
+if(ton > 20){
+msg += "🔴 Overload risk";
+}
+else if(ton < 10){
+msg += "🟡 Low charge";
+}
+else{
+msg += "🟢 Optimal";
+}
+
+metalOut.innerHTML = msg;
+
 }
 
 // ===== RAMMING =====
