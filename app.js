@@ -306,3 +306,83 @@ document.getElementById("aiOut").innerHTML="❌ Error in calculation";
 }
 
   }
+
+
+// ================= 🔥 FINAL CHEMISTRY ENGINE =================
+
+function runFinalDecision(){
+
+try{
+
+let ton = parseFloat(document.getElementById("ton").value)||0;
+
+let Mn = parseFloat(document.getElementById("Mn").value)||0;
+let Si = parseFloat(document.getElementById("Si").value)||0;
+let P  = parseFloat(document.getElementById("P").value)||0;
+let S  = parseFloat(document.getElementById("S").value)||0;
+let Cr = parseFloat(document.getElementById("Cr").value)||0;
+let Cu = parseFloat(document.getElementById("Cu").value)||0;
+let Ni = parseFloat(document.getElementById("Ni").value)||0;
+let Al = parseFloat(document.getElementById("Al").value)||0;
+
+let FeO = parseFloat(document.getElementById("FeO").value)||12;
+let Temp = parseFloat(document.getElementById("Temp").value)||1650;
+let basic = (parseFloat(document.getElementById("CaO").value)||0) /
+(parseFloat(document.getElementById("SiO2").value)||1);
+
+let tMn=0.6, tSi=0.2, tP=0.045;
+
+let grade=document.getElementById("grade").value;
+
+if(grade==="E250BR"){ tMn=0.5; tSi=0.15; }
+if(grade==="Fe500D"){ tP=0.040; }
+
+let needMn=(tMn-Mn)ton1000;
+let siMn=needMn/0.6;
+
+let newSi = Si + (siMn0.14)/(ton1000);
+
+let feSi=0;
+if(newSi<tSi){
+feSi=(tSi-newSi)ton1000/0.7;
+}
+
+let lime = (basic<2)?40:25;
+let remix = (FeO>15 || P>0.04)?(5+ton0.5):0;
+let al = (Al<0.005)?(1+ton0.5):0;
+
+let fMn = Mn + (siMn0.6)/(ton1000);
+let fSi = newSi + (feSi0.7)/(ton1000);
+
+let sum3 = Cr+Cu+Ni;
+
+let msg="🔥 FINAL DECISION<br><br>";
+
+msg+="➕ SiMn: "+siMn.toFixed(0)+" kg<br>";
+if(feSi>0) msg+="➕ FeSi: "+feSi.toFixed(0)+" kg<br>";
+msg+="➕ Lime: "+lime+" kg<br>";
+if(remix>0) msg+="➕ Remix77: "+remix.toFixed(1)+" kg<br>";
+if(al>0) msg+="➕ Aluminium: "+al.toFixed(1)+" kg<br>";
+
+msg+="<br>📊 Final Prediction:<br>";
+msg+="Mn: "+fMn.toFixed(3)+"<br>";
+msg+="Si: "+fSi.toFixed(3)+"<br>";
+msg+="P: "+P.toFixed(3)+"<br>";
+msg+="S: "+S.toFixed(3)+"<br>";
+msg+="Cr+Cu+Ni: "+sum3.toFixed(3)+"<br>";
+
+msg+="<br>🎯 STATUS:<br>";
+
+if(P>tP || FeO>18 || sum3>0.7){
+msg+="❌ NOT READY";
+}else{
+msg+="🟢 READY TO TAP";
+}
+
+document.getElementById("aiOut").innerHTML = msg;
+
+}catch(e){
+document.getElementById("aiOut").innerHTML="❌ Error";
+}
+
+}
