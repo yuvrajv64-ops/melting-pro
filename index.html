@@ -108,52 +108,42 @@ b[n].classList.add("active");
 s[n].classList.add("active");
 }
 
-// METAL (FIXED)
-function toggleMetalMode(){
-let mode = metalMode.value;
-furnaceMode.style.display = (mode==="furnace")?"block":"none";
-ladleMode.style.display = (mode==="ladle")?"block":"none";
-}
-
 function calcMetal(){
 
 try{
 
-let mode = metalMode.value;
+let mode = document.getElementById("metalMode").value;
 let ton = 0;
 
-// FURNACE
+// ===== FURNACE =====
 if(mode==="furnace"){
 
-let top = parseFloat(topDia.value);
-let bottom = parseFloat(bottomDia.value);
-let taper = parseFloat(taper.value);
-let height = parseFloat(height.value);
+let top = parseFloat(document.getElementById("topDia").value);
+let bottom = parseFloat(document.getElementById("bottomDia").value);
+let taper = parseFloat(document.getElementById("taper").value);
+let height = parseFloat(document.getElementById("height").value);
 
 if(isNaN(top)||isNaN(bottom)||isNaN(taper)||isNaN(height)){
-metalOut.innerHTML="❌ Enter furnace values";
+document.getElementById("metalOut").innerHTML="❌ Enter values";
 return;
 }
 
-let avg = (top + bottom) / 2;
-
-// taper effect
+let avg = (top + bottom)/2;
 let factor = 1 - (taper/height)*0.25;
 
-// base calc
 ton = (avg * avg * height)/12000;
 ton = ton * factor;
 
 }
 
-// LADLE
+// ===== LADLE =====
 else{
 
-let dia = parseFloat(ladleDia.value);
-let h = parseFloat(ladleHeight.value);
+let dia = parseFloat(document.getElementById("ladleDia").value);
+let h = parseFloat(document.getElementById("ladleHeight").value);
 
 if(isNaN(dia)||isNaN(h)){
-metalOut.innerHTML="❌ Enter ladle values";
+document.getElementById("metalOut").innerHTML="❌ Enter ladle values";
 return;
 }
 
@@ -161,38 +151,24 @@ ton = (dia * dia * h)/15000;
 
 }
 
-// LOSS
-let loss = parseFloat(lossPct.value)||0;
+// ===== LOSS =====
+let loss = parseFloat(document.getElementById("lossPct").value)||0;
 let afterLoss = ton * (1 - loss/100);
 
-// KG
+// ===== KG =====
 let kg = ton * 1000;
-let kgAfter = afterLoss * 1000;
 
-// ACTUAL
-let actual = parseFloat(actualMetal.value);
+// ===== AUTO FILL =====
+document.getElementById("actualMetal").value = ton.toFixed(2);
 
+// ===== OUTPUT =====
 let msg = "🔥 "+ton.toFixed(2)+" Ton ("+kg.toFixed(0)+" kg)<br>";
-msg += "⚖ After Loss: "+afterLoss.toFixed(2)+" Ton ("+kgAfter.toFixed(0)+" kg)<br>";
+msg += "⚖ After Loss: "+afterLoss.toFixed(2)+" Ton";
 
-if(!isNaN(actual)){
-let diff = actual - ton;
-
-msg += "📊 Actual: "+actual+" Ton<br>";
-
-if(Math.abs(diff)<0.5){
-msg+="🟢 Accurate";
-}else if(diff>0){
-msg+="🟡 Actual higher";
-}else{
-msg+="🔴 Actual lower";
-}
-}
-
-metalOut.innerHTML = msg;
+document.getElementById("metalOut").innerHTML = msg;
 
 }catch(e){
-metalOut.innerHTML="❌ Error";
+document.getElementById("metalOut").innerHTML="❌ Error";
 }
 
 }
