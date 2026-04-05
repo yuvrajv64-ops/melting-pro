@@ -1,5 +1,3 @@
-// 🔥 METAL CALCULATOR (PRO LEVEL)
-
 function calcMetal(){
 
 let top = parseFloat(topDia.value) || 0;
@@ -16,25 +14,21 @@ height *= 0.0254;
 let r1 = top / 2;
 let r2 = bottom / 2;
 
-// 🔹 Frustum (taper part)
+// ✅ Frustum
 let v1 = (Math.PI * taper / 3) * (r1r1 + r2r2 + r1*r2);
 
-// 🔹 Cylinder (bottom part)
+// ✅ Cylinder
 let v2 = Math.PI * r2*r2 * (height - taper);
 
-// Total volume
+// Total
 let volume = v1 + v2;
 
-// 🔹 Density (scrap mix approx)
-let density = 7200; // kg/m³
-
-// 🔹 Fill factor
+// density + fill
+let density = 7200;
 let fill = 0.80;
 
-// Ton calculation
 let ton = volume * density * fill / 1000;
 
-// 🔥 Output + suggestion
 let msg = "🔥 Metal: " + ton.toFixed(2) + " Ton<br>";
 
 if(ton > 20){
@@ -61,8 +55,7 @@ ramOut.innerHTML="🧱 "+(v2.6/1000000).toFixed(2)+" Ton";
 // ===== MN =====
 function calcMn(){
 let m=mnMetal.value;
-let need=(m*(tarMn.value-curMn.value)*10);
-let alloy=need/(allMn.value/100)/(rec.value/100);
+let need=(m*(tarMn.valueeed/(allMn.value/100)/(rec.value/100);
 
 let msg="⚙ "+alloy.toFixed(1)+" kg<br>";
 
