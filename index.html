@@ -1,162 +1,92 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html><html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MeltingPro Ultimate AI</title><style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MeltingPro PRO</title><style>
 body{margin:0;font-family:Arial;background:#0f172a;color:#fff;}
-header{background:#020617;padding:15px;text-align:center;color:#f97316;font-weight:bold;}
-.tabs{display:flex;background:#1e293b;}
-.tabs button{flex:1;padding:12px;border:none;background:#1e293b;color:#ccc;}
-.tabs button.active{background:#f97316;color:#000;}
-.section{display:none;padding:12px;}
-.section.active{display:block;}
-.card{background:#111827;padding:12px;margin-top:12px;border-radius:10px;}
-input,select{width:100%;padding:10px;margin:6px 0;background:#1e293b;border:none;color:#fff;border-radius:6px;}
-button{width:100%;padding:10px;background:#f97316;border:none;border-radius:8px;font-weight:bold;}
-.result{margin-top:10px;background:#1e293b;padding:10px;border-left:4px solid #f97316;}
-</style></head><body><header>🔥 MeltingPro Ultimate Furnace AI</header><div class="tabs">
-<button class="active" onclick="tab(0)">Dashboard</button>
-<button onclick="tab(1)">Final Tap AI</button>
-<button onclick="tab(2)">Lab</button>
-</div><!-- ================= DASHBOARD ================= --><div class="section active"><div class="card">
-<h3>🔥 Metal</h3>
-<input id="metalTon">
-<button onclick="calcMetalFull()">Calculate</button>
-<div id="metalOut" class="result"></div>
-</div><div class="card">
-<h3>🧱 Ramming</h3>
+header{background:#020617;padding:12px;text-align:center;color:#f97316;font-weight:bold;}
+.card{background:#111827;padding:12px;margin:10px;border-radius:10px;}
+input,select{width:100%;padding:8px;margin:5px 0;background:#1e293b;color:#fff;border:none;border-radius:5px;}
+button{width:100%;padding:10px;background:#f97316;border:none;border-radius:6px;}
+.result{margin-top:8px;background:#1e293b;padding:8px;}
+</style></head><body><header>🔥 MeltingPro Industrial AI</header><!-- METAL --><div class="card">
+<h3>🔥 Metal (Furnace Geometry)</h3>
 <input id="topDia" placeholder="Top Dia (inch)">
-<input id="bottomDia" placeholder="Bottom Dia">
-<input id="taperLen" placeholder="Taper">
-<input id="fullLen" placeholder="Full Length">
-<input id="coilDia" placeholder="Shell Dia">
+<input id="bottomDia" placeholder="Bottom Dia (inch)">
+<input id="taper" placeholder="Taper Height (inch)">
+<input id="height" placeholder="Total Height (inch)">
+<button onclick="calcMetal()">Calculate</button>
+<div id="metalOut" class="result"></div>
+</div><!-- RAMMING --><div class="card">
+<h3>🧱 Ramming Mass</h3>
+<input id="shellDia" placeholder="Shell Dia (inch)">
 <button onclick="calcRamming()">Calculate</button>
 <div id="ramOut" class="result"></div>
-</div><div class="card">
-<h3>⚙ Mn</h3>
-<input id="mnMetal">
-<input id="curMn">
-<input id="tarMn">
-<input id="recMn">
-<input id="allMn">
+</div><!-- MN --><div class="card">
+<h3>⚙ Mn Calculator</h3>
+<input id="mnMetal" placeholder="Metal (ton)">
+<input id="curMn" placeholder="Current Mn">
+<input id="tarMn" placeholder="Target Mn">
+<input id="rec" placeholder="Recovery %">
+<input id="allMn" placeholder="Alloy %">
 <button onclick="calcMn()">Calculate</button>
 <div id="mnOut" class="result"></div>
-</div><div class="card">
-<h3>⚡ Carbon</h3>
-<select id="carbonMode" onchange="toggleCarbon()">
-<option value="down">Down</option>
-<option value="up">Up</option>
-</select><div id="downBox">
-<input id="cMetal">
-<input id="cCur">
-<input id="cTar">
-<input id="feoSp">
-</div><div id="upBox" style="display:none;">
-<input id="cMetalUp">
-<input id="cCurUp">
-<input id="cTarUp">
-<input id="ciPct">
+</div><!-- CARBON --><div class="card">
+<h3>⚡ Carbon Control</h3>
+<select id="mode" onchange="toggleC()">
+<option value="down">Carbon Down</option>
+<option value="up">Carbon Up</option>
+</select><div id="cd">
+<input id="cMetal" placeholder="Metal">
+<input id="cCur" placeholder="Current C">
+<input id="cTar" placeholder="Target C">
+<input id="feo" placeholder="FeO">
+</div><div id="cu" style="display:none;">
+<input id="cMetalUp" placeholder="Metal">
+<input id="cCurUp" placeholder="Current C">
+<input id="cTarUp" placeholder="Target C">
+<input id="ciPct" placeholder="CI %">
 </div><button onclick="calcCarbon()">Calculate</button>
 
 <div id="cOut" class="result"></div>
-</div></div><!-- ================= FINAL TAP AI ================= --><div class="section"><div class="card">
-<h3>🔥 FINAL TAP AI (FULL CONTROL)</h3><select id="tapGrade">
+</div><!-- FINAL AI --><div class="card">
+<h3>🔥 Final Tap AI (FULL DECISION)</h3><select id="grade">
 <option>Fe500</option>
 <option>Fe500D</option>
 <option>E250BR</option>
 <option>Fe500XLS</option>
-</select><input id="tapTon" placeholder="Bath Ton"><h4>Lollypop</h4>
-<input id="lpMn" placeholder="Mn">
-<input id="lpSi" placeholder="Si">
-<input id="lpP" placeholder="P">
-<input id="lpS" placeholder="S">
-<input id="lpCr" placeholder="Cr">
-<input id="lpCu" placeholder="Cu">
-<input id="lpNi" placeholder="Ni">
-<input id="lpAl" placeholder="Al"><h4>Furnace</h4>
-<input id="tapFeO" placeholder="FeO">
-<input id="tapTemp" placeholder="Temp">
-<input id="tapCaO" placeholder="CaO">
-<input id="tapSiO2" placeholder="SiO2"><button onclick="finalTapAI()">RUN AI</button>
-  <button onclick="runFinalDecision()">🔥 Final Decision</button>
+</select><input id="ton" placeholder="Bath Ton"><h4>Lollypop</h4>
+<input id="Mn" placeholder="Mn">
+<input id="Si" placeholder="Si">
+<input id="P" placeholder="P">
+<input id="S" placeholder="S">
+<input id="Cr" placeholder="Cr">
+<input id="Cu" placeholder="Cu">
+<input id="Ni" placeholder="Ni">
+<input id="Al" placeholder="Al"><h4>Furnace</h4>
+<input id="FeO" placeholder="FeO %">
+<input id="Temp" placeholder="Temp °C">
+<input id="CaO" placeholder="CaO %">
+<input id="SiO2" placeholder="SiO2 %"><button onclick="runFinal()">🔥 FINAL DECISION</button>
 
-<div id="tapOut" class="result"></div></div></div><!-- ================= LAB ================= --><div class="section"><div class="card">
-<h3>🧪 FeO FULL METHOD</h3>
-<p>0.5g sample + H2SO4 + KMnO4 titration</p>
-<p>FeO ≈ V×1.6</p>
-<p>High FeO → Mn loss → Remix77</p>
-</div><div class="card">
-<h3>🧪 FeT FULL</h3>
-<p>Dichromate titration → V×1.117</p>
-</div><div class="card">
-<h3>🧪 CaO / MgO</h3>
-<p>EDTA titration</p>
-<p>Basicity = 2–2.5</p>
-</div></div><script>
+<div id="tapOut" class="result"></div>
+</div><!-- LAB --><div class="card">
+<h3>🧪 FULL LAB GUIDE (BIS + PRACTICAL)</h3><b>FeO (KMnO₄)</b><br>
+0.5g sample + H₂SO₄ + KMnO₄<br>
+FeO% = (V × N × 7.99 × 100) / W<br>
+Shortcut: FeO ≈ V×1.6<br>
+✔ <10 → best<br>
+❌ >15 → Mn loss → Remix77 + slag clean<br><br>
 
-function tab(n){
-let t=document.querySelectorAll(".tabs button");
-let s=document.querySelectorAll(".section");
-t.forEach(x=>x.classList.remove("active"));
-s.forEach(x=>x.classList.remove("active"));
-t[n].classList.add("active");
-s[n].classList.add("active");
-}
+<b>FeT (Dichromate)</b><br>
+HCl dissolve → SnCl₂ reduce → HgCl₂<br>
+Fe% = V×1.117<br>
+✔ High → good recovery<br><br>
 
-// METAL
-function calcMetal(){
-metalOut.innerHTML="Metal: "+metalTon.value+" ton";
-}
+<b>CaO / Basicity</b><br>
+Basicity = CaO/SiO₂<br>
+✔ 2–2.5 ideal<br>
+❌ <2 → lime add<br>
+❌ >2.5 → silica adjust<br>
 
-// RAMMING
-function calcRamming(){
-let ton=10; // simplified placeholder
-ramOut.innerHTML="Ramming: "+ton+" ton";
-}
-
-// MN
-function calcMn(){
-mnOut.innerHTML="Mn calculated";
-}
-
-// CARBON
-function toggleCarbon(){
-downBox.style.display=(carbonMode.value==="up")?"none":"block";
-upBox.style.display=(carbonMode.value==="up")?"block":"none";
-}
-
-function calcCarbon(){
-cOut.innerHTML="Carbon controlled";
-}
-
-// FINAL TAP AI
-function finalTapAI(){
-
-let ton=+tapTon.value||0;
-let Mn=+lpMn.value||0;
-let Si=+lpSi.value||0;
-let P=+lpP.value||0;
-let S=+lpS.value||0;
-
-let FeO=+tapFeO.value||0;
-let Temp=+tapTemp.value||0;
-let basicity=(+tapCaO.value)/(+tapSiO2.value);
-
-let msg="🔥 FINAL DECISION<br><br>";
-
-msg+="Basicity:"+basicity.toFixed(2)+"<br>";
-msg+="Temp:"+Temp+"°C<br>";
-
-if(FeO>15) msg+="High FeO → Remix77<br>";
-if(Temp>1670) msg+="Reduce Temp<br>";
-
-if(P>0.04) msg+="High P → Add Lime<br>";
-
-msg+="<br>🟢 Ready for Tap";
-
-tapOut.innerHTML=msg;
-
-}
-
-</script></body>
+</div><script src="app.js"></script></body>
 </html>
