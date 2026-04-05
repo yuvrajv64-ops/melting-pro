@@ -1,33 +1,33 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MeltingPro 3.0</title>
+<title>MeltingPro 4.0 – AI Furnace</title>
 
 <style>
 body{margin:0;font-family:Arial;background:#0f172a;color:#fff;}
-header{background:#020617;padding:15px;text-align:center;color:#f97316;font-weight:bold;}
+header{background:#020617;padding:12px;text-align:center;color:#f97316;font-weight:bold;}
 .tabs{display:flex;background:#1e293b;}
-.tabs button{flex:1;padding:12px;border:none;background:#1e293b;color:#ccc;}
+.tabs button{flex:1;padding:10px;border:none;background:#1e293b;color:#ccc;}
 .tabs button.active{background:#f97316;color:#000;}
-.section{display:none;padding:15px;}
+.section{display:none;padding:12px;}
 .section.active{display:block;}
-.card{background:#111827;padding:12px;border-radius:10px;margin-top:10px;}
-input,select{width:100%;padding:8px;margin:5px 0;background:#1e293b;color:#fff;border:none;}
-button{background:#f97316;border:none;padding:10px;width:100%;margin-top:5px;}
-.result{margin-top:10px;padding:10px;background:#1e293b;border-left:4px solid #f97316;}
+.card{background:#111827;padding:12px;margin-top:10px;border-radius:10px;}
+input,select{width:100%;padding:8px;margin:5px 0;background:#1e293b;color:#fff;border:none;border-radius:6px;}
+button{width:100%;padding:10px;background:#f97316;border:none;border-radius:6px;margin-top:5px;}
+.result{background:#1e293b;padding:10px;margin-top:8px;border-left:4px solid orange;}
+.note{font-size:12px;color:#aaa;}
 </style>
 </head>
 
 <body>
 
-<header>🔥 MeltingPro 3.0 – Smart Furnace</header>
+<header>🔥 MeltingPro 4.0 – Smart Furnace AI</header>
 
 <div class="tabs">
-<button class="active" onclick="showTab(0)">Dashboard</button>
-<button onclick="showTab(1)">AI Tap</button>
-<button onclick="showTab(2)">Lab</button>
+<button class="active" onclick="tab(0)">Dashboard</button>
+<button onclick="tab(1)">Chemistry AI</button>
+<button onclick="tab(2)">Lab</button>
 </div>
 
 <!-- DASHBOARD -->
@@ -39,6 +39,7 @@ button{background:#f97316;border:none;padding:10px;width:100%;margin-top:5px;}
 <input id="height" placeholder="Height (inch)">
 <button onclick="calcMetal()">Calculate</button>
 <div id="metalOut" class="result"></div>
+<div class="note">Density 7.5 t/m³ | Fill 0.85</div>
 </div>
 
 <div class="card">
@@ -50,49 +51,27 @@ button{background:#f97316;border:none;padding:10px;width:100%;margin-top:5px;}
 <div id="ramOut" class="result"></div>
 </div>
 
-<div class="card">
-<h3>Mn Calculator</h3>
-<input id="metal" placeholder="Metal kg">
-<input id="curMn" placeholder="Current Mn">
-<input id="tarMn" placeholder="Target Mn">
-<input id="rec" placeholder="Recovery %">
-<input id="alloy" placeholder="Alloy %">
-<button onclick="calcMn()">Calculate</button>
-<div id="mnOut" class="result"></div>
 </div>
 
-<div class="card">
-<h3>Carbon Control</h3>
-<input id="cMetal" placeholder="Metal kg">
-<input id="cCur" placeholder="Current C">
-<input id="cTar" placeholder="Target C">
-<input id="cPct" placeholder="CI / Sponge %">
-<button onclick="carbon()">Calculate</button>
-<div id="cOut" class="result"></div>
-</div>
-
-</div>
-
-<!-- AI TAP -->
+<!-- CHEMISTRY -->
 <div class="section">
 
 <div class="card">
-<h3>🔥 Final Tap AI</h3>
+<h3>🧪 Scrap / Bath Composition</h3>
 
-<select id="grade">
-<option>Fe500</option>
-<option>Fe500D</option>
-<option>E250BR</option>
-<option>XLS</option>
-</select>
+<input id="c" placeholder="C %">
+<input id="mn" placeholder="Mn %">
+<input id="si" placeholder="Si %">
+<input id="p" placeholder="P %">
+<input id="s" placeholder="S %">
+<input id="cr" placeholder="Cr %">
+<input id="cu" placeholder="Cu %">
+<input id="ni" placeholder="Ni %">
+<input id="al" placeholder="Al %">
 
-<input id="feo" placeholder="FeO %">
-<input id="temp" placeholder="Temp °C">
-<input id="basic" placeholder="Basicity">
+<button onclick="analyze()">Run AI Analysis</button>
 
-<button onclick="aiTap()">Run AI</button>
-
-<div id="aiOut" class="result"></div>
+<div id="chemOut" class="result"></div>
 
 </div>
 
@@ -102,31 +81,54 @@ button{background:#f97316;border:none;padding:10px;width:100%;margin-top:5px;}
 <div class="section">
 
 <div class="card">
-<h3>FeO Wet Method</h3>
-<p>Sample: 0.5g slag</p>
-<p>Add H2SO4, heat, titrate with KMnO4</p>
-<p>Formula: FeO% = V × 1.6</p>
+<h3>🧪 FeO (KMnO₄ Method)</h3>
+
+<p>Step 1: 0.5g slag weigh</p>
+<p>Step 2: Add H₂SO₄</p>
+<p>Step 3: Heat</p>
+<p>Step 4: Titrate with KMnO₄</p>
+
+<p><b>Formula:</b></p>
+<p>FeO% = V × 1.6</p>
+
 </div>
 
 <div class="card">
-<h3>Total Fe (FeT)</h3>
-<p>Reduce Fe3+ to Fe2+</p>
-<p>Titrate using dichromate</p>
-<p>Formula: FeT% = (V×N×55.85×100)/W</p>
+<h3>🧪 Total Fe (FeT)</h3>
+
+<p>Sample dissolve in HCl</p>
+<p>Reduce Fe³⁺ to Fe²⁺</p>
+<p>Titrate with KMnO₄</p>
+
+<p><b>Formula:</b></p>
+<p>FeT% = (V × N × 55.85 × 100) / W</p>
+
 </div>
 
 <div class="card">
-<h3>Basicity</h3>
-<p>CaO / SiO2</p>
-<p>Ideal: 2.0 – 2.5</p>
+<h3>🧪 SiO₂</h3>
+
+<p>Fusion with Na₂CO₃</p>
+<p>Acid dissolve</p>
+<p>Dry + weigh residue</p>
+
+<p>SiO₂% = (Residue / Sample) × 100</p>
+
+</div>
+
+<div class="card">
+<h3>🧪 CaO & MgO</h3>
+
+<p>EDTA titration method</p>
+<p>Indicator: Eriochrome Black T</p>
+
 </div>
 
 </div>
 
 <script>
 
-// TAB
-function showTab(n){
+function tab(n){
 let t=document.querySelectorAll(".tabs button");
 let s=document.querySelectorAll(".section");
 t.forEach(x=>x.classList.remove("active"));
@@ -139,52 +141,58 @@ s[n].classList.add("active");
 function calcMetal(){
 let d=topDia.value*0.0254;
 let h=height.value*0.0254;
-let v=3.14*(d/2)*(d/2)*h;
-let ton=v*7.5;
+let vol=3.14*(d/2)*(d/2)*h;
+let ton=vol*7.5*0.85;
 metalOut.innerHTML="🔥 "+ton.toFixed(2)+" Ton";
 }
 
 // RAMMING
 function calcRamming(){
-let s=shell.value,f=farma.value,hv=h.value;
+let s=shell.value;
+let f=farma.value;
 let lining=(s-f)/2;
 ramOut.innerHTML="🧱 Lining: "+lining+" inch";
 }
 
-// MN
-function calcMn(){
-let m=metal.value,c=curMn.value,t=tarMn.value,r=rec.value,a=alloy.value;
-let mn=(m*(t-c)/100)/(r/100);
-let al=(mn*100)/a;
-mnOut.innerHTML="🧪 Alloy: "+al.toFixed(1)+" kg";
-}
+// AI CHEMISTRY
+function analyze(){
 
-// CARBON
-function carbon(){
-let m=cMetal.value,c=cCur.value,t=cTar.value,p=cPct.value;
-let kg=(m*(t-c)/100)/(p/100);
-cOut.innerHTML="🔥 Add: "+kg.toFixed(1)+" kg";
-}
-
-// AI TAP
-function aiTap(){
-
-let feoV=parseFloat(feo.value);
-let tempV=parseFloat(temp.value);
-let basicV=parseFloat(basic.value);
+let c=parseFloat(document.getElementById("c").value);
+let mn=parseFloat(document.getElementById("mn").value);
+let si=parseFloat(document.getElementById("si").value);
+let p=parseFloat(document.getElementById("p").value);
+let s=parseFloat(document.getElementById("s").value);
 
 let out="";
 
-if(feoV>15) out+="🔴 High FeO<br>";
-if(tempV>1670) out+="🔴 High Temp<br>";
-if(basicV<1.8) out+="➕ Add Lime<br>";
+if(si<0.15){
+out+="➕ Add FeSi (2–5 kg)<br>";
+}
 
-out+="<br>🧪 FeSi: 2-5 kg<br>";
-out+="⚡ Al: 1-2 kg<br>";
-out+="🔥 SiMn: As per Mn calc<br>";
-out+="💡 Clean slag before addition<br>";
+if(mn<0.4){
+out+="➕ Add Mn alloy<br>";
+}
 
-aiOut.innerHTML=out;
+if(p>0.05){
+out+="⚠ High P → Use basic slag + lime<br>";
+}
+
+if(s>0.05){
+out+="⚠ High S → Add lime + fluorspar<br>";
+}
+
+if(si>0.5){
+out+="⚠ High Si → Avoid FeSi<br>";
+}
+
+out+="<br>💡 Slag Control:<br>";
+
+out+="✔ Add Lime (10–20 kg)<br>";
+out+="✔ Remix 77 if slag thick<br>";
+out+="✔ Al 1–2 kg (micro control)<br>";
+
+chemOut.innerHTML=out;
+
 }
 
 </script>
