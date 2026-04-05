@@ -5,30 +5,33 @@ let bottom = parseFloat(bottomDia.value) || 0;
 let taper = parseFloat(taper.value) || 0;
 let height = parseFloat(height.value) || 0;
 
-// inch → meter
-top *= 0.0254;
-bottom *= 0.0254;
-taper *= 0.0254;
-height *= 0.0254;
+// ❗ validation
+if(!top || !bottom || !taper || !height){
+metalOut.innerHTML="❌ Enter all values";
+return;
+}
 
-let r1 = top / 2;
-let r2 = bottom / 2;
+// 🔥 INDUSTRIAL SHORT FORMULA (INCH BASED)
 
-// ✅ Frustum
-let v1 = (Math.PI * taper / 3) * (r1r1 + r2r2 + r1*r2);
+// Average dia
+let avgDia = (top + bottom) / 2;
 
-// ✅ Cylinder
-let v2 = Math.PI * r2*r2 * (height - taper);
+// Effective height
+let effHeight = height;
 
-// Total
-let volume = v1 + v2;
+// Volume factor (empirical)
+let volume = 0.00000065 * avgDia * avgDia * effHeight;
 
-// density + fill
-let density = 7200;
+// Fill factor
 let fill = 0.80;
 
-let ton = volume * density * fill / 1000;
+// Density factor (scrap mix)
+let densityFactor = 7.2;
 
+// Final ton
+let ton = volume * densityFactor * fill * 1000;
+
+// OUTPUT
 let msg = "🔥 Metal: " + ton.toFixed(2) + " Ton<br>";
 
 if(ton > 20){
