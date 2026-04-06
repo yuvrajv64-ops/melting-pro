@@ -138,8 +138,8 @@ height *= 0.0254;
 let r1 = top/2;
 let r2 = bottom/2;
 
-let v1 = (Math.PI * taper / 3) * (r1r1 + r2r2 + r1r2);
-let v2 = Math.PI * r2r2 * (height - taper);
+let v1 = (Math.PI * taper / 3) * (r1*r1 + r2*r2 + r1*r2);
+let v2 = Math.PI * r2*r2 * (height - taper);
 
 let volume = v1 + v2;
 
