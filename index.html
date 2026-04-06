@@ -168,6 +168,65 @@ document.getElementById("metalOut").innerHTML="❌ Error";
 }
 
 }
+  function drawFurnace(top, bottom, taper, height){
+
+let c = document.getElementById("furnaceCanvas");
+let ctx = c.getContext("2d");
+
+ctx.clearRect(0,0,c.width,c.height);
+
+// scale
+let scale = 200 / height;
+
+let h = height * scale;
+let t = taper * scale;
+let topW = top * scale;
+let botW = bottom * scale;
+
+let x = 150;
+let y = 20;
+
+// top width
+let topLeft = x - topW/2;
+let topRight = x + topW/2;
+
+// bottom width
+let botLeft = x - botW/2;
+let botRight = x + botW/2;
+
+// drawing
+ctx.strokeStyle = "#f97316";
+ctx.lineWidth = 2;
+
+ctx.beginPath();
+
+// top
+ctx.moveTo(topLeft, y);
+ctx.lineTo(topRight, y);
+
+// taper
+ctx.lineTo(botRight, y + t);
+
+// straight
+ctx.lineTo(botRight, y + h);
+
+// bottom
+ctx.lineTo(botLeft, y + h);
+
+// left side
+ctx.lineTo(topLeft, y);
+
+ctx.stroke();
+
+// labels
+ctx.fillStyle = "#fff";
+ctx.font = "12px Arial";
+
+ctx.fillText("Top: "+(top/0.0254).toFixed(0)+""", topLeft, y-5);
+ctx.fillText("Bottom: "+(bottom/0.0254).toFixed(0)+""", botLeft, y+h+15);
+ctx.fillText("Height: "+(height/0.0254).toFixed(0)+""", x-40, y+h/2);
+
+  }
   
 // RAM
 function calcRamming(){
