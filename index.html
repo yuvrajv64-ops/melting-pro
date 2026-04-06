@@ -110,8 +110,14 @@ s[n].classList.add("active");
 }
 
 function calcMetal(){
-
 try{
+
+let mode = document.getElementById("metalMode")?.value || "furnace";
+
+let ton = 0;
+
+// ================= FURNACE =================
+if(mode === "furnace"){
 
 let top = parseFloat(document.getElementById("topDia").value);
 let bottom = parseFloat(document.getElementById("bottomDia").value);
@@ -119,103 +125,80 @@ let taper = parseFloat(document.getElementById("taper").value);
 let height = parseFloat(document.getElementById("height").value);
 
 if(isNaN(top)||isNaN(bottom)||isNaN(taper)||isNaN(height)){
-document.getElementById("metalOut").innerHTML="❌ Enter values";
+document.getElementById("metalOut").innerHTML="❌ Enter furnace values";
 return;
 }
 
 // inch → meter
-top = top * 0.0254;
-bottom = bottom * 0.0254;
-taper = taper * 0.0254;
-height = height * 0.0254;
+top *= 0.0254;
+bottom *= 0.0254;
+taper *= 0.0254;
+height *= 0.0254;
 
 // radius
 let r1 = top/2;
 let r2 = bottom/2;
 
-// 🔥 Frustum (taper part)
-let v1 = (Math.PI * taper / 3) * (r1r1 + r2r2 + r1*r2);
+// frustum + cylinder
+let v1 = (Math.PI * taper / 3) * (r1r1 + r2r2 + r1r2);
+let v2 = Math.PI * r2r2 * (height - taper);
 
-// 🔥 Cylinder (straight part)
-let v2 = Math.PI * r2*r2 * (height - taper);
-
-// total volume (m³)
 let volume = v1 + v2;
 
-// density molten steel ≈ 7200 kg/m³
-let ton = (volume * 7200) / 1000;
+// density
+ton = (volume * 7200) / 1000;
 
-// 🔥 practical fill factor
+// fill factor
 ton = ton * 0.90;
 
-// kg
+// draw image
+drawFurnace(top, bottom, taper, height);
+
+}
+
+// ================= LADLE =================
+else{
+
+let dia = parseFloat(document.getElementById("ladleDia").value);
+let h = parseFloat(document.getElementById("ladleHeight").value);
+
+if(isNaN(dia)||isNaN(h)){
+document.getElementById("metalOut").innerHTML="❌ Enter ladle values";
+return;
+}
+
+// inch → meter
+dia *= 0.0254;
+h *= 0.0254;
+
+let r = dia/2;
+
+let volume = Math.PI * r*r * h;
+
+ton = (volume * 7200) / 1000;
+ton = ton * 0.95;
+
+}
+
+// ================= OUTPUT =================
 let kg = ton * 1000;
 
-// auto fill
+// auto fill actual
 document.getElementById("actualMetal").value = ton.toFixed(2);
 
-// output
+// loss
+let loss = parseFloat(document.getElementById("lossPct").value) || 0;
+let afterLoss = ton * (1 - loss/100);
+
 let msg = "🔥 "+ton.toFixed(2)+" Ton ("+kg.toFixed(0)+" kg)";
-msg += "<br>📐 Real Geometry Applied";
+msg += "<br>⚖ After Loss: "+afterLoss.toFixed(2)+" Ton";
 
 document.getElementById("metalOut").innerHTML = msg;
 
-// 🔥 DRAW IMAGE
-drawFurnace(top, bottom, taper, height);
-
 }catch(e){
 document.getElementById("metalOut").innerHTML="❌ Error";
+console.log(e);
 }
-
-}
-  function drawFurnace(top, bottom, taper, height){
-
-let c = document.getElementById("furnaceCanvas");
-if(!c) return;
-
-let ctx = c.getContext("2d");
-
-ctx.clearRect(0,0,c.width,c.height);
-
-// scale
-let scale = 200 / height;
-
-let h = height * scale;
-let t = taper * scale;
-let topW = top * scale;
-let botW = bottom * scale;
-
-let x = 150;
-let y = 20;
-
-// widths
-let topLeft = x - topW/2;
-let topRight = x + topW/2;
-
-let botLeft = x - botW/2;
-let botRight = x + botW/2;
-
-// drawing
-ctx.strokeStyle = "#f97316";
-ctx.lineWidth = 2;
-
-ctx.beginPath();
-ctx.moveTo(topLeft, y);
-ctx.lineTo(topRight, y);
-ctx.lineTo(botRight, y + t);
-ctx.lineTo(botRight, y + h);
-ctx.lineTo(botLeft, y + h);
-ctx.lineTo(topLeft, y);
-ctx.stroke();
-
-// labels
-ctx.fillStyle = "#fff";
-ctx.font = "12px Arial";
-
-ctx.fillText("Top: "+(top/0.0254).toFixed(0)+" in", topLeft, y-5);
-ctx.fillText("Bottom: "+(bottom/0.0254).toFixed(0)+" in", botLeft, y+h+15);
-ctx.fillText("Height: "+(height/0.0254).toFixed(0)+" in", x-40, y+h/2);
-
   }
   
 // RAM
