@@ -112,12 +112,6 @@ function calcMetal(){
 
 try{
 
-let mode = document.getElementById("metalMode").value;
-let ton = 0;
-
-// ===== FURNACE =====
-if(mode==="furnace"){
-
 let top = parseFloat(document.getElementById("topDia").value);
 let bottom = parseFloat(document.getElementById("bottomDia").value);
 let taper = parseFloat(document.getElementById("taper").value);
@@ -128,51 +122,52 @@ document.getElementById("metalOut").innerHTML="❌ Enter values";
 return;
 }
 
-let avg = (top + bottom)/2;
-let factor = 1 - (taper/height)*0.25;
+// inch → meter
+top = top * 0.0254;
+bottom = bottom * 0.0254;
+taper = taper * 0.0254;
+height = height * 0.0254;
 
-ton = (avg * avg * height)/12000;
-ton = ton * factor;
+// radius
+let r1 = top/2;
+let r2 = bottom/2;
 
-}
+// 🔥 Frustum (taper part)
+let v1 = (Math.PI * taper / 3) * (r1r1 + r2r2 + r1*r2);
 
-// ===== LADLE =====
-else{
+// 🔥 Cylinder (straight part)
+let v2 = Math.PI * r2*r2 * (height - taper);
 
-let dia = parseFloat(document.getElementById("ladleDia").value);
-let h = parseFloat(document.getElementById("ladleHeight").value);
+// total volume (m³)
+let volume = v1 + v2;
 
-if(isNaN(dia)||isNaN(h)){
-document.getElementById("metalOut").innerHTML="❌ Enter ladle values";
-return;
-}
+// density molten steel ≈ 7200 kg/m³
+let ton = (volume * 7200) / 1000;
 
-ton = (dia * dia * h)/15000;
+// 🔥 practical fill factor
+ton = ton * 0.90;
 
-}
-
-// ===== LOSS =====
-let loss = parseFloat(document.getElementById("lossPct").value)||0;
-let afterLoss = ton * (1 - loss/100);
-
-// ===== KG =====
+// kg
 let kg = ton * 1000;
 
-// ===== AUTO FILL =====
+// auto fill
 document.getElementById("actualMetal").value = ton.toFixed(2);
 
-// ===== OUTPUT =====
-let msg = "🔥 "+ton.toFixed(2)+" Ton ("+kg.toFixed(0)+" kg)<br>";
-msg += "⚖ After Loss: "+afterLoss.toFixed(2)+" Ton";
+// output
+let msg = "🔥 "+ton.toFixed(2)+" Ton ("+kg.toFixed(0)+" kg)";
+msg += "<br>📐 Real Geometry Applied";
 
 document.getElementById("metalOut").innerHTML = msg;
+
+// 🔥 DRAW IMAGE
+drawFurnace(top, bottom, taper, height);
 
 }catch(e){
 document.getElementById("metalOut").innerHTML="❌ Error";
 }
 
 }
-
+  
 // RAM
 function calcRamming(){
 let s=parseFloat(shellDia.value)||0;
