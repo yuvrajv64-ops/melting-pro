@@ -118,83 +118,54 @@ function calcMetal(){
 try{
 
 let density = 7200;
-let theoretical = 0;
 
-// ===== FURNACE =====
-if(metalMode.value==="furnace"){
+// INPUT
+let top = parseFloat(document.getElementById("topDia").value);
+let bottom = parseFloat(document.getElementById("bottomDia").value);
+let taper = parseFloat(document.getElementById("taper").value);
+let height = parseFloat(document.getElementById("height").value);
 
-let top = parseFloat(topDia.value);
-let bottom = parseFloat(bottomDia.value);
-let taper = parseFloat(taper.value);
-let height = parseFloat(height.value);
-
-if(!top || !bottom || !taper || !height){
-metalOut.innerHTML="❌ Enter values";
+// CHECK
+if(isNaN(top) || isNaN(bottom) || isNaN(taper) || isNaN(height)){
+document.getElementById("metalOut").innerHTML="❌ Enter values properly";
 return;
 }
 
+// inch → meter
 top *= 0.0254;
 bottom *= 0.0254;
 taper *= 0.0254;
 height *= 0.0254;
 
+// radius
 let r1 = top/2;
 let r2 = bottom/2;
 
+// volume
 let v1 = (Math.PI * taper / 3) * (r1*r1 + r2*r2 + r1*r2);
 let v2 = Math.PI * r2*r2 * (height - taper);
 
 let volume = v1 + v2;
 
-theoretical = (volume * density) / 1000;
+// ton
+let ton = (volume * density) / 1000;
 
-}
+// factor (simple fix)
+let factor = 1.08;
 
-// ===== LADLE =====
-else{
+// final
+let finalTon = ton * factor;
 
-let dia = parseFloat(ladleDia.value);
-let h = parseFloat(ladleHeight.value);
-
-if(!dia || !h){
-metalOut.innerHTML="❌ Enter ladle values";
-return;
-}
-
-dia *= 0.0254;
-h *= 0.0254;
-
-let r = dia/2;
-
-let volume = Math.PI * r*r * h;
-
-theoretical = (volume * density) / 1000;
-}
-
-// ===== FACTOR =====
-let factor = 1;
-
-if(mix.value==="scrap") factor=1.05;
-if(mix.value==="balanced") factor=1.08;
-if(mix.value==="sponge") factor=1.12;
-
-let last = parseFloat(lastHeat?.value);
-if(last && last>0){
-factor = last / (theoretical*1000);
-}
-
-let practical = theoretical * factor;
-
-metalOut.innerHTML =
-"🔥 "+practical.toFixed(2)+" Ton ("+(practical*1000).toFixed(0)+" kg)<br>"+
-"📊 Theo: "+theoretical.toFixed(2)+" Ton";
+// output
+document.getElementById("metalOut").innerHTML =
+"🔥 "+finalTon.toFixed(2)+" Ton ("+(finalTon*1000).toFixed(0)+" kg)";
 
 }catch(e){
-metalOut.innerHTML="❌ Error";
+document.getElementById("metalOut").innerHTML="❌ Error";
 console.log(e);
 }
 
-               }
+}
                                  
   
 // RAM
