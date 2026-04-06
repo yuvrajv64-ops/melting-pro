@@ -17,37 +17,42 @@ button{width:100%;padding:10px;background:#f97316;border:none;margin-top:5px;}
 <button class="active" onclick="tab(0)">Dashboard</button>
 <button onclick="tab(1)">Final AI</button>
 <button onclick="tab(2)">Lab</button>
-</div><!-- DASHBOARD --><div class="section active"><div class="card">
+</div><!-- DASHBOARD --><div class="section active">
+  <div class="card">
 <h3>🔥 Molten Metal Calculator (Pro)</h3>
 
-<select id="metalMode" onchange="toggleMetalMode()">
+<select id="mode">
 <option value="furnace">Furnace</option>
 <option value="ladle">Ladle</option>
 </select>
-  <select id="chargeMix">
-<option value="scrap">Scrap Heavy</option>
-<option value="balanced">Balanced</option>
-<option value="sponge">Sponge Heavy</option>
-  </select>
 
-<div id="furnaceMode">
+<select id="mix">
+<option value="scrap">Scrap Heavy</option>
+<option value="balanced" selected>Balanced</option>
+<option value="sponge">Sponge Heavy</option>
+</select>
+
+<!-- Furnace -->
+<div id="furnaceBox">
 <input id="topDia" placeholder="Top Dia (inch)">
 <input id="bottomDia" placeholder="Bottom Dia (inch)">
 <input id="taper" placeholder="Taper Height (inch)">
 <input id="height" placeholder="Total Height (inch)">
 </div>
 
-<div id="ladleMode" style="display:none;">
+<!-- Ladle -->
+<div id="ladleBox" style="display:none;">
 <input id="ladleDia" placeholder="Ladle Dia (inch)">
 <input id="ladleHeight" placeholder="Height (inch)">
 </div>
-  
-<input id="actualMetal" placeholder="Actual Metal (ton)">
-<input id="lossPct" placeholder="Loss %">
+
+<!-- Smart Auto Learning -->
+<input id="lastHeat" placeholder="Last Heat (kg) OPTIONAL">
 
 <button onclick="calcMetal()">Calculate</button>
 
-<div id="metalOut" class="result"></div>
+<div id="output" class="result"></div>
+  </div>
   
 <h3>🧱 Ramming</h3>
 <input id="shellDia" placeholder="Shell Dia">
@@ -113,59 +118,99 @@ b[n].classList.add("active");
 s[n].classList.add("active");
 }
 
+// MODE TOGGLE
+mode.addEventListener("change",()=>{
+furnaceBox.style.display = (mode.value==="furnace")?"block":"none";
+ladleBox.style.display = (mode.value==="ladle")?"block":"none";
+});
+
+// MAIN FUNCTION
 function calcMetal(){
 
 try{
 
 let density = 7200;
+let theoretical = 0;
 
-// INPUT
-let top = parseFloat(document.getElementById("topDia").value);
-let bottom = parseFloat(document.getElementById("bottomDia").value);
-let taper = parseFloat(document.getElementById("taper").value);
-let height = parseFloat(document.getElementById("height").value);
+// ===== FURNACE =====
+if(mode.value==="furnace"){
 
-// CHECK
-if(isNaN(top) || isNaN(bottom) || isNaN(taper) || isNaN(height)){
-document.getElementById("metalOut").innerHTML="❌ Enter values properly";
+let top = parseFloat(topDia.value);
+let bottom = parseFloat(bottomDia.value);
+let taper = parseFloat(taper.value);
+let height = parseFloat(height.value);
+
+if(isNaN(top)||isNaN(bottom)||isNaN(taper)||isNaN(height)){
+output.innerHTML="❌ Enter all values";
 return;
 }
 
-// inch → meter
-top *= 0.0254;
-bottom *= 0.0254;
-taper *= 0.0254;
-height *= 0.0254;
+top*=0.0254;
+bottom*=0.0254;
+taper*=0.0254;
+height*=0.0254;
 
-// radius
 let r1 = top/2;
 let r2 = bottom/2;
 
-// volume
 let v1 = (Math.PI * taper / 3) * (r1*r1 + r2*r2 + r1*r2);
 let v2 = Math.PI * r2*r2 * (height - taper);
 
 let volume = v1 + v2;
 
-// ton
-let ton = (volume * density) / 1000;
+theoretical = (volume * density) / 1000;
+}
 
-// factor (simple fix)
-let factor = 1.08;
+// ===== LADLE =====
+else{
 
-// final
-let finalTon = ton * factor;
+let dia = parseFloat(ladleDia.value);
+let h = parseFloat(ladleHeight.value);
 
-// output
-document.getElementById("metalOut").innerHTML =
-"🔥 "+finalTon.toFixed(2)+" Ton ("+(finalTon*1000).toFixed(0)+" kg)";
+if(isNaN(dia)||isNaN(h)){
+output.innerHTML="❌ Enter ladle values";
+return;
+}
+
+dia*=0.0254;
+h*=0.0254;
+
+let r = dia/2;
+
+let volume = Math.PI * r*r * h;
+
+theoretical = (volume * density) / 1000;
+}
+
+// ===== FACTOR =====
+let factor = 1;
+
+// mix based
+if(mix.value==="scrap") factor = 1.05;
+if(mix.value==="balanced") factor = 1.08;
+if(mix.value==="sponge") factor = 1.12;
+
+// auto learning
+let last = parseFloat(lastHeat.value);
+if(last && last>0){
+factor = last / (theoretical*1000);
+}
+
+// FINAL RESULT
+let finalTon = theoretical * factor;
+let finalKg = finalTon * 1000;
+
+// OUTPUT
+output.innerHTML =
+"🔥 "+finalTon.toFixed(2)+" Ton ("+finalKg.toFixed(0)+" kg)<br>"+
+"📊 Factor: "+factor.toFixed(3);
 
 }catch(e){
-document.getElementById("metalOut").innerHTML="❌ Error";
+output.innerHTML="❌ Error";
 console.log(e);
 }
 
-}
+   }
                                  
   
 // RAM
