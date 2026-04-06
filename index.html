@@ -24,6 +24,11 @@ button{width:100%;padding:10px;background:#f97316;border:none;margin-top:5px;}
 <option value="furnace">Furnace</option>
 <option value="ladle">Ladle</option>
 </select>
+  <select id="chargeMix">
+<option value="scrap">Scrap Heavy</option>
+<option value="balanced">Balanced</option>
+<option value="sponge">Sponge Heavy</option>
+  </select>
 
 <div id="furnaceMode">
 <input id="topDia" placeholder="Top Dia (inch)">
@@ -112,7 +117,14 @@ s[n].classList.add("active");
 
 function calcMetal(){
 try{
+let mix = document.getElementById("chargeMix").value;
 
+let density = 7200;
+
+if(mix === "scrap") density = 7500;
+if(mix === "balanced") density = 7350;
+if(mix === "sponge") density = 7100;
+  
 let mode = document.getElementById("metalMode").value;
 
 // ================= FURNACE =================
@@ -152,8 +164,22 @@ let kg = ton * 1000;
 
 // auto fill
 document.getElementById("actualMetal").value = ton.toFixed(2);
+let actual = parseFloat(document.getElementById("actualMetal").value);
 
+if(actual && ton > 0){
+
+let newFactor = actual / ton;
+
+// smooth learning (shock avoid)
+factor = (factor * 0.7) + (newFactor * 0.3);
+
+// save
+localStorage.setItem("furnaceFactor", factor.toFixed(3));
+
+}
 // output
+  msg += "<br>⚙ Factor: " + factor.toFixed(3);
+msg += "<br>🧪 Density: " + density + " kg/m³";
 document.getElementById("metalOut").innerHTML =
 "🔥 "+ton.toFixed(2)+" Ton ("+kg.toFixed(0)+" kg)";
 
