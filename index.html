@@ -128,6 +128,21 @@ ladleBox.style.display = (mode.value==="ladle")?"block":"none";
 function calcMetal(){
 
 try{
+  let modeVal = document.getElementById("mode").value;
+
+// ===== FURNACE =====
+if(modeVal==="furnace"){
+
+// furnace code
+
+}
+
+// ===== LADLE =====
+else if(modeVal==="ladle"){
+
+// ladle code
+
+}
 
 let density = 7200;
 let theoretical = 0;
@@ -135,10 +150,10 @@ let theoretical = 0;
 // ===== FURNACE =====
 if(mode.value==="furnace"){
 
-let top = parseFloat(topDia.value);
-let bottom = parseFloat(bottomDia.value);
-let taper = parseFloat(taper.value);
-let height = parseFloat(height.value);
+let top = parseFloat(document.getElementById("topDia").value);
+let bottom = parseFloat(document.getElementById("bottomDia").value);
+let taper = parseFloat(document.getElementById("taper").value);
+let height = parseFloat(document.getElementById("height").value);
 
 if(isNaN(top)||isNaN(bottom)||isNaN(taper)||isNaN(height)){
 output.innerHTML="❌ Enter all values";
