@@ -41,8 +41,6 @@ button{width:100%;padding:10px;background:#f97316;border:none;margin-top:5px;}
 <input id="ladleDia" placeholder="Ladle Dia (inch)">
 <input id="ladleHeight" placeholder="Height (inch)">
 </div>
-  <canvas id="furnaceCanvas" width="300" height="400" style="background:transparent;border:1px solid #333;margin-top:10px;"></canvas>
-  
   
 <input id="actualMetal" placeholder="Actual Metal (ton)">
 <input id="lossPct" placeholder="Loss %">
@@ -116,16 +114,15 @@ s[n].classList.add("active");
 }
 
 function calcMetal(){
-try{
+
+let mode = document.getElementById("metalMode").value;
 let mix = document.getElementById("chargeMix").value;
 
-let density = 7200;
-
-if(mix === "scrap") density = 7500;
-if(mix === "balanced") density = 7350;
+// density selection
+let density = 7350;
+if(mix === "scrap") density = 7600;
+if(mix === "balanced") density = 7400;
 if(mix === "sponge") density = 7100;
-  
-let mode = document.getElementById("metalMode").value;
 
 // ================= FURNACE =================
 if(mode === "furnace"){
@@ -136,7 +133,7 @@ let taper = parseFloat(document.getElementById("taper").value);
 let height = parseFloat(document.getElementById("height").value);
 
 if(!top || !bottom || !taper || !height){
-document.getElementById("metalOut").innerHTML="❌ Enter all values";
+metalOut.innerHTML = "❌ Enter all values";
 return;
 }
 
@@ -146,46 +143,27 @@ bottom *= 0.0254;
 taper *= 0.0254;
 height *= 0.0254;
 
-// volume
+// radius
 let r1 = top/2;
 let r2 = bottom/2;
 
+// volume
 let v1 = (Math.PI * taper / 3) * (r1*r1 + r2*r2 + r1*r2);
 let v2 = Math.PI * r2*r2 * (height - taper);
 
 let volume = v1 + v2;
 
 // ton
-let ton = (volume * 7200) / 1000;
-ton = ton * 0.90;
+let ton = (volume * density) / 1000;
+
+// practical correction
+ton = ton * 0.96;
 
 // kg
 let kg = ton * 1000;
 
-// auto fill
-document.getElementById("actualMetal").value = ton.toFixed(2);
-let actual = parseFloat(document.getElementById("actualMetal").value);
-
-if(actual && ton > 0){
-
-let newFactor = actual / ton;
-
-// smooth learning (shock avoid)
-factor = (factor * 0.7) + (newFactor * 0.3);
-
-// save
-localStorage.setItem("furnaceFactor", factor.toFixed(3));
-
-}
-// output
-  msg += "<br>⚙ Factor: " + factor.toFixed(3);
-msg += "<br>🧪 Density: " + density + " kg/m³";
-document.getElementById("metalOut").innerHTML =
-"🔥 "+ton.toFixed(2)+" Ton ("+kg.toFixed(0)+" kg)";
-
-// draw
-drawFurnace(top, bottom, taper, height);
-
+metalOut.innerHTML =
+"🔥 " + ton.toFixed(2) + " Ton (" + kg.toFixed(0) + " kg)";
 }
 
 // ================= LADLE =================
@@ -195,7 +173,7 @@ let dia = parseFloat(document.getElementById("ladleDia").value);
 let h = parseFloat(document.getElementById("ladleHeight").value);
 
 if(!dia || !h){
-document.getElementById("metalOut").innerHTML="❌ Enter ladle values";
+metalOut.innerHTML = "❌ Enter ladle values";
 return;
 }
 
@@ -207,26 +185,19 @@ let r = dia/2;
 
 let volume = Math.PI * r*r * h;
 
-let ton = (volume * 7200) / 1000;
-ton = ton * 0.95;
+let ton = (volume * density) / 1000;
+
+// ladle correction
+ton = ton * 0.97;
 
 let kg = ton * 1000;
 
-document.getElementById("actualMetal").value = ton.toFixed(2);
-
-document.getElementById("metalOut").innerHTML =
-"🔥 "+ton.toFixed(2)+" Ton ("+kg.toFixed(0)+" kg)";
-
-// ladle drawing
-drawLadle(dia, h);
-
+metalOut.innerHTML =
+"🔥 " + ton.toFixed(2) + " Ton (" + kg.toFixed(0) + " kg)";
 }
 
-}catch(e){
-document.getElementById("metalOut").innerHTML="❌ Error";
-console.log(e);
-}
-                                  }
+  }
+                                 
   
 // RAM
 function calcRamming(){
