@@ -125,41 +125,22 @@ ladleBox.style.display = (mode.value==="ladle")?"block":"none";
 });
 
 // MAIN FUNCTION
-function calcMetal(){
-
-try{
-  let modeVal = document.getElementById("mode").value;
+let modeVal = document.getElementById("mode").value;
 
 // ===== FURNACE =====
-if(modeVal==="furnace"){
-
-// furnace code
-
-}
-
-// ===== LADLE =====
-else if(modeVal==="ladle"){
-
-// ladle code
-
-}
-
-let density = 7200;
-let theoretical = 0;
-
-// ===== FURNACE =====
-if(mode.value==="furnace"){
+if(modeVal === "furnace"){
 
 let top = parseFloat(document.getElementById("topDia").value);
 let bottom = parseFloat(document.getElementById("bottomDia").value);
 let taper = parseFloat(document.getElementById("taper").value);
 let height = parseFloat(document.getElementById("height").value);
 
-if(isNaN(top)||isNaN(bottom)||isNaN(taper)||isNaN(height)){
-output.innerHTML="❌ Enter all values";
+if(isNaN(top) || isNaN(bottom) || isNaN(taper) || isNaN(height)){
+output.innerHTML="❌ Enter furnace values";
 return;
 }
 
+// inch → meter
 top*=0.0254;
 bottom*=0.0254;
 taper*=0.0254;
@@ -174,15 +155,16 @@ let v2 = Math.PI * r2*r2 * (height - taper);
 let volume = v1 + v2;
 
 theoretical = (volume * density) / 1000;
+
 }
 
 // ===== LADLE =====
-else{
+else if(modeVal === "ladle"){
 
-let dia = parseFloat(ladleDia.value);
-let h = parseFloat(ladleHeight.value);
+let dia = parseFloat(document.getElementById("ladleDia").value);
+let h = parseFloat(document.getElementById("ladleHeight").value);
 
-if(isNaN(dia)||isNaN(h)){
+if(isNaN(dia) || isNaN(h)){
 output.innerHTML="❌ Enter ladle values";
 return;
 }
@@ -195,37 +177,8 @@ let r = dia/2;
 let volume = Math.PI * r*r * h;
 
 theoretical = (volume * density) / 1000;
-}
 
-// ===== FACTOR =====
-let factor = 1;
-
-// mix based
-if(mix.value==="scrap") factor = 1.05;
-if(mix.value==="balanced") factor = 1.08;
-if(mix.value==="sponge") factor = 1.12;
-
-// auto learning
-let last = parseFloat(lastHeat.value);
-if(last && last>0){
-factor = last / (theoretical*1000);
-}
-
-// FINAL RESULT
-let finalTon = theoretical * factor;
-let finalKg = finalTon * 1000;
-
-// OUTPUT
-output.innerHTML =
-"🔥 "+finalTon.toFixed(2)+" Ton ("+finalKg.toFixed(0)+" kg)<br>"+
-"📊 Factor: "+factor.toFixed(3);
-
-}catch(e){
-output.innerHTML="❌ Error";
-console.log(e);
-}
-
-   }
+  }
                                  
   
 // RAM
