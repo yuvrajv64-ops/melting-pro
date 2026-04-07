@@ -28,7 +28,9 @@ button{width:100%;padding:10px;background:#f97316;border:none;margin-top:5px;}
 
 <input id="scrapPct" placeholder="Scrap % (e.g. 70)">
 <input id="spongePct" placeholder="Sponge % (e.g. 30)">
-
+<input id="scrapYield" placeholder="Scrap Yield % (e.g. 90)">
+<input id="spongeYield" placeholder="Sponge Yield % (e.g. 78)">
+    
 <!-- Furnace -->
 <div id="furnaceBox">
 <input id="topDia" placeholder="Top Dia (inch)">
@@ -171,12 +173,23 @@ let volume = Math.PI * r*r * h;
 theoretical = (volume * density)/1000;
 }
 
-// ===== MIX RATIO FACTOR =====
-let mixFactor = 1;
+// ===== YIELD BASED CALCULATION =====
 
-// logic: scrap ↑ → density ↑
-mixFactor = 1 + (scrapPct*0.0005) + (spongePct*0.0012);
+let scrapPct = parseFloat(document.getElementById("scrapPct").value) || 0;
+let spongePct = parseFloat(document.getElementById("spongePct").value) || 0;
 
+let scrapYield = parseFloat(document.getElementById("scrapYield").value) || 90;
+let spongeYield = parseFloat(document.getElementById("spongeYield").value) || 78;
+
+// convert %
+let s1 = scrapPct / 100;
+let s2 = spongePct / 100;
+
+let y1 = scrapYield / 100;
+let y2 = spongeYield / 100;
+
+// weighted yield
+let yieldFactor = (s1 * y1) + (s2 * y2);
 // ===== AUTO LEARNING =====
 let learnFactor = localStorage.getItem("learnFactor");
 
@@ -191,7 +204,7 @@ localStorage.setItem("learnFactor", learnFactor);
 if(!learnFactor) learnFactor = 1;
 
 // ===== FINAL =====
-let finalFactor = mixFactor * learnFactor;
+let finalFactor = yieldFactor * learnFactor;
 
 let finalTon = theoretical * finalFactor;
 let finalKg = finalTon * 1000;
@@ -199,8 +212,8 @@ let finalKg = finalTon * 1000;
 // ===== OUTPUT =====
 output.innerHTML =
 "🔥 "+finalTon.toFixed(2)+" Ton ("+finalKg.toFixed(0)+" kg)<br>"+
-"⚙ Mix: "+mixFactor.toFixed(3)+" | Learn: "+parseFloat(learnFactor).toFixed(3);
-}
+"📊 Yield: "+(yieldFactor*100).toFixed(1)+"%<br>"+
+"🧱 Scrap: "+scrapPct+"% | Sponge: "+spongePct+"%";
 
                                  
   
