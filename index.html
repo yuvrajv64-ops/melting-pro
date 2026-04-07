@@ -68,7 +68,8 @@ button{width:100%;padding:10px;background:#f97316;border:none;margin-top:5px;}
 
 <button onclick="calcMetal()">Calculate</button>
 <div id="output" class="result"></div>
-
+<div id="aiSuggestion" class="result"></div>
+  
 </div>
 
 <h3>🧱 Ramming</h3>
@@ -207,6 +208,7 @@ output.innerHTML=
 "📐 "+theoretical.toFixed(2)+" Ton<br>"+
 "⚙ "+practical.toFixed(2)+" Ton<br>"+
 "🚀 "+final.toFixed(2)+" Ton";
+  smartAI();
 }
 
 // ===== LADLE =====
@@ -244,7 +246,140 @@ output.innerHTML=
 "🚀 "+final.toFixed(2)+" Ton";
 }
 }
+function smartAI(){
 
+let mode = document.getElementById("calcMode").value;
+let msg = "";
+let status = "🟢 STABLE";
+let grade = "B";
+
+// ================= FURNACE =================
+if(mode === "furnace"){
+
+let scrap = parseFloat(scrapPct.value)||0;
+let sponge = parseFloat(spongePct.value)||0;
+let scrapY = parseFloat(scrapYield.value)||90;
+let spongeY = parseFloat(spongeYield.value)||78;
+let feo = parseFloat(document.getElementById("feo")?.value)||0;
+
+let totalYield = ((scrap*scrapY)+(sponge*spongeY))/100;
+
+// ===== 🎯 TARGET =====
+let targetYield = 90;
+
+// ===== 📊 YIELD GAP =====
+let gap = targetYield - totalYield;
+
+// ===== 🤖 AUTO MIX SUGGESTION =====
+if(gap > 2){
+status = "🔴 CRITICAL";
+grade = "C";
+
+let scrapAdd = Math.min(10, Math.abs(gap));
+let spongeReduce = scrapAdd;
+
+msg += "🔴 Yield Low ("+totalYield.toFixed(1)+"%)<br>";
+msg += "🤖 Auto Suggestion:<br>";
+msg += "👉 Scrap: "+scrap+" → "+(scrap+scrapAdd)+"%<br>";
+msg += "👉 Sponge: "+sponge+" → "+(sponge-spongeReduce)+"%<br><br>";
+}
+else if(gap >= -2 && gap <= 2){
+msg += "🟢 Yield Optimal ("+totalYield.toFixed(1)+"%)<br><br>";
+}
+else{
+msg += "🟢 High Yield ("+totalYield.toFixed(1)+"%)<br><br>";
+}
+
+// ===== ⚖ MIX RISK =====
+if(sponge > 45){
+status = "⚠ RISK";
+grade = "C";
+
+msg += "⚠ High Sponge ("+sponge+"%)<br>";
+msg += "👉 Slag ↑ FeO ↑ Arc unstable<br>";
+msg += "👉 Reduce sponge by 5–10%<br><br>";
+}
+
+if(scrap > 85){
+msg += "⚠ Scrap High ("+scrap+"%)<br>";
+msg += "👉 Bucket density issue possible<br><br>";
+}
+
+// ===== 🧪 FeO AI =====
+if(feo > 15){
+status = "🔴 CRITICAL";
+grade = "C";
+
+let mnLoss = (feo * 0.02).toFixed(2);
+
+msg += "🔴 FeO High ("+feo+")<br>";
+msg += "👉 Mn Loss ≈ "+mnLoss+"%<br>";
+msg += "👉 Add Lime + Reduce O₂<br><br>";
+}
+else if(feo > 10){
+msg += "⚠ FeO Moderate ("+feo+") → Watch slag<br><br>";
+}
+
+// ===== 🧱 SLAG AI =====
+let cao = parseFloat(document.getElementById("CaO")?.value)||0;
+let sio2 = parseFloat(document.getElementById("SiO2")?.value)||0;
+
+if(cao && sio2){
+let basicity = cao/sio2;
+
+if(basicity < 2){
+status = "⚠ RISK";
+msg += "⚠ Basicity Low ("+basicity.toFixed(2)+")<br>";
+msg += "👉 Add lime to reach 2–2.5<br><br>";
+}
+else if(basicity > 3){
+msg += "⚠ Basicity High ("+basicity.toFixed(2)+")<br>";
+msg += "👉 Slag thick → fluidity issue<br><br>";
+}
+else{
+msg += "🟢 Slag Balanced ("+basicity.toFixed(2)+")<br><br>";
+}
+}
+
+// ===== 🔥 FINAL RATING =====
+msg += "🏆 Heat Grade: "+grade+"<br>";
+msg += "🔥 Status: "+status;
+
+}
+
+// ================= LADLE =================
+else{
+
+let dia = parseFloat(ladleDia.value)||0;
+let h = parseFloat(ladleHeight.value)||0;
+
+msg += "🪣 Ladle AI<br><br>";
+
+let ratio = h/dia;
+
+if(ratio > 1.5){
+msg += "⚠ High H/D Ratio ("+ratio.toFixed(2)+")<br>";
+msg += "👉 Splash risk / temp loss<br><br>";
+}
+
+msg += "🤖 Suggestion:<br>";
+msg += "• Preheat ladle properly<br>";
+msg += "• Avoid slag carryover<br>";
+msg += "• Maintain temp > 1550°C<br><br>";
+
+msg += "🏆 Grade: A<br>";
+msg += "🔥 Status: READY";
+}
+
+// ===== DEFAULT =====
+if(msg===""){
+msg = "✅ Perfect Heat";
+}
+
+document.getElementById("aiSuggestion").innerHTML = msg;
+
+  }
+  
 // RAM
 function calcRamming(){
 let s=parseFloat(shellDia.value)||0;
