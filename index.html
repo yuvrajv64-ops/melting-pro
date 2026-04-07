@@ -10,24 +10,31 @@ header{background:#020617;padding:12px;text-align:center;color:#f97316;font-weig
 .tabs{display:flex;background:#1e293b;}
 .tabs button{flex:1;padding:12px;border:none;background:#1e293b;color:#ccc;}
 .tabs button.active{background:#f97316;color:#000;}
-.section{display:block;padding:15px;}
+.section{display:none;padding:15px;}
+.section.active{display:block;}
 .card{background:#111827;padding:12px;margin-top:10px;border-radius:10px;}
 input,select{width:100%;padding:10px;margin:5px 0;background:#1e293b;color:#fff;border:none;}
 button{width:100%;padding:10px;background:#f97316;border:none;margin-top:5px;}
 .result{margin-top:10px;background:#1e293b;padding:10px;}
+.banner{background:#f97316;color:#000;padding:8px;text-align:center;font-weight:bold;}
 </style>
 </head>
 
 <body>
 
-<header><div id="maintenanceBanner" style="display:none;background:#f97316;color:#000;text-align:center;padding:10px;font-weight:bold;">
-🚧 App under maintenance till 10 April. Some features may not work properly.
+<div id="maint" class="banner">⚠ App under maintenance till 10 April</div>
+
+<header>🔥 MeltingPro FINAL</header>
+
+<div class="tabs">
+<button class="active" onclick="tab(0)">Dashboard</button>
+<button onclick="tab(1)">Final AI</button>
+<button onclick="tab(2)">Lab</button>
 </div>
-  🔥 MeltingPro FINAL</header>
 
-<div class="section">
-
+<div class="section active">
 <div class="card">
+
 <h3>🔥 Molten Metal Calculator (Pro)</h3>
 
 <select id="mode">
@@ -62,15 +69,11 @@ button{width:100%;padding:10px;background:#f97316;border:none;margin-top:5px;}
 
 </div>
 
-<!-- RAM -->
-<div class="card">
 <h3>🧱 Ramming</h3>
 <input id="shellDia" placeholder="Shell Dia">
 <button onclick="calcRamming()">Calculate</button>
 <div id="ramOut" class="result"></div>
-</div>
 
-<!-- MN -->
 <div class="card">
 <h3>⚙ Mn</h3>
 <input id="mnMetal" placeholder="Metal ton">
@@ -82,7 +85,6 @@ button{width:100%;padding:10px;background:#f97316;border:none;margin-top:5px;}
 <div id="mnOut" class="result"></div>
 </div>
 
-<!-- CARBON -->
 <div class="card">
 <h3>⚡ Carbon</h3>
 
@@ -107,159 +109,108 @@ button{width:100%;padding:10px;background:#f97316;border:none;margin-top:5px;}
 
 <button onclick="calcCarbon()">Calculate</button>
 <div id="cOut" class="result"></div>
-</div>
 
+</div>
 </div>
 
 <script>
 
-// 🔥 TOGGLE FIX
-document.addEventListener("DOMContentLoaded", function(){
+// maintenance auto hide
+if(new Date() > new Date("2026-04-10")){
+document.getElementById("maint").style.display="none";
+}
 
-    let mode = document.getElementById("mode");
-    let furnaceBox = document.getElementById("furnaceBox");
-    let ladleBox = document.getElementById("ladleBox");
-    let mixBox = document.getElementById("mixBox");
+// toggle furnace/ladle
+document.getElementById("mode").addEventListener("change", function(){
 
-    mode.addEventListener("change", function(){
+let furnaceBox = document.getElementById("furnaceBox");
+let ladleBox = document.getElementById("ladleBox");
+let mixBox = document.getElementById("mixBox");
 
-        if(this.value === "furnace"){
-            furnaceBox.style.display = "block";
-            ladleBox.style.display = "none";
-            mixBox.style.display = "block";
-        } 
-        else{
-            furnaceBox.style.display = "none";
-            ladleBox.style.display = "block";
-            mixBox.style.display = "none";
-        }
+if(this.value==="furnace"){
+furnaceBox.style.display="block";
+ladleBox.style.display="none";
+mixBox.style.display="block";
+}else{
+furnaceBox.style.display="none";
+ladleBox.style.display="block";
+mixBox.style.display="none";
+}
 
-        // 🔥 IMPORTANT FIX
-        document.getElementById("output").innerHTML = "";
-        calcMetal();
-
-    });
-
+document.getElementById("output").innerHTML="";
 });
 
-toggleMode();
-mode.addEventListener("change",toggleMode);
-
-});
-
-// 🔥 MAIN CALC
+// MAIN CALC
 function calcMetal(){
 
-    let output = document.getElementById("output");
-    output.innerHTML = "";
+let output=document.getElementById("output");
+output.innerHTML="";
 
-    let modeVal = document.getElementById("mode").value.toLowerCase().trim();
+let modeVal=document.getElementById("mode").value;
 
-    let fillPct = parseFloat(document.getElementById("fillPct")?.value) || 92;
-    let density = 7450;
+let fillPct=parseFloat(fillPct?.value)||92;
+let density=7450;
 
-    // ================= FURNACE =================
-    if(modeVal === "furnace"){
+if(modeVal==="furnace"){
 
-        let scrapPct = parseFloat(document.getElementById("scrapPct").value) || 0;
-        let spongePct = parseFloat(document.getElementById("spongePct").value) || 0;
+let scrapPct=parseFloat(scrapPct.value)||0;
+let spongePct=parseFloat(spongePct.value)||0;
 
-        let scrapYield = parseFloat(document.getElementById("scrapYield").value) || 90;
-        let spongeYield = parseFloat(document.getElementById("spongeYield").value) || 78;
+let scrapYield=parseFloat(scrapYield.value)||90;
+let spongeYield=parseFloat(spongeYield.value)||78;
 
-        if((scrapPct + spongePct) != 100){
-            output.innerHTML = "❌ Scrap + Sponge must = 100%";
-            return;
-        }
+if((scrapPct+spongePct)!=100){
+output.innerHTML="❌ Scrap+Sponge=100%";
+return;
+}
 
-        let totalYield = ((scrapPct * scrapYield) + (spongePct * spongeYield)) / 100;
-        let yieldFactor = totalYield / 100;
+let yield=((scrapPct*scrapYield)+(spongePct*spongeYield))/10000;
 
-        let top = parseFloat(document.getElementById("topDia").value);
-        let bottom = parseFloat(document.getElementById("bottomDia").value);
-        let taper = parseFloat(document.getElementById("taper").value);
-        let height = parseFloat(document.getElementById("height").value);
+let top=parseFloat(topDia.value);
+let bottom=parseFloat(bottomDia.value);
+let taper=parseFloat(taper.value);
+let height=parseFloat(height.value);
 
-        if(isNaN(top)||isNaN(bottom)||isNaN(taper)||isNaN(height)){
-            output.innerHTML="❌ Enter furnace values";
-            return;
-        }
+if(isNaN(top)||isNaN(bottom)||isNaN(taper)||isNaN(height)){
+output.innerHTML="❌ Enter furnace values";
+return;
+}
 
-        top*=0.0254; bottom*=0.0254; taper*=0.0254; height*=0.0254;
+top*=0.0254;bottom*=0.0254;taper*=0.0254;height*=0.0254;
 
-        let r1 = top/2;
-        let r2 = bottom/2;
+let r1=top/2,r2=bottom/2;
 
-        let v1 = (Math.PI * taper / 3) * (r1*r1 + r2*r2 + r1*r2);
-        let v2 = Math.PI * r2*r2 * (height - taper);
+let vol=((Math.PI*taper/3)*(r1*r1+r2*r2+r1*r2))+(Math.PI*r2*r2*(height-taper));
 
-        let volume = (v1 + v2) * (fillPct/100);
+let theo=(vol*(fillPct/100)*density)/1000;
+let final=theo*yield;
 
-        let theoretical = (volume * density) / 1000;
-        let practical = theoretical * yieldFactor;
+output.innerHTML="🔥 "+final.toFixed(2)+" Ton";
 
-        // 🔥 AUTO LEARNING (SAFE)
-        let lastHeat = parseFloat(document.getElementById("lastHeat").value);
-        let learnFactor = parseFloat(localStorage.getItem("furnaceLearn")) || 1;
+}
 
-        if(!isNaN(lastHeat) && lastHeat > 0 && practical > 0){
-            let actualTon = lastHeat / 1000;
-            learnFactor = actualTon / practical;
-            localStorage.setItem("furnaceLearn", learnFactor);
-        }
+else{
 
-        let finalTon = practical * learnFactor;
+let dia=parseFloat(ladleDia.value);
+let h=parseFloat(ladleHeight.value);
 
-        output.innerHTML =
-        "📐 Theoretical: "+theoretical.toFixed(2)+" Ton<br>"+
-        "🔥 After Yield: "+practical.toFixed(2)+" Ton<br>"+
-        "🚀 Final: "+finalTon.toFixed(2)+" Ton ("+(finalTon*1000).toFixed(0)+" kg)<br>"+
-        "📊 Yield: "+totalYield.toFixed(1)+"%<br>"+
-        "🧠 Learn: "+learnFactor.toFixed(3);
-    }
+if(isNaN(dia)||isNaN(h)){
+output.innerHTML="❌ Enter ladle values";
+return;
+}
 
-    // ================= LADLE =================
-    else if(modeVal === "ladle"){
+dia*=0.0254;h*=0.0254;
 
-        let dia = parseFloat(document.getElementById("ladleDia").value);
-        let h = parseFloat(document.getElementById("ladleHeight").value);
+let r=dia/2;
 
-        if(isNaN(dia)||isNaN(h)){
-            output.innerHTML="❌ Enter ladle values";
-            return;
-        }
+let vol=Math.PI*r*r*h;
 
-        dia*=0.0254;
-        h*=0.0254;
+let ton=(vol*(fillPct/100)*density)/1000;
 
-        let r = dia/2;
+output.innerHTML="🪣 "+ton.toFixed(2)+" Ton";
 
-        let volume = Math.PI * r*r * h;
-        let filledVolume = volume * (fillPct/100);
+}
 
-        let theoretical = (filledVolume * density) / 1000;
-
-        // 🔥 AUTO LEARNING (SAFE)
-        let lastHeat = parseFloat(document.getElementById("lastHeat").value);
-        let learnFactor = parseFloat(localStorage.getItem("ladleLearn")) || 1;
-
-        if(!isNaN(lastHeat) && lastHeat > 0 && theoretical > 0){
-            let actualTon = lastHeat / 1000;
-            learnFactor = actualTon / theoretical;
-            localStorage.setItem("ladleLearn", learnFactor);
-        }
-
-        let finalTon = theoretical * learnFactor;
-
-        output.innerHTML =
-        "📐 Theoretical: "+theoretical.toFixed(2)+" Ton<br>"+
-        "🪣 Final: "+finalTon.toFixed(2)+" Ton ("+(finalTon*1000).toFixed(0)+" kg)<br>"+
-        "🧠 Learn: "+learnFactor.toFixed(3);
-    }
-
-    else{
-        output.innerHTML = "❌ Mode error";
-    }
 }
 
 // RAM
@@ -278,37 +229,23 @@ mnOut.innerHTML="⚙ "+alloy.toFixed(1)+" kg";
 
 // CARBON
 function toggleC(){
-cd.style.display=(carbonMode.value==="up")?"none":"block";
-cu.style.display=(carbonMode.value==="up")?"block":"none";
+let mode=document.getElementById("carbonMode").value;
+cd.style.display=(mode==="up")?"none":"block";
+cu.style.display=(mode==="up")?"block":"none";
 }
 
 function calcCarbon(){
-if(carbonMode.value==="down"){
+let mode=document.getElementById("carbonMode").value;
+
+if(mode==="down"){
 let kg=(cMetal.value*(cCur.value-cTar.value)*6)/feo.value;
 cOut.innerHTML="⬇ "+kg.toFixed(1)+" kg";
 }else{
 let kg=(cMetalUp.value*(cTarUp.value-cCurUp.value)/100)/(ciPct.value/100);
 cOut.innerHTML="⬆ "+kg.toFixed(1)+" kg";
 }
-}// 🔥 AUTO MAINTENANCE BANNER
-(function(){
-
-let banner = document.getElementById("maintenanceBanner");
-
-// 👉 Date set (YYYY, MM-1, DD)
-let endDate = new Date(2026, 3, 10); // 10 April 2026
-
-let today = new Date();
-
-if(today <= endDate){
-    banner.style.display = "block";
-}else{
-    banner.style.display = "none";
 }
 
-})();
-
 </script>
-
 </body>
 </html>
