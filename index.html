@@ -21,7 +21,10 @@ button{width:100%;padding:10px;background:#f97316;border:none;margin-top:5px;}
 
 <body>
 
-<header>🔥 MeltingPro FINAL</header>
+<header><div id="maintBanner" style="display:none;background:#f97316;color:#000;padding:10px;text-align:center;font-weight:bold;">
+🔧 Maintenance Update: App will be available by 10 April
+</div>
+  🔥 MeltingPro FINAL</header>
 
 <div class="tabs">
 <button class="active" onclick="tab(0)">Dashboard</button>
@@ -266,7 +269,32 @@ let kg=(cMetalUp.value*(cTarUp.value-cCurUp.value)/100)/(ciPct.value/100);
 cOut.innerHTML="⬆ "+kg.toFixed(1)+" kg";
 }
 }
+// 🔥 Maintenance System
 
+window.onload = function(){
+
+let today = new Date();
+let endDate = new Date("2026-04-10"); // 🔥 change date here
+
+// ===== SHOW BANNER =====
+if(today <= endDate){
+    document.getElementById("maintBanner").style.display = "block";
+}
+
+// ===== POPUP (once per day) =====
+let lastShown = localStorage.getItem("popupDate");
+let todayStr = today.toDateString();
+
+if(today <= endDate && lastShown !== todayStr){
+
+    setTimeout(()=>{
+        alert("🔧 Maintenance Update\n\nApp is under maintenance.\nAvailable by 10 April.\n\nThank you for your patience.");
+    }, 500);
+
+    localStorage.setItem("popupDate", todayStr);
+}
+
+   }
 </script>
 
 </body>
