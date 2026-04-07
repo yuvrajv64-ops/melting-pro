@@ -16,7 +16,7 @@ header{background:#020617;padding:12px;text-align:center;color:#f97316;font-weig
 input,select{width:100%;padding:10px;margin:5px 0;background:#1e293b;color:#fff;border:none;}
 button{width:100%;padding:10px;background:#f97316;border:none;margin-top:5px;}
 .result{margin-top:10px;background:#1e293b;padding:10px;}
-.banner{background:#f97316;color:#000;padding:8px;text-align:center;font-weight:bold;}
+.banner{background:#f97316;color:#000;text-align:center;padding:8px;font-weight:bold;}
 </style>
 </head>
 
@@ -32,12 +32,13 @@ button{width:100%;padding:10px;background:#f97316;border:none;margin-top:5px;}
 <button onclick="tab(2)">Lab</button>
 </div>
 
+<!-- DASHBOARD -->
 <div class="section active">
-<div class="card">
 
+<div class="card">
 <h3>🔥 Molten Metal Calculator (Pro)</h3>
 
-<select id="mode">
+<select id="calcMode">
 <option value="furnace">Furnace</option>
 <option value="ladle">Ladle</option>
 </select>
@@ -45,9 +46,9 @@ button{width:100%;padding:10px;background:#f97316;border:none;margin-top:5px;}
 <div id="mixBox">
 <input id="scrapPct" placeholder="Scrap %">
 <input id="spongePct" placeholder="Sponge %">
-<input id="scrapYield" placeholder="Scrap Yield %" value="90">
-<input id="spongeYield" placeholder="Sponge Yield %" value="78">
-<input id="fillPct" placeholder="Fill %" value="92">
+<input id="scrapYield" placeholder="Scrap Yield %">
+<input id="spongeYield" placeholder="Sponge Yield %">
+<input id="fillPct" placeholder="Fill %">
 </div>
 
 <div id="furnaceBox">
@@ -60,6 +61,7 @@ button{width:100%;padding:10px;background:#f97316;border:none;margin-top:5px;}
 <div id="ladleBox" style="display:none;">
 <input id="ladleDia" placeholder="Ladle Dia (inch)">
 <input id="ladleHeight" placeholder="Height (inch)">
+<input id="ladleFill" placeholder="Fill % (e.g. 90)">
 </div>
 
 <input id="lastHeat" placeholder="Last Heat (kg) OPTIONAL">
@@ -109,25 +111,26 @@ button{width:100%;padding:10px;background:#f97316;border:none;margin-top:5px;}
 
 <button onclick="calcCarbon()">Calculate</button>
 <div id="cOut" class="result"></div>
-
 </div>
+
 </div>
 
 <script>
 
-// maintenance auto hide
-if(new Date() > new Date("2026-04-10")){
+// 🔥 Maintenance auto remove
+let today = new Date();
+if(today > new Date("2026-04-10")){
 document.getElementById("maint").style.display="none";
 }
 
-// toggle furnace/ladle
-document.getElementById("mode").addEventListener("change", function(){
+// 🔥 Toggle
+document.getElementById("calcMode").addEventListener("change", function(){
 
 let furnaceBox = document.getElementById("furnaceBox");
 let ladleBox = document.getElementById("ladleBox");
 let mixBox = document.getElementById("mixBox");
 
-if(this.value==="furnace"){
+if(this.value === "furnace"){
 furnaceBox.style.display="block";
 ladleBox.style.display="none";
 mixBox.style.display="block";
@@ -140,31 +143,29 @@ mixBox.style.display="none";
 document.getElementById("output").innerHTML="";
 });
 
-// MAIN CALC
+// 🔥 MAIN CALC
 function calcMetal(){
 
-let output=document.getElementById("output");
+let output = document.getElementById("output");
 output.innerHTML="";
 
-let modeVal=document.getElementById("mode").value;
+let mode = document.getElementById("calcMode").value;
+let density = 7450;
 
-let fillPct=parseFloat(fillPct?.value)||92;
-let density=7450;
+// ===== FURNACE =====
+if(mode==="furnace"){
 
-if(modeVal==="furnace"){
+let scrap = parseFloat(scrapPct.value)||0;
+let sponge = parseFloat(spongePct.value)||0;
 
-let scrapPct=parseFloat(scrapPct.value)||0;
-let spongePct=parseFloat(spongePct.value)||0;
-
-let scrapYield=parseFloat(scrapYield.value)||90;
-let spongeYield=parseFloat(spongeYield.value)||78;
-
-if((scrapPct+spongePct)!=100){
-output.innerHTML="❌ Scrap+Sponge=100%";
+if(scrap + sponge != 100){
+output.innerHTML="❌ Scrap + Sponge = 100%";
 return;
 }
 
-let yield=((scrapPct*scrapYield)+(spongePct*spongeYield))/10000;
+let scrapY = parseFloat(scrapYield.value)||90;
+let spongeY = parseFloat(spongeYield.value)||78;
+let fill = parseFloat(fillPct.value)||92;
 
 let top=parseFloat(topDia.value);
 let bottom=parseFloat(bottomDia.value);
@@ -176,47 +177,78 @@ output.innerHTML="❌ Enter furnace values";
 return;
 }
 
-top*=0.0254;bottom*=0.0254;taper*=0.0254;height*=0.0254;
+top*=0.0254; bottom*=0.0254; taper*=0.0254; height*=0.0254;
 
-let r1=top/2,r2=bottom/2;
+let r1=top/2, r2=bottom/2;
 
-let vol=((Math.PI*taper/3)*(r1*r1+r2*r2+r1*r2))+(Math.PI*r2*r2*(height-taper));
+let v1=(Math.PI*taper/3)*(r1*r1+r2*r2+r1*r2);
+let v2=Math.PI*r2*r2*(height-taper);
 
-let theo=(vol*(fillPct/100)*density)/1000;
-let final=theo*yield;
+let volume=(v1+v2)*(fill/100);
 
-output.innerHTML="🔥 "+final.toFixed(2)+" Ton";
+let theoretical=(volume*density)/1000;
 
+let totalYield=((scrap*scrapY)+(sponge*spongeY))/100;
+let practical=theoretical*(totalYield/100);
+
+// AUTO LEARN
+let last=parseFloat(lastHeat.value);
+let learn=parseFloat(localStorage.getItem("furnaceLearn"))||1;
+
+if(!isNaN(last)&&last>0){
+learn=(last/1000)/practical;
+localStorage.setItem("furnaceLearn",learn);
 }
 
+let final=practical*learn;
+
+output.innerHTML=
+"🔥 Furnace<br>"+
+"📐 "+theoretical.toFixed(2)+" Ton<br>"+
+"⚙ "+practical.toFixed(2)+" Ton<br>"+
+"🚀 "+final.toFixed(2)+" Ton";
+}
+
+// ===== LADLE =====
 else{
 
 let dia=parseFloat(ladleDia.value);
 let h=parseFloat(ladleHeight.value);
+let fill=parseFloat(ladleFill.value)||90;
 
 if(isNaN(dia)||isNaN(h)){
 output.innerHTML="❌ Enter ladle values";
 return;
 }
 
-dia*=0.0254;h*=0.0254;
+dia*=0.0254; h*=0.0254;
 
 let r=dia/2;
+let vol=Math.PI*r*r*h*(fill/100);
 
-let vol=Math.PI*r*r*h;
+let theoretical=(vol*density)/1000;
 
-let ton=(vol*(fillPct/100)*density)/1000;
+let last=parseFloat(lastHeat.value);
+let learn=parseFloat(localStorage.getItem("ladleLearn"))||1;
 
-output.innerHTML="🪣 "+ton.toFixed(2)+" Ton";
-
+if(!isNaN(last)&&last>0){
+learn=(last/1000)/theoretical;
+localStorage.setItem("ladleLearn",learn);
 }
 
+let final=theoretical*learn;
+
+output.innerHTML=
+"🪣 Ladle<br>"+
+"📐 "+theoretical.toFixed(2)+" Ton<br>"+
+"🚀 "+final.toFixed(2)+" Ton";
+}
 }
 
 // RAM
 function calcRamming(){
 let s=parseFloat(shellDia.value)||0;
-ramOut.innerHTML="🧱 "+(s*s/500).toFixed(2)+" Ton";
+ramOut.innerHTML="🧱 "+((s*s)/500).toFixed(2)+" Ton";
 }
 
 // MN
@@ -235,9 +267,7 @@ cu.style.display=(mode==="up")?"block":"none";
 }
 
 function calcCarbon(){
-let mode=document.getElementById("carbonMode").value;
-
-if(mode==="down"){
+if(carbonMode.value==="down"){
 let kg=(cMetal.value*(cCur.value-cTar.value)*6)/feo.value;
 cOut.innerHTML="⬇ "+kg.toFixed(1)+" kg";
 }else{
@@ -247,5 +277,6 @@ cOut.innerHTML="⬆ "+kg.toFixed(1)+" kg";
 }
 
 </script>
+
 </body>
 </html>
