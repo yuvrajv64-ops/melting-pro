@@ -113,7 +113,30 @@ High FeO → Mn loss → Remix77<hr><h3>🧪 FeT</h3>
 Fe = V × 1.117<hr><h3>🧪 Basicity</h3>
 CaO/SiO2 = 2–2.5</div>
 </div><script>
+document.addEventListener("DOMContentLoaded", function(){
 
+let mode = document.getElementById("mode");
+let furnaceBox = document.getElementById("furnaceBox");
+let ladleBox = document.getElementById("ladleBox");
+let mixBox = document.getElementById("mixBox");
+
+mode.addEventListener("change", ()=>{
+
+if(mode.value === "furnace"){
+    furnaceBox.style.display = "block";
+    ladleBox.style.display = "none";
+    mixBox.style.display = "block";
+}
+else{
+    furnaceBox.style.display = "none";
+    ladleBox.style.display = "block";
+    mixBox.style.display = "none";
+}
+
+});
+
+});
+  
 // TAB
 
 function calcMetal(){
