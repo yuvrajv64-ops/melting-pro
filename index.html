@@ -195,8 +195,10 @@ localStorage.setItem("learnFactor",learnFactor);
 
 let finalTon=practical*learnFactor;
 
-output.innerHTML=
-"🔥 "+finalTon.toFixed(2)+" Ton ("+(finalTon*1000).toFixed(0)+" kg)<br>"+
+output.innerHTML =
+"📐 Theoretical: "+theoretical.toFixed(2)+" Ton<br>"+
+"⚙ After Yield: "+practical.toFixed(2)+" Ton<br>"+
+"🔥 Final (Calibrated): "+finalTon.toFixed(2)+" Ton ("+(finalTon*1000).toFixed(0)+" kg)<br>"+
 "📊 Yield: "+totalYield.toFixed(1)+"%<br>"+
 "🧠 Learn: "+learnFactor.toFixed(3);
 }
