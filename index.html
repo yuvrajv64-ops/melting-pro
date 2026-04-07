@@ -158,15 +158,21 @@ let lastHeat = parseFloat(document.getElementById("lastHeat").value);
 let density = 7450;
 let theoretical = 0;
 
-// ===== MIX VALIDATION =====
-if((scrapPct + spongePct) !== 100){
-    output.innerHTML = "❌ Scrap + Sponge must = 100%";
-    return;
-}
+// ===== MIX VALIDATION (ONLY FOR FURNACE) =====
+if(modeVal === "furnace"){
+    if((scrapPct + spongePct) != 100){
+        output.innerHTML = "❌ Scrap + Sponge must = 100%";
+        return;
+    }
+          }
 
 // ===== OVERALL YIELD =====
-let totalYield = ((scrapPct * scrapYield) + (spongePct * spongeYield)) / 100;
-let yieldFactor = totalYield / 100;
+let yieldFactor = 1;
+
+if(modeVal === "furnace"){
+    let totalYield = ((scrapPct * scrapYield) + (spongePct * spongeYield)) / 100;
+    yieldFactor = totalYield / 100;
+          }
 
 // ===== FURNACE =====
 if(modeVal === "furnace"){
