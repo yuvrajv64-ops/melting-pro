@@ -234,8 +234,12 @@ volume = volume * (fillPct / 100);
 theoretical = (volume * density) / 1000;
 }
 
-// ===== APPLY YIELD =====
-let practical = theoretical * yieldFactor;
+let practical = theoretical;
+
+// sirf furnace me yield lagega
+if(modeVal === "furnace"){
+    practical = theoretical * yieldFactor;
+  }
 
 // ===== AUTO LEARNING =====
 let learnFactor = localStorage.getItem("learnFactor");
