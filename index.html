@@ -141,79 +141,85 @@ else{
 
 function calcMetal(){
 
-let output = document.getElementById("output");
-let modeVal = document.getElementById("mode").value.toLowerCase().trim();
+    let output = document.getElementById("output");
+    let modeVal = document.getElementById("mode").value.toLowerCase().trim();
 
-// ===== INPUTS =====
-let scrapPct = parseFloat(document.getElementById("scrapPct").value) || 0;
-let spongePct = parseFloat(document.getElementById("spongePct").value) || 0;
+    // ===== INPUTS =====
+    let scrapPct = parseFloat(document.getElementById("scrapPct").value) || 0;
+    let spongePct = parseFloat(document.getElementById("spongePct").value) || 0;
 
-let scrapYield = parseFloat(document.getElementById("scrapYield").value) || 90;
-let spongeYield = parseFloat(document.getElementById("spongeYield").value) || 78;
+    let scrapYield = parseFloat(document.getElementById("scrapYield").value) || 90;
+    let spongeYield = parseFloat(document.getElementById("spongeYield").value) || 78;
 
-let fillPct = parseFloat(document.getElementById("fillPct").value) || 92;
+    let fillPct = parseFloat(document.getElementById("fillPct").value) || 92;
 
-let lastHeat = parseFloat(document.getElementById("lastHeat").value);
+    let density = 7450;
 
-let density = 7450;
-if(modeVal === "furnace"){
+    // ===== FURNACE =====
+    if(modeVal === "furnace"){
 
-    if((scrapPct + spongePct) != 100){
-        output.innerHTML = "❌ Scrap + Sponge must = 100%";
-        return;
+        if((scrapPct + spongePct) != 100){
+            output.innerHTML = "❌ Scrap + Sponge must = 100%";
+            return;
+        }
+
+        let totalYield = ((scrapPct * scrapYield) + (spongePct * spongeYield)) / 100;
+        let yieldFactor = totalYield / 100;
+
+        let top = parseFloat(document.getElementById("topDia").value);
+        let bottom = parseFloat(document.getElementById("bottomDia").value);
+        let taper = parseFloat(document.getElementById("taper").value);
+        let height = parseFloat(document.getElementById("height").value);
+
+        if(isNaN(top)||isNaN(bottom)||isNaN(taper)||isNaN(height)){
+            output.innerHTML="❌ Enter furnace values";
+            return;
+        }
+
+        top*=0.0254; bottom*=0.0254; taper*=0.0254; height*=0.0254;
+
+        let r1 = top/2;
+        let r2 = bottom/2;
+
+        let v1 = (Math.PI * taper / 3) * (r1*r1 + r2*r2 + r1*r2);
+        let v2 = Math.PI * r2*r2 * (height - taper);
+
+        let volume = (v1 + v2) * (fillPct/100);
+
+        let theoretical = (volume * density) / 1000;
+        let practical = theoretical * yieldFactor;
+
+        output.innerHTML =
+        "🔥 "+practical.toFixed(2)+" Ton ("+(practical*1000).toFixed(0)+" kg)<br>"+
+        "📊 Yield: "+totalYield.toFixed(1)+"%";
     }
 
-    let totalYield = ((scrapPct * scrapYield) + (spongePct * spongeYield)) / 100;
-    let yieldFactor = totalYield / 100;
+    // ===== LADLE =====
+    else if(modeVal === "ladle"){
 
-    let top = parseFloat(document.getElementById("topDia").value);
-    let bottom = parseFloat(document.getElementById("bottomDia").value);
-    let taper = parseFloat(document.getElementById("taper").value);
-    let height = parseFloat(document.getElementById("height").value);
+        let dia = parseFloat(document.getElementById("ladleDia").value);
+        let h = parseFloat(document.getElementById("ladleHeight").value);
 
-    if(isNaN(top)||isNaN(bottom)||isNaN(taper)||isNaN(height)){
-        output.innerHTML="❌ Enter furnace values";
-        return;
+        if(isNaN(dia)||isNaN(h)){
+            output.innerHTML="❌ Enter ladle values";
+            return;
+        }
+
+        dia*=0.0254; h*=0.0254;
+
+        let r = dia/2;
+        let volume = Math.PI * r*r * h * (fillPct/100);
+
+        let theoretical = (volume * density) / 1000;
+
+        output.innerHTML =
+        "🪣 "+theoretical.toFixed(2)+" Ton ("+(theoretical*1000).toFixed(0)+" kg)";
     }
 
-    top*=0.0254; bottom*=0.0254; taper*=0.0254; height*=0.0254;
-
-    let r1 = top/2;
-    let r2 = bottom/2;
-
-    let v1 = (Math.PI * taper / 3) * (r1*r1 + r2*r2 + r1*r2);
-    let v2 = Math.PI * r2*r2 * (height - taper);
-
-    let volume = (v1 + v2) * (fillPct/100);
-
-    let theoretical = (volume * density) / 1000;
-    let practical = theoretical * yieldFactor;
-
-    output.innerHTML =
-    "🔥 "+practical.toFixed(2)+" Ton ("+(practical*1000).toFixed(0)+" kg)<br>"+
-    "📊 Yield: "+totalYield.toFixed(1)+"%";
-
-}
-else if(modeVal === "ladle"){
-
-    let dia = parseFloat(document.getElementById("ladleDia").value);
-    let h = parseFloat(document.getElementById("ladleHeight").value);
-
-    if(isNaN(dia)||isNaN(h)){
-        output.innerHTML="❌ Enter ladle values";
-        return;
+    else{
+        output.innerHTML = "❌ Mode error";
     }
-
-    dia*=0.0254; h*=0.0254;
-
-    let r = dia/2;
-    let volume = Math.PI * r*r * h * (fillPct/100);
-
-    let theoretical = (volume * density) / 1000;
-
-    output.innerHTML =
-    "🪣 "+theoretical.toFixed(2)+" Ton ("+(theoretical*1000).toFixed(0)+" kg)";
-}
+              }
                                  
   
 // RAM
