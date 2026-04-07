@@ -109,23 +109,13 @@ CaO/SiO2 = 2–2.5</div>
 </div><script>
 
 // TAB
-function tab(n){
-let b=document.querySelectorAll(".tabs button");
-let s=document.querySelectorAll(".section");
-b.forEach(x=>x.classList.remove("active"));
-s.forEach(x=>x.classList.remove("active"));
-b[n].classList.add("active");
-s[n].classList.add("active");
-}
+function calcMetal(){
 
-// MODE TOGGLE
-mode.addEventListener("change",()=>{
-furnaceBox.style.display = (mode.value==="furnace")?"block":"none";
-ladleBox.style.display = (mode.value==="ladle")?"block":"none";
-});
-
-// MAIN FUNCTION
+let output = document.getElementById("output");
 let modeVal = document.getElementById("mode").value;
+
+let density = 7200;
+let theoretical = 0;
 
 // ===== FURNACE =====
 if(modeVal === "furnace"){
@@ -141,21 +131,22 @@ return;
 }
 
 // inch → meter
-top*=0.0254;
-bottom*=0.0254;
-taper*=0.0254;
-height*=0.0254;
+top *= 0.0254;
+bottom *= 0.0254;
+taper *= 0.0254;
+height *= 0.0254;
 
+// radius
 let r1 = top/2;
 let r2 = bottom/2;
 
+// volume
 let v1 = (Math.PI * taper / 3) * (r1*r1 + r2*r2 + r1*r2);
 let v2 = Math.PI * r2*r2 * (height - taper);
 
 let volume = v1 + v2;
 
-theoretical = (volume * density) / 1000;
-
+theoretical = (volume * density)/1000;
 }
 
 // ===== LADLE =====
@@ -169,16 +160,20 @@ output.innerHTML="❌ Enter ladle values";
 return;
 }
 
-dia*=0.0254;
-h*=0.0254;
+dia *= 0.0254;
+h *= 0.0254;
 
 let r = dia/2;
 
 let volume = Math.PI * r*r * h;
 
-theoretical = (volume * density) / 1000;
+theoretical = (volume * density)/1000;
+}
 
-  }
+// ===== OUTPUT =====
+output.innerHTML =
+"🔥 "+theoretical.toFixed(2)+" Ton ("+(theoretical*1000).toFixed(0)+" kg)";
+}
                                  
   
 // RAM
