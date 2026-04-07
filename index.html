@@ -204,15 +204,54 @@ output.innerHTML =
 }
 
 // LADLE
-else{
+else if(modeVal === "ladle"){
 
-let dia=parseFloat(document.getElementById("ladleDia").value);
-let h=parseFloat(document.getElementById("ladleHeight").value);
+    let dia = parseFloat(document.getElementById("ladleDia").value);
+    let h = parseFloat(document.getElementById("ladleHeight").value);
 
-if(isNaN(dia)||isNaN(h)){
-output.innerHTML="❌ Enter ladle values";
-return;
-}
+    // 🔥 Separate fill for ladle (important)
+    let fillPct = parseFloat(document.getElementById("fillPct").value) || 92;
+
+    let density = 7450;
+
+    if(isNaN(dia) || isNaN(h)){
+        output.innerHTML = "❌ Enter ladle values";
+        return;
+    }
+
+    // inch → meter
+    dia *= 0.0254;
+    h *= 0.0254;
+
+    let r = dia / 2;
+
+    // 🔥 PURE VOLUME
+    let volume = Math.PI * r * r * h;
+
+    // 🔥 APPLY FILL
+    let filledVolume = volume * (fillPct / 100);
+
+    // 🔥 THEORETICAL
+    let theoretical = (filledVolume * density) / 1000;
+
+    // 🧠 AUTO LEARNING
+    let lastHeat = parseFloat(document.getElementById("lastHeat").value);
+    let learnFactor = parseFloat(localStorage.getItem("ladleLearn")) || 1;
+
+    if(!isNaN(lastHeat) && lastHeat > 0){
+        let actualTon = lastHeat / 1000;
+        learnFactor = actualTon / theoretical;
+        localStorage.setItem("ladleLearn", learnFactor);
+    }
+
+    let finalTon = theoretical * learnFactor;
+
+    // ✅ OUTPUT (clear separation)
+    output.innerHTML =
+    "📐 Theoretical: " + theoretical.toFixed(2) + " Ton<br>" +
+    "🔥 Final: " + finalTon.toFixed(2) + " Ton ("+(finalTon*1000).toFixed(0)+" kg)<br>" +
+    "🧠 Learn: " + learnFactor.toFixed(3);
+  }
 
 dia*=0.0254;h*=0.0254;
 
