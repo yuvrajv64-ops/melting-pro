@@ -142,7 +142,7 @@ else{
 function calcMetal(){
 
 let output = document.getElementById("output");
-let modeVal = document.getElementById("mode").value;
+let modeVal = document.getElementById("mode").value.toLowerCase().trim();
 
 // ===== INPUTS =====
 let scrapPct = parseFloat(document.getElementById("scrapPct").value) || 0;
