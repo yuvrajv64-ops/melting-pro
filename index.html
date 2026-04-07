@@ -58,6 +58,7 @@ button{width:100%;padding:10px;background:#f97316;border:none;margin-top:5px;}
 <div id="ladleBox" style="display:none;">
 <input id="ladleDia" placeholder="Ladle Dia (inch)">
 <input id="ladleHeight" placeholder="Height (inch)">
+  <input id="ladleFillPct" placeholder="Fill % (e.g. 92)">
 </div>
 
 <input id="lastHeat" placeholder="Last Heat (kg) OPTIONAL">
@@ -221,7 +222,8 @@ else{
 
 let dia=parseFloat(ladleDia.value);
 let h=parseFloat(ladleHeight.value);
-
+let fillPct = parseFloat(document.getElementById("ladleFillPct").value) || 92;
+  
 if(isNaN(dia)||isNaN(h)){
 output.innerHTML="❌ Enter ladle values";
 return;
