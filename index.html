@@ -109,11 +109,16 @@ CaO/SiO2 = 2–2.5</div>
 </div><script>
 
 // TAB
-function calcMetal(){
+
+  function calcMetal(){
 
 let output = document.getElementById("output");
-let modeVal = document.getElementById("mode").value;
-let mixVal = document.getElementById("mix").value;
+let modeVal = document.getElementById("mode").value.trim();
+
+// 🔥 NEW RATIO SYSTEM
+let scrapPct = parseFloat(document.getElementById("scrapPct").value) || 0;
+let spongePct = parseFloat(document.getElementById("spongePct").value) || 0;
+
 let lastHeat = parseFloat(document.getElementById("lastHeat").value);
 
 let density = 7200;
@@ -149,7 +154,7 @@ theoretical = (volume * density)/1000;
 }
 
 // ===== LADLE =====
-else{
+else if(modeVal === "ladle"){
 
 let dia = parseFloat(document.getElementById("ladleDia").value);
 let h = parseFloat(document.getElementById("ladleHeight").value);
@@ -169,40 +174,37 @@ let volume = Math.PI * r*r * h;
 theoretical = (volume * density)/1000;
 }
 
-// ===== BASE FACTOR =====
-let factor = 1;
+// ===== MIX RATIO FACTOR =====
+let mixFactor = 1;
 
-// mix based
-if(mixVal==="scrap") factor = 1.05;
-if(mixVal==="balanced") factor = 1.08;
-if(mixVal==="sponge") factor = 1.12;
+// logic: scrap ↑ → density ↑
+mixFactor = 1 + (scrapPct*0.0005) + (spongePct*0.0012);
 
 // ===== AUTO LEARNING =====
+let learnFactor = localStorage.getItem("learnFactor");
+
 if(lastHeat && lastHeat > 0){
 
 let actualTon = lastHeat / 1000;
+learnFactor = actualTon / theoretical;
 
-// new smart factor
-factor = actualTon / theoretical;
-
-// store permanently (VERY IMPORTANT)
-localStorage.setItem("furnaceFactor", factor);
+localStorage.setItem("learnFactor", learnFactor);
 }
 
-// ===== LOAD SAVED FACTOR =====
-let savedFactor = localStorage.getItem("furnaceFactor");
-if(savedFactor){
-factor = parseFloat(savedFactor);
-}
+if(!learnFactor) learnFactor = 1;
 
-// ===== FINAL RESULT =====
-let finalTon = theoretical * factor;
+// ===== FINAL =====
+let finalFactor = mixFactor * learnFactor;
+
+let finalTon = theoretical * finalFactor;
 let finalKg = finalTon * 1000;
 
+// ===== OUTPUT =====
 output.innerHTML =
-"🔥 "+finalTon.toFixed(2)+" Ton ("+finalKg.toFixed(0)+" kg)<br>" +
-"📊 Smart Factor: "+factor.toFixed(3);
-  }
+"🔥 "+finalTon.toFixed(2)+" Ton ("+finalKg.toFixed(0)+" kg)<br>"+
+"⚙ Mix: "+mixFactor.toFixed(3)+" | Learn: "+parseFloat(learnFactor).toFixed(3);
+}
+
                                  
   
 // RAM
