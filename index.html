@@ -10,8 +10,7 @@ header{background:#020617;padding:12px;text-align:center;color:#f97316;font-weig
 .tabs{display:flex;background:#1e293b;}
 .tabs button{flex:1;padding:12px;border:none;background:#1e293b;color:#ccc;}
 .tabs button.active{background:#f97316;color:#000;}
-.section{display:none;padding:15px;}
-.section.active{display:block;}
+.section{display:block;padding:15px;}
 .card{background:#111827;padding:12px;margin-top:10px;border-radius:10px;}
 input,select{width:100%;padding:10px;margin:5px 0;background:#1e293b;color:#fff;border:none;}
 button{width:100%;padding:10px;background:#f97316;border:none;margin-top:5px;}
@@ -21,22 +20,12 @@ button{width:100%;padding:10px;background:#f97316;border:none;margin-top:5px;}
 
 <body>
 
-<header><div id="maintBanner" style="display:none;background:#f97316;color:#000;padding:10px;text-align:center;font-weight:bold;">
-🔧 Maintenance Update: App will be available by 10 April
-</div>
-  🔥 MeltingPro FINAL</header>
+<header>🔥 MeltingPro FINAL</header>
 
-<div class="tabs">
-<button class="active" onclick="tab(0)">Dashboard</button>
-<button onclick="tab(1)">Final AI</button>
-<button onclick="tab(2)">Lab</button>
-</div>
-
-<!-- DASHBOARD -->
-<div class="section active">
+<div class="section">
 
 <div class="card">
-<h3>🔥 Molten Metal Calculator</h3>
+<h3>🔥 Molten Metal Calculator (Pro)</h3>
 
 <select id="mode">
 <option value="furnace">Furnace</option>
@@ -46,9 +35,9 @@ button{width:100%;padding:10px;background:#f97316;border:none;margin-top:5px;}
 <div id="mixBox">
 <input id="scrapPct" placeholder="Scrap %">
 <input id="spongePct" placeholder="Sponge %">
-<input id="scrapYield" value="90" placeholder="Scrap Yield %">
-<input id="spongeYield" value="78" placeholder="Sponge Yield %">
-<input id="fillPct" value="92" placeholder="Fill %">
+<input id="scrapYield" placeholder="Scrap Yield %" value="90">
+<input id="spongeYield" placeholder="Sponge Yield %" value="78">
+<input id="fillPct" placeholder="Fill %" value="92">
 </div>
 
 <div id="furnaceBox">
@@ -71,10 +60,12 @@ button{width:100%;padding:10px;background:#f97316;border:none;margin-top:5px;}
 </div>
 
 <!-- RAM -->
+<div class="card">
 <h3>🧱 Ramming</h3>
 <input id="shellDia" placeholder="Shell Dia">
 <button onclick="calcRamming()">Calculate</button>
 <div id="ramOut" class="result"></div>
+</div>
 
 <!-- MN -->
 <div class="card">
@@ -113,17 +104,22 @@ button{width:100%;padding:10px;background:#f97316;border:none;margin-top:5px;}
 
 <button onclick="calcCarbon()">Calculate</button>
 <div id="cOut" class="result"></div>
-
 </div>
 
 </div>
 
 <script>
 
-// TOGGLE
-document.getElementById("mode").addEventListener("change", function(){
+// 🔥 TOGGLE FIX
+document.addEventListener("DOMContentLoaded", function(){
 
-if(this.value === "furnace"){
+let mode = document.getElementById("mode");
+let furnaceBox = document.getElementById("furnaceBox");
+let ladleBox = document.getElementById("ladleBox");
+let mixBox = document.getElementById("mixBox");
+
+function toggleMode(){
+if(mode.value==="furnace"){
 furnaceBox.style.display="block";
 ladleBox.style.display="none";
 mixBox.style.display="block";
@@ -132,46 +128,50 @@ furnaceBox.style.display="none";
 ladleBox.style.display="block";
 mixBox.style.display="none";
 }
+}
+
+toggleMode();
+mode.addEventListener("change",toggleMode);
 
 });
 
-// MAIN CALC
+// 🔥 MAIN CALC
 function calcMetal(){
 
-let output = document.getElementById("output");
-let modeVal = document.getElementById("mode").value;
+let output=document.getElementById("output");
+let modeVal=document.getElementById("mode").value;
 
-let fillPct = parseFloat(document.getElementById("fillPct").value) || 92;
-let density = 7450;
+let fillPct=parseFloat(document.getElementById("fillPct").value)||92;
+let density=7450;
 
-// FURNACE
-if(modeVal === "furnace"){
+// ===== FURNACE =====
+if(modeVal==="furnace"){
 
-let scrapPct = parseFloat(document.getElementById("scrapPct").value)||0;
-let spongePct = parseFloat(document.getElementById("spongePct").value)||0;
+let scrapPct=parseFloat(scrapPct.value)||0;
+let spongePct=parseFloat(spongePct.value)||0;
 
-if((scrapPct+spongePct)!==100){
+let scrapYield=parseFloat(document.getElementById("scrapYield").value)||90;
+let spongeYield=parseFloat(document.getElementById("spongeYield").value)||78;
+
+if((scrapPct+spongePct)!=100){
 output.innerHTML="❌ Scrap+Sponge=100%";
 return;
 }
 
-let scrapYield = parseFloat(document.getElementById("scrapYield").value)||90;
-let spongeYield = parseFloat(document.getElementById("spongeYield").value)||78;
-
 let totalYield=((scrapPct*scrapYield)+(spongePct*spongeYield))/100;
 let yieldFactor=totalYield/100;
 
-let top=parseFloat(document.getElementById("topDia").value);
-let bottom=parseFloat(document.getElementById("bottomDia").value);
-let taper=parseFloat(document.getElementById("taper").value);
-let height=parseFloat(document.getElementById("height").value);
+let top=parseFloat(topDia.value);
+let bottom=parseFloat(bottomDia.value);
+let taper=parseFloat(taper.value);
+let height=parseFloat(height.value);
 
 if(isNaN(top)||isNaN(bottom)||isNaN(taper)||isNaN(height)){
 output.innerHTML="❌ Enter furnace values";
 return;
 }
 
-top*=0.0254;bottom*=0.0254;taper*=0.0254;height*=0.0254;
+top*=0.0254; bottom*=0.0254; taper*=0.0254; height*=0.0254;
 
 let r1=top/2;
 let r2=bottom/2;
@@ -180,99 +180,60 @@ let v1=(Math.PI*taper/3)*(r1*r1+r2*r2+r1*r2);
 let v2=Math.PI*r2*r2*(height-taper);
 
 let volume=(v1+v2)*(fillPct/100);
+
 let theoretical=(volume*density)/1000;
 let practical=theoretical*yieldFactor;
 
-// AUTO LEARNING
-let lastHeat=parseFloat(document.getElementById("lastHeat").value);
+// learning
 let learnFactor=parseFloat(localStorage.getItem("learnFactor"))||1;
+let lastHeat=parseFloat(document.getElementById("lastHeat").value);
 
-if(!isNaN(lastHeat)&&lastHeat>0){
-let actualTon=lastHeat/1000;
-learnFactor=actualTon/practical;
+if(!isNaN(lastHeat)&&lastHeat>0&&practical>0){
+learnFactor=(lastHeat/1000)/practical;
 localStorage.setItem("learnFactor",learnFactor);
 }
 
 let finalTon=practical*learnFactor;
 
-output.innerHTML =
+output.innerHTML=
 "📐 Theoretical: "+theoretical.toFixed(2)+" Ton<br>"+
 "⚙ After Yield: "+practical.toFixed(2)+" Ton<br>"+
-"🔥 Final (Calibrated): "+finalTon.toFixed(2)+" Ton ("+(finalTon*1000).toFixed(0)+" kg)<br>"+
+"🔥 Final: "+finalTon.toFixed(2)+" Ton ("+(finalTon*1000).toFixed(0)+" kg)<br>"+
 "📊 Yield: "+totalYield.toFixed(1)+"%<br>"+
 "🧠 Learn: "+learnFactor.toFixed(3);
 }
 
-// LADLE
-else if(modeVal === "ladle"){
+// ===== LADLE =====
+else{
 
-    let dia = parseFloat(document.getElementById("ladleDia").value);
-    let h = parseFloat(document.getElementById("ladleHeight").value);
+let dia=parseFloat(ladleDia.value);
+let h=parseFloat(ladleHeight.value);
 
-    // 🔥 Separate fill for ladle (important)
-    let fillPct = parseFloat(document.getElementById("fillPct").value) || 92;
+if(isNaN(dia)||isNaN(h)){
+output.innerHTML="❌ Enter ladle values";
+return;
+}
 
-    let density = 7450;
-
-    if(isNaN(dia) || isNaN(h)){
-        output.innerHTML = "❌ Enter ladle values";
-        return;
-    }
-
-    // inch → meter
-    dia *= 0.0254;
-    h *= 0.0254;
-
-    let r = dia / 2;
-
-    // 🔥 PURE VOLUME
-    let volume = Math.PI * r * r * h;
-
-    // 🔥 APPLY FILL
-    let filledVolume = volume * (fillPct / 100);
-
-    // 🔥 THEORETICAL
-    let theoretical = (filledVolume * density) / 1000;
-
-    // 🧠 AUTO LEARNING
-    let lastHeat = parseFloat(document.getElementById("lastHeat").value);
-    let learnFactor = parseFloat(localStorage.getItem("ladleLearn")) || 1;
-
-    if(!isNaN(lastHeat) && lastHeat > 0){
-        let actualTon = lastHeat / 1000;
-        learnFactor = actualTon / theoretical;
-        localStorage.setItem("ladleLearn", learnFactor);
-    }
-
-    let finalTon = theoretical * learnFactor;
-
-    // ✅ OUTPUT (clear separation)
-    output.innerHTML =
-    "📐 Theoretical: " + theoretical.toFixed(2) + " Ton<br>" +
-    "🔥 Final: " + finalTon.toFixed(2) + " Ton ("+(finalTon*1000).toFixed(0)+" kg)<br>" +
-    "🧠 Learn: " + learnFactor.toFixed(3);
-  }
-
-dia*=0.0254;h*=0.0254;
+dia*=0.0254; h*=0.0254;
 
 let r=dia/2;
+
 let volume=Math.PI*r*r*h*(fillPct/100);
 let theoretical=(volume*density)/1000;
 
-// AUTO LEARNING
+let learnFactor=parseFloat(localStorage.getItem("ladleLearn"))||1;
 let lastHeat=parseFloat(document.getElementById("lastHeat").value);
-let learnFactor=parseFloat(localStorage.getItem("learnFactor"))||1;
 
 if(!isNaN(lastHeat)&&lastHeat>0){
-let actualTon=lastHeat/1000;
-learnFactor=actualTon/theoretical;
-localStorage.setItem("learnFactor",learnFactor);
+learnFactor=(lastHeat/1000)/theoretical;
+localStorage.setItem("ladleLearn",learnFactor);
 }
 
 let finalTon=theoretical*learnFactor;
 
 output.innerHTML=
-"🪣 "+finalTon.toFixed(2)+" Ton ("+(finalTon*1000).toFixed(0)+" kg)<br>"+
+"📐 Theoretical: "+theoretical.toFixed(2)+" Ton<br>"+
+"🔥 Final: "+finalTon.toFixed(2)+" Ton ("+(finalTon*1000).toFixed(0)+" kg)<br>"+
 "🧠 Learn: "+learnFactor.toFixed(3);
 }
 
@@ -294,15 +255,12 @@ mnOut.innerHTML="⚙ "+alloy.toFixed(1)+" kg";
 
 // CARBON
 function toggleC(){
-let m=document.getElementById("carbonMode").value;
-cd.style.display=(m==="up")?"none":"block";
-cu.style.display=(m==="up")?"block":"none";
+cd.style.display=(carbonMode.value==="up")?"none":"block";
+cu.style.display=(carbonMode.value==="up")?"block":"none";
 }
 
 function calcCarbon(){
-let m=document.getElementById("carbonMode").value;
-
-if(m==="down"){
+if(carbonMode.value==="down"){
 let kg=(cMetal.value*(cCur.value-cTar.value)*6)/feo.value;
 cOut.innerHTML="⬇ "+kg.toFixed(1)+" kg";
 }else{
@@ -310,32 +268,7 @@ let kg=(cMetalUp.value*(cTarUp.value-cCurUp.value)/100)/(ciPct.value/100);
 cOut.innerHTML="⬆ "+kg.toFixed(1)+" kg";
 }
 }
-// 🔥 Maintenance System
 
-window.onload = function(){
-
-let today = new Date();
-let endDate = new Date("2026-04-10"); // 🔥 change date here
-
-// ===== SHOW BANNER =====
-if(today <= endDate){
-    document.getElementById("maintBanner").style.display = "block";
-}
-
-// ===== POPUP (once per day) =====
-let lastShown = localStorage.getItem("popupDate");
-let todayStr = today.toDateString();
-
-if(today <= endDate && lastShown !== todayStr){
-
-    setTimeout(()=>{
-        alert("🔧 Maintenance Update\n\nApp is under maintenance.\nAvailable by 10 April.\n\nThank you for your patience.");
-    }, 500);
-
-    localStorage.setItem("popupDate", todayStr);
-}
-
-   }
 </script>
 
 </body>
