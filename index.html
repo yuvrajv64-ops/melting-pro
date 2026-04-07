@@ -20,7 +20,10 @@ button{width:100%;padding:10px;background:#f97316;border:none;margin-top:5px;}
 
 <body>
 
-<header>🔥 MeltingPro FINAL</header>
+<header><div id="maintenanceBanner" style="display:none;background:#f97316;color:#000;text-align:center;padding:10px;font-weight:bold;">
+🚧 App under maintenance till 10 April. Some features may not work properly.
+</div>
+  🔥 MeltingPro FINAL</header>
 
 <div class="section">
 
@@ -267,7 +270,23 @@ cOut.innerHTML="⬇ "+kg.toFixed(1)+" kg";
 let kg=(cMetalUp.value*(cTarUp.value-cCurUp.value)/100)/(ciPct.value/100);
 cOut.innerHTML="⬆ "+kg.toFixed(1)+" kg";
 }
+}// 🔥 AUTO MAINTENANCE BANNER
+(function(){
+
+let banner = document.getElementById("maintenanceBanner");
+
+// 👉 Date set (YYYY, MM-1, DD)
+let endDate = new Date(2026, 3, 10); // 10 April 2026
+
+let today = new Date();
+
+if(today <= endDate){
+    banner.style.display = "block";
+}else{
+    banner.style.display = "none";
 }
+
+})();
 
 </script>
 
