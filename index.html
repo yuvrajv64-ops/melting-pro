@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MeltingPro FINAL</title>
+<title>MeltingPro FINAL DEBUG</title>
 
 <style>
 body{margin:0;font-family:Arial;background:#0f172a;color:#fff;}
@@ -20,9 +20,8 @@ button{width:100%;padding:12px;background:#f97316;color:#000;border:none;margin-
 
 <div id="maint" class="banner">⚠ App under maintenance till 10 April</div>
 
-<header>🔥 MeltingPro FINAL</header>
+<header>🔥 MeltingPro FINAL DEBUG</header>
 
-<!-- 🔥 FURNACE -->
 <div class="card">
 <h3>🔥 Furnace Calculator</h3>
 
@@ -41,66 +40,75 @@ button{width:100%;padding:12px;background:#f97316;color:#000;border:none;margin-
 
 <input id="lastHeat" placeholder="Last Heat (kg) OPTIONAL">
 
-<button onclick="calcMetal()">Calculate</button>
+<button id="calcBtn">Calculate</button>
 
 <div id="output" class="result"></div>
 <div id="aiSuggestion" class="result"></div>
+<div id="debug" class="result"></div>
+
 </div>
 
-<!-- ⚙ Mn -->
 <div class="card">
 <h3>⚙ Mn Calculator</h3>
-
 <input id="mnMetal" placeholder="Metal (Ton)">
 <input id="mnCurrent" placeholder="Current Mn %">
 <input id="mnTarget" placeholder="Target Mn %">
-
 <button onclick="calcMn()">Calculate Mn</button>
 <div id="mnResult" class="result"></div>
 </div>
 
-<!-- ⚡ CARBON -->
 <div class="card">
 <h3>⚡ Carbon Calculator</h3>
-
 <input id="cMetal" placeholder="Metal (Ton)">
 <input id="cCurrent" placeholder="Current C %">
 <input id="cTarget" placeholder="Target C %">
-
 <button onclick="calcCarbon()">Calculate Carbon</button>
 <div id="cResult" class="result"></div>
 </div>
 
 <script>
 
-// 🔥 FURNACE
+// 🔥 BUTTON BIND FIX
+document.getElementById("calcBtn").addEventListener("click", calcMetal);
+
+// 🔥 MAIN CALC (SAFE)
 function calcMetal(){
 
+try{
+
+let debug = document.getElementById("debug");
+debug.innerHTML = "Running...";
+
+// SAFE INPUT FETCH
+let scrap = parseFloat(document.getElementById("scrapPct").value) || 0;
+let sponge = parseFloat(document.getElementById("spongePct").value) || 0;
+
+let scrapY = parseFloat(document.getElementById("scrapYield").value) || 90;
+let spongeY = parseFloat(document.getElementById("spongeYield").value) || 78;
+
+let fill = parseFloat(document.getElementById("fillPct").value) || 92;
+
+let top = parseFloat(document.getElementById("topDia").value);
+let bottom = parseFloat(document.getElementById("bottomDia").value);
+let taper = parseFloat(document.getElementById("taper").value);
+let height = parseFloat(document.getElementById("height").value);
+
+let last = parseFloat(document.getElementById("lastHeat").value);
+
 let output = document.getElementById("output");
-output.innerHTML = "";
 
-let scrap = parseFloat(scrapPct.value)||0;
-let sponge = parseFloat(spongePct.value)||0;
-
+// VALIDATION
 if((scrap + sponge) != 100){
 output.innerHTML="❌ Scrap + Sponge must = 100%";
 return;
 }
-
-let scrapY = parseFloat(scrapYield.value)||90;
-let spongeY = parseFloat(spongeYield.value)||78;
-let fill = parseFloat(fillPct.value)||92;
-
-let top=parseFloat(topDia.value);
-let bottom=parseFloat(bottomDia.value);
-let taper=parseFloat(taper.value);
-let height=parseFloat(height.value);
 
 if(isNaN(top)||isNaN(bottom)||isNaN(taper)||isNaN(height)){
 output.innerHTML="❌ Enter furnace values";
 return;
 }
 
+// CALC
 top*=0.0254; bottom*=0.0254; taper*=0.0254; height*=0.0254;
 
 let r1=top/2, r2=bottom/2;
@@ -116,7 +124,7 @@ let theoretical=(volume*density)/1000;
 let totalYield=((scrap*scrapY)+(sponge*spongeY))/100;
 let practical=theoretical*(totalYield/100);
 
-let last=parseFloat(lastHeat.value);
+// AUTO LEARN
 let learn=parseFloat(localStorage.getItem("furnaceLearn"))||1;
 
 if(!isNaN(last)&&last>0){
@@ -126,6 +134,7 @@ localStorage.setItem("furnaceLearn",learn);
 
 let final=practical*learn;
 
+// OUTPUT
 output.innerHTML=
 "📐 Theoretical: "+theoretical.toFixed(2)+" Ton<br>"+
 "🔥 After Yield: "+practical.toFixed(2)+" Ton<br>"+
@@ -133,7 +142,16 @@ output.innerHTML=
 "📊 Yield: "+totalYield.toFixed(1)+"%<br>"+
 "🧠 Learn: "+learn.toFixed(3);
 
+// AI CALL
 smartAI(totalYield, scrap, sponge);
+
+// DEBUG
+debug.innerHTML="✅ Success";
+
+}catch(err){
+document.getElementById("debug").innerHTML="❌ Error: "+err.message;
+}
+
 }
 
 // 🤖 AI
@@ -160,9 +178,9 @@ document.getElementById("aiSuggestion").innerHTML=msg;
 
 // ⚙ Mn
 function calcMn(){
-let metal=parseFloat(mnMetal.value)||0;
-let current=parseFloat(mnCurrent.value)||0;
-let target=parseFloat(mnTarget.value)||0;
+let metal=parseFloat(document.getElementById("mnMetal").value)||0;
+let current=parseFloat(document.getElementById("mnCurrent").value)||0;
+let target=parseFloat(document.getElementById("mnTarget").value)||0;
 
 let req=((target-current)/100)*metal*1000;
 
@@ -170,11 +188,11 @@ document.getElementById("mnResult").innerHTML=
 "⚙ Mn Required: "+req.toFixed(1)+" kg";
 }
 
-// ⚡ CARBON
+// ⚡ Carbon
 function calcCarbon(){
-let metal=parseFloat(cMetal.value)||0;
-let current=parseFloat(cCurrent.value)||0;
-let target=parseFloat(cTarget.value)||0;
+let metal=parseFloat(document.getElementById("cMetal").value)||0;
+let current=parseFloat(document.getElementById("cCurrent").value)||0;
+let target=parseFloat(document.getElementById("cTarget").value)||0;
 
 let req=((target-current)/100)*metal*1000;
 
@@ -182,7 +200,7 @@ document.getElementById("cResult").innerHTML=
 "⚡ Carbon Required: "+req.toFixed(1)+" kg";
 }
 
-// ⏳ MAINT REMOVE
+// ⏳ MAINT AUTO REMOVE
 let today=new Date();
 let lastDate=new Date("2026-04-10");
 
