@@ -1,7 +1,10 @@
-<!DOCTYPE html><html>
+<!DOCTYPE html>
+<html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MeltingPro FINAL</title><style>
+<title>MeltingPro FINAL</title>
+
+<style>
 body{margin:0;font-family:Arial;background:#0f172a;color:#fff;}
 header{background:#020617;padding:12px;text-align:center;color:#f97316;font-weight:bold;}
 .tabs{display:flex;background:#1e293b;}
@@ -13,12 +16,23 @@ header{background:#020617;padding:12px;text-align:center;color:#f97316;font-weig
 input,select{width:100%;padding:10px;margin:5px 0;background:#1e293b;color:#fff;border:none;}
 button{width:100%;padding:10px;background:#f97316;border:none;margin-top:5px;}
 .result{margin-top:10px;background:#1e293b;padding:10px;}
-</style></head><body><header>🔥 MeltingPro FINAL</header><div class="tabs">
+</style>
+
+</head>
+<body>
+
+<header>🔥 MeltingPro FINAL</header>
+
+<div class="tabs">
 <button class="active" onclick="tab(0)">Dashboard</button>
 <button onclick="tab(1)">Final AI</button>
 <button onclick="tab(2)">Lab</button>
-</div><!-- DASHBOARD --><div class="section active">
-  <div class="card">
+</div>
+
+<!-- DASHBOARD -->
+<div class="section active">
+
+<div class="card">
 <h3>🔥 Molten Metal Calculator (Pro)</h3>
 
 <select id="mode">
@@ -27,18 +41,13 @@ button{width:100%;padding:10px;background:#f97316;border:none;margin-top:5px;}
 </select>
 
 <div id="mixBox">
-
-<input id="scrapPct" placeholder="Scrap % (e.g. 70)">
-<input id="spongePct" placeholder="Sponge % (e.g. 30)">
-
-<input id="scrapYield" placeholder="Scrap Yield % (e.g. 90)">
-<input id="spongeYield" placeholder="Sponge Yield % (e.g. 78)">
-
-<input id="fillPct" placeholder="Fill % (e.g. 92)">
-
+<input id="scrapPct" placeholder="Scrap %">
+<input id="spongePct" placeholder="Sponge %">
+<input id="scrapYield" placeholder="Scrap Yield %" value="90">
+<input id="spongeYield" placeholder="Sponge Yield %" value="78">
+<input id="fillPct" placeholder="Fill %" value="92">
 </div>
-    
-<!-- Furnace -->
+
 <div id="furnaceBox">
 <input id="topDia" placeholder="Top Dia (inch)">
 <input id="bottomDia" placeholder="Bottom Dia (inch)">
@@ -46,25 +55,25 @@ button{width:100%;padding:10px;background:#f97316;border:none;margin-top:5px;}
 <input id="height" placeholder="Total Height (inch)">
 </div>
 
-<!-- Ladle -->
 <div id="ladleBox" style="display:none;">
 <input id="ladleDia" placeholder="Ladle Dia (inch)">
 <input id="ladleHeight" placeholder="Height (inch)">
 </div>
 
-<!-- Smart Auto Learning -->
 <input id="lastHeat" placeholder="Last Heat (kg) OPTIONAL">
 
 <button onclick="calcMetal()">Calculate</button>
-
 <div id="output" class="result"></div>
-  </div>
-  
+</div>
+
+<!-- RAMMING -->
 <h3>🧱 Ramming</h3>
 <input id="shellDia" placeholder="Shell Dia">
 <button onclick="calcRamming()">Calculate</button>
 <div id="ramOut" class="result"></div>
-</div><div class="card">
+
+<!-- MN -->
+<div class="card">
 <h3>⚙ Mn</h3>
 <input id="mnMetal" placeholder="Metal ton">
 <input id="curMn" placeholder="Current Mn">
@@ -73,160 +82,164 @@ button{width:100%;padding:10px;background:#f97316;border:none;margin-top:5px;}
 <input id="allMn" placeholder="Alloy %">
 <button onclick="calcMn()">Calculate</button>
 <div id="mnOut" class="result"></div>
-</div><div class="card">
+</div>
+
+<!-- CARBON -->
+<div class="card">
 <h3>⚡ Carbon</h3>
-<select id="mode" onchange="toggleC()">
+
+<select id="cMode" onchange="toggleC()">
 <option value="down">Down</option>
 <option value="up">Up</option>
-</select><div id="cd">
+</select>
+
+<div id="cd">
 <input id="cMetal" placeholder="Metal">
 <input id="cCur" placeholder="Current C">
 <input id="cTar" placeholder="Target C">
 <input id="feo" placeholder="FeO">
-</div><div id="cu" style="display:none;">
+</div>
+
+<div id="cu" style="display:none;">
 <input id="cMetalUp" placeholder="Metal">
 <input id="cCurUp" placeholder="Current C">
 <input id="cTarUp" placeholder="Target C">
 <input id="ciPct" placeholder="CI %">
-</div><button onclick="calcCarbon()">Calculate</button>
+</div>
 
+<button onclick="calcCarbon()">Calculate</button>
 <div id="cOut" class="result"></div>
-</div></div><!-- FINAL AI --><div class="section">
-<div class="card"><h3>🔥 Final Tap</h3><select id="grade">
+
+</div>
+
+</div>
+
+<!-- FINAL AI -->
+<div class="section">
+<div class="card">
+<h3>🔥 Final Tap</h3>
+<select id="grade">
 <option>Fe500</option>
 <option>Fe500D</option>
 <option>E250BR</option>
-</select><input id="ton" placeholder="Ton">
+</select>
+
+<input id="ton" placeholder="Ton">
 <input id="Mn" placeholder="Mn">
 <input id="Si" placeholder="Si">
 <input id="P" placeholder="P">
-<input id="S" placeholder="S"><input id="FeO" placeholder="FeO">
+<input id="S" placeholder="S">
+<input id="FeO" placeholder="FeO">
 <input id="Temp" placeholder="Temp">
 <input id="CaO" placeholder="CaO">
-<input id="SiO2" placeholder="SiO2"><button onclick="runAI()">Run</button>
+<input id="SiO2" placeholder="SiO2">
 
-<div id="tapOut" class="result"></div></div>
-</div><!-- LAB --><div class="section">
-<div class="card"><h3>🧪 FeO</h3>
+<button onclick="runAI()">Run</button>
+<div id="tapOut" class="result"></div>
+</div>
+</div>
+
+<!-- LAB -->
+<div class="section">
+<div class="card">
+<h3>🧪 FeO</h3>
 FeO = V × 1.6<br>
-High FeO → Mn loss → Remix77<hr><h3>🧪 FeT</h3>
-Fe = V × 1.117<hr><h3>🧪 Basicity</h3>
-CaO/SiO2 = 2–2.5</div>
-</div><script>
-document.addEventListener("DOMContentLoaded", function(){
+High FeO → Mn loss → Remix77
+<hr>
+<h3>🧪 FeT</h3>
+Fe = V × 1.117
+<hr>
+<h3>🧪 Basicity</h3>
+CaO/SiO2 = 2–2.5
+</div>
+</div>
 
-let mode = document.getElementById("mode");
-let furnaceBox = document.getElementById("furnaceBox");
-let ladleBox = document.getElementById("ladleBox");
-let mixBox = document.getElementById("mixBox");
+<script>
 
-mode.addEventListener("change", ()=>{
+// MODE TOGGLE
+document.getElementById("mode").addEventListener("change", function(){
+let val = this.value;
 
-if(mode.value === "furnace"){
-    furnaceBox.style.display = "block";
-    ladleBox.style.display = "none";
-    mixBox.style.display = "block";
-}
-else{
-    furnaceBox.style.display = "none";
-    ladleBox.style.display = "block";
-    mixBox.style.display = "none";
-}
-
+furnaceBox.style.display = (val==="furnace")?"block":"none";
+ladleBox.style.display = (val==="ladle")?"block":"none";
+mixBox.style.display = (val==="furnace")?"block":"block";
 });
 
-});
-  
-// TAB
-
+// MAIN CALC
 function calcMetal(){
 
-    let output = document.getElementById("output");
-    let modeVal = document.getElementById("mode").value.toLowerCase().trim();
+let output = document.getElementById("output");
+let modeVal = document.getElementById("mode").value;
 
-    // ===== INPUTS =====
-    let scrapPct = parseFloat(document.getElementById("scrapPct").value) || 0;
-    let spongePct = parseFloat(document.getElementById("spongePct").value) || 0;
+let scrapPct = parseFloat(scrapPct.value)||0;
+let spongePct = parseFloat(spongePct.value)||0;
+let scrapYield = parseFloat(scrapYield.value)||90;
+let spongeYield = parseFloat(spongeYield.value)||78;
+let fillPct = parseFloat(fillPct.value)||92;
 
-    let scrapYield = parseFloat(document.getElementById("scrapYield").value) || 90;
-    let spongeYield = parseFloat(document.getElementById("spongeYield").value) || 78;
+let density = 7450;
 
-    let fillPct = parseFloat(document.getElementById("fillPct").value) || 92;
+// FURNACE
+if(modeVal==="furnace"){
 
-    let density = 7450;
+if((scrapPct+spongePct)!=100){
+output.innerHTML="❌ Scrap+Sponge=100%";
+return;
+}
 
-    // ===== FURNACE =====
-    if(modeVal === "furnace"){
+let totalYield=((scrapPct*scrapYield)+(spongePct*spongeYield))/100;
+let yieldFactor=totalYield/100;
 
-        if((scrapPct + spongePct) != 100){
-            output.innerHTML = "❌ Scrap + Sponge must = 100%";
-            return;
-        }
+let top=parseFloat(topDia.value);
+let bottom=parseFloat(bottomDia.value);
+let taper=parseFloat(taper.value);
+let height=parseFloat(height.value);
 
-        let totalYield = ((scrapPct * scrapYield) + (spongePct * spongeYield)) / 100;
-        let yieldFactor = totalYield / 100;
+if(isNaN(top)||isNaN(bottom)||isNaN(taper)||isNaN(height)){
+output.innerHTML="❌ Enter furnace values";
+return;
+}
 
-        let top = parseFloat(document.getElementById("topDia").value);
-        let bottom = parseFloat(document.getElementById("bottomDia").value);
-        let taper = parseFloat(document.getElementById("taper").value);
-        let height = parseFloat(document.getElementById("height").value);
+top*=0.0254;bottom*=0.0254;taper*=0.0254;height*=0.0254;
 
-        if(isNaN(top)||isNaN(bottom)||isNaN(taper)||isNaN(height)){
-            output.innerHTML="❌ Enter furnace values";
-            return;
-        }
+let r1=top/2;
+let r2=bottom/2;
 
-        top*=0.0254; bottom*=0.0254; taper*=0.0254; height*=0.0254;
+let v1=(Math.PI*taper/3)*(r1*r1+r2*r2+r1*r2);
+let v2=Math.PI*r2*r2*(height-taper);
 
-        let r1 = top/2;
-        let r2 = bottom/2;
+let volume=(v1+v2)*(fillPct/100);
+let ton=(volume*density)/1000*yieldFactor;
 
-        let v1 = (Math.PI * taper / 3) * (r1*r1 + r2*r2 + r1*r2);
-        let v2 = Math.PI * r2*r2 * (height - taper);
+output.innerHTML="🔥 "+ton.toFixed(2)+" Ton ("+(ton*1000).toFixed(0)+" kg)<br>📊 Yield "+totalYield.toFixed(1)+"%";
+}
 
-        let volume = (v1 + v2) * (fillPct/100);
+// LADLE
+else{
 
-        let theoretical = (volume * density) / 1000;
-        let practical = theoretical * yieldFactor;
+let dia=parseFloat(ladleDia.value);
+let h=parseFloat(ladleHeight.value);
 
-        output.innerHTML =
-        "🔥 "+practical.toFixed(2)+" Ton ("+(practical*1000).toFixed(0)+" kg)<br>"+
-        "📊 Yield: "+totalYield.toFixed(1)+"%";
-    }
+if(isNaN(dia)||isNaN(h)){
+output.innerHTML="❌ Enter ladle values";
+return;
+}
 
-    // ===== LADLE =====
-    else if(modeVal === "ladle"){
+dia*=0.0254;h*=0.0254;
 
-        let dia = parseFloat(document.getElementById("ladleDia").value);
-        let h = parseFloat(document.getElementById("ladleHeight").value);
+let r=dia/2;
+let volume=Math.PI*r*r*h*(fillPct/100);
+let ton=(volume*density)/1000;
 
-        if(isNaN(dia)||isNaN(h)){
-            output.innerHTML="❌ Enter ladle values";
-            return;
-        }
+output.innerHTML="🪣 "+ton.toFixed(2)+" Ton ("+(ton*1000).toFixed(0)+" kg)";
+}
 
-        dia*=0.0254; h*=0.0254;
+}
 
-        let r = dia/2;
-        let volume = Math.PI * r*r * h * (fillPct/100);
-
-        let theoretical = (volume * density) / 1000;
-
-        output.innerHTML =
-        "🪣 "+theoretical.toFixed(2)+" Ton ("+(theoretical*1000).toFixed(0)+" kg)";
-    }
-
-    else{
-        output.innerHTML = "❌ Mode error";
-    }
-              }
-                                 
-  
 // RAM
 function calcRamming(){
 let s=parseFloat(shellDia.value)||0;
-let ton=(s*s)/500;
-ramOut.innerHTML="🧱 "+ton.toFixed(2)+" Ton";
+ramOut.innerHTML="🧱 "+((s*s)/500).toFixed(2)+" Ton";
 }
 
 // MN
@@ -239,12 +252,15 @@ mnOut.innerHTML="⚙ "+alloy.toFixed(1)+" kg";
 
 // CARBON
 function toggleC(){
-cd.style.display=(mode.value==="up")?"none":"block";
-cu.style.display=(mode.value==="up")?"block":"none";
+let m=document.getElementById("cMode").value;
+cd.style.display=(m==="up")?"none":"block";
+cu.style.display=(m==="up")?"block":"none";
 }
 
 function calcCarbon(){
-if(mode.value==="down"){
+let m=document.getElementById("cMode").value;
+
+if(m==="down"){
 let kg=(cMetal.value*(cCur.value-cTar.value)*6)/feo.value;
 cOut.innerHTML="⬇ "+kg.toFixed(1)+" kg";
 }else{
@@ -255,7 +271,6 @@ cOut.innerHTML="⬆ "+kg.toFixed(1)+" kg";
 
 // AI
 function runAI(){
-
 let t=ton.value;
 let Mn0=Mn.value;
 
@@ -267,64 +282,9 @@ if(FeO.value>15) msg+="🔴 High FeO<br>";
 if(Temp.value>1670) msg+="🔴 High Temp<br>";
 
 tapOut.innerHTML=msg;
-
 }
 
- function drawFurnace(top, bottom, taper, height){
+</script>
 
-let c = document.getElementById("furnaceCanvas");
-if(!c || height<=0) return;
-
-let ctx = c.getContext("2d");
-
-ctx.clearRect(0,0,c.width,c.height);
-
-let scale = 150 / height;
-
-let h = height * scale;
-let t = taper * scale;
-let topW = top * scale;
-let botW = bottom * scale;
-
-let x = 150;
-let y = 20;
-
-ctx.strokeStyle = "#f97316";
-ctx.lineWidth = 2;
-
-ctx.beginPath();
-ctx.moveTo(x - topW/2, y);
-ctx.lineTo(x + topW/2, y);
-ctx.lineTo(x + botW/2, y + t);
-ctx.lineTo(x + botW/2, y + h);
-ctx.lineTo(x - botW/2, y + h);
-ctx.closePath();
-ctx.stroke();
-
-  }
-
-  function drawLadle(dia, height){
-
-let c = document.getElementById("furnaceCanvas");
-if(!c) return;
-
-let ctx = c.getContext("2d");
-
-ctx.clearRect(0,0,c.width,c.height);
-
-let scale = 150 / height;
-
-let h = height * scale;
-let w = dia * scale;
-
-let x = 150;
-let y = 20;
-
-ctx.strokeStyle = "#00c2ff";
-ctx.lineWidth = 2;
-
-ctx.strokeRect(x - w/2, y, w, h);
-
-  }
-</script></body>
-</html>
+</body>
+  </html>4
