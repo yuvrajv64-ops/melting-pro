@@ -28,8 +28,11 @@ button{width:100%;padding:10px;background:#f97316;border:none;margin-top:5px;}
 
 <input id="scrapPct" placeholder="Scrap % (e.g. 70)">
 <input id="spongePct" placeholder="Sponge % (e.g. 30)">
+
 <input id="scrapYield" placeholder="Scrap Yield % (e.g. 90)">
 <input id="spongeYield" placeholder="Sponge Yield % (e.g. 78)">
+
+<input id="fillPct" placeholder="Fill % (e.g. 92)">
     
 <!-- Furnace -->
 <div id="furnaceBox">
@@ -114,17 +117,29 @@ function calcMetal(){
 let output = document.getElementById("output");
 let modeVal = document.getElementById("mode").value;
 
-// ===== INPUT =====
+// ===== INPUTS =====
 let scrapPct = parseFloat(document.getElementById("scrapPct").value) || 0;
 let spongePct = parseFloat(document.getElementById("spongePct").value) || 0;
 
 let scrapYield = parseFloat(document.getElementById("scrapYield").value) || 90;
 let spongeYield = parseFloat(document.getElementById("spongeYield").value) || 78;
 
+let fillPct = parseFloat(document.getElementById("fillPct").value) || 92;
+
 let lastHeat = parseFloat(document.getElementById("lastHeat").value);
 
-let density = 7200;
+let density = 7450;
 let theoretical = 0;
+
+// ===== MIX VALIDATION =====
+if((scrapPct + spongePct) !== 100){
+    output.innerHTML = "❌ Scrap + Sponge must = 100%";
+    return;
+}
+
+// ===== OVERALL YIELD =====
+let totalYield = ((scrapPct * scrapYield) + (spongePct * spongeYield)) / 100;
+let yieldFactor = totalYield / 100;
 
 // ===== FURNACE =====
 if(modeVal === "furnace"){
@@ -134,80 +149,84 @@ let bottom = parseFloat(document.getElementById("bottomDia").value);
 let taper = parseFloat(document.getElementById("taper").value);
 let height = parseFloat(document.getElementById("height").value);
 
-if(isNaN(top) || isNaN(bottom) || isNaN(taper) || isNaN(height)){
-output.innerHTML="❌ Enter furnace values";
-return;
+if(isNaN(top)||isNaN(bottom)||isNaN(taper)||isNaN(height)){
+    output.innerHTML="❌ Enter furnace values";
+    return;
 }
 
-top*=0.0254;
-bottom*=0.0254;
-taper*=0.0254;
-height*=0.0254;
+// inch → meter
+top *= 0.0254;
+bottom *= 0.0254;
+taper *= 0.0254;
+height *= 0.0254;
 
 let r1 = top/2;
 let r2 = bottom/2;
 
+// frustum
 let v1 = (Math.PI * taper / 3) * (r1*r1 + r2*r2 + r1*r2);
+
+// cylinder
 let v2 = Math.PI * r2*r2 * (height - taper);
 
+// total volume
 let volume = v1 + v2;
+
+// fill correction
+volume = volume * (fillPct / 100);
 
 theoretical = (volume * density) / 1000;
 }
 
 // ===== LADLE =====
-else if(modeVal === "ladle"){
+else{
 
 let dia = parseFloat(document.getElementById("ladleDia").value);
 let h = parseFloat(document.getElementById("ladleHeight").value);
 
-if(isNaN(dia) || isNaN(h)){
-output.innerHTML="❌ Enter ladle values";
-return;
+if(isNaN(dia)||isNaN(h)){
+    output.innerHTML="❌ Enter ladle values";
+    return;
 }
 
-dia*=0.0254;
-h*=0.0254;
+dia *= 0.0254;
+h *= 0.0254;
 
 let r = dia/2;
 
 let volume = Math.PI * r*r * h;
 
+volume = volume * (fillPct / 100);
+
 theoretical = (volume * density) / 1000;
 }
 
-// ===== YIELD =====
-let s1 = scrapPct/100;
-let s2 = spongePct/100;
-
-let y1 = scrapYield/100;
-let y2 = spongeYield/100;
-
-let yieldFactor = (s1*y1) + (s2*y2);
+// ===== APPLY YIELD =====
+let practical = theoretical * yieldFactor;
 
 // ===== AUTO LEARNING =====
 let learnFactor = localStorage.getItem("learnFactor");
 
 if(lastHeat && lastHeat > 0){
-let actualTon = lastHeat / 1000;
-learnFactor = actualTon / theoretical;
-localStorage.setItem("learnFactor", learnFactor);
+    let actualTon = lastHeat / 1000;
+    learnFactor = actualTon / practical;
+    localStorage.setItem("learnFactor", learnFactor);
 }
 
 if(!learnFactor) learnFactor = 1;
 
 // ===== FINAL =====
-let finalTon = theoretical * yieldFactor * learnFactor;
+let finalTon = practical * learnFactor;
 let finalKg = finalTon * 1000;
 
 // ===== OUTPUT =====
 output.innerHTML =
 "🔥 "+finalTon.toFixed(2)+" Ton ("+finalKg.toFixed(0)+" kg)<br>"+
-"📊 Yield: "+(yieldFactor*100).toFixed(1)+"%<br>"+
-"⚙ Learn: "+parseFloat(learnFactor).toFixed(3);
+"📊 Yield: "+totalYield.toFixed(1)+"%<br>"+
+"⚙ Mix: "+yieldFactor.toFixed(3)+"<br>"+
+"🧠 Learn: "+parseFloat(learnFactor).toFixed(3);
 
   }
-
                                  
   
 // RAM
