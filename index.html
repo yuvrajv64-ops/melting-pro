@@ -113,6 +113,8 @@ function calcMetal(){
 
 let output = document.getElementById("output");
 let modeVal = document.getElementById("mode").value;
+let mixVal = document.getElementById("mix").value;
+let lastHeat = parseFloat(document.getElementById("lastHeat").value);
 
 let density = 7200;
 let theoretical = 0;
@@ -125,22 +127,19 @@ let bottom = parseFloat(document.getElementById("bottomDia").value);
 let taper = parseFloat(document.getElementById("taper").value);
 let height = parseFloat(document.getElementById("height").value);
 
-if(isNaN(top) || isNaN(bottom) || isNaN(taper) || isNaN(height)){
+if(isNaN(top)||isNaN(bottom)||isNaN(taper)||isNaN(height)){
 output.innerHTML="❌ Enter furnace values";
 return;
 }
 
-// inch → meter
-top *= 0.0254;
-bottom *= 0.0254;
-taper *= 0.0254;
-height *= 0.0254;
+top*=0.0254;
+bottom*=0.0254;
+taper*=0.0254;
+height*=0.0254;
 
-// radius
 let r1 = top/2;
 let r2 = bottom/2;
 
-// volume
 let v1 = (Math.PI * taper / 3) * (r1*r1 + r2*r2 + r1*r2);
 let v2 = Math.PI * r2*r2 * (height - taper);
 
@@ -150,18 +149,18 @@ theoretical = (volume * density)/1000;
 }
 
 // ===== LADLE =====
-else if(modeVal === "ladle"){
+else{
 
 let dia = parseFloat(document.getElementById("ladleDia").value);
 let h = parseFloat(document.getElementById("ladleHeight").value);
 
-if(isNaN(dia) || isNaN(h)){
+if(isNaN(dia)||isNaN(h)){
 output.innerHTML="❌ Enter ladle values";
 return;
 }
 
-dia *= 0.0254;
-h *= 0.0254;
+dia*=0.0254;
+h*=0.0254;
 
 let r = dia/2;
 
@@ -170,10 +169,40 @@ let volume = Math.PI * r*r * h;
 theoretical = (volume * density)/1000;
 }
 
-// ===== OUTPUT =====
-output.innerHTML =
-"🔥 "+theoretical.toFixed(2)+" Ton ("+(theoretical*1000).toFixed(0)+" kg)";
+// ===== BASE FACTOR =====
+let factor = 1;
+
+// mix based
+if(mixVal==="scrap") factor = 1.05;
+if(mixVal==="balanced") factor = 1.08;
+if(mixVal==="sponge") factor = 1.12;
+
+// ===== AUTO LEARNING =====
+if(lastHeat && lastHeat > 0){
+
+let actualTon = lastHeat / 1000;
+
+// new smart factor
+factor = actualTon / theoretical;
+
+// store permanently (VERY IMPORTANT)
+localStorage.setItem("furnaceFactor", factor);
 }
+
+// ===== LOAD SAVED FACTOR =====
+let savedFactor = localStorage.getItem("furnaceFactor");
+if(savedFactor){
+factor = parseFloat(savedFactor);
+}
+
+// ===== FINAL RESULT =====
+let finalTon = theoretical * factor;
+let finalKg = finalTon * 1000;
+
+output.innerHTML =
+"🔥 "+finalTon.toFixed(2)+" Ton ("+finalKg.toFixed(0)+" kg)<br>" +
+"📊 Smart Factor: "+factor.toFixed(3);
+  }
                                  
   
 // RAM
