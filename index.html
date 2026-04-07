@@ -150,7 +150,7 @@ function calcMetal(){
 let output = document.getElementById("output");
 output.innerHTML="";
 
-let mode = document.getElementById("calcMode").value;
+let mode = document.getElementById("mode")?.value || "furnace";
 let density = 7450;
 
 // ===== FURNACE =====
