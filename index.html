@@ -7,17 +7,13 @@
 <style>
 body{margin:0;font-family:Arial;background:#0f172a;color:#fff;}
 header{background:#020617;padding:12px;text-align:center;color:#f97316;font-weight:bold;}
-.tabs{display:flex;background:#1e293b;}
-.tabs button{flex:1;padding:12px;border:none;background:#1e293b;color:#ccc;}
-.tabs button.active{background:#f97316;color:#000;}
-.section{display:none;padding:15px;}
-.section.active{display:block;}
-.card{background:#111827;padding:12px;margin-top:10px;border-radius:10px;}
-input,select{width:100%;padding:10px;margin:5px 0;background:#1e293b;color:#fff;border:none;}
-button{width:100%;padding:10px;background:#f97316;border:none;margin-top:5px;}
-.result{margin-top:10px;background:#1e293b;padding:10px;}
+.card{background:#111827;padding:12px;margin:10px;border-radius:10px;}
+input{width:100%;padding:10px;margin:5px 0;background:#1e293b;color:#fff;border:none;}
+button{width:100%;padding:12px;background:#f97316;color:#000;border:none;margin-top:10px;}
+.result{background:#1e293b;padding:10px;margin-top:10px;}
 .banner{background:#f97316;color:#000;text-align:center;padding:8px;font-weight:bold;}
 </style>
+
 </head>
 
 <body>
@@ -26,141 +22,68 @@ button{width:100%;padding:10px;background:#f97316;border:none;margin-top:5px;}
 
 <header>🔥 MeltingPro FINAL</header>
 
-<div class="tabs">
-<button class="active" onclick="tab(0)">Dashboard</button>
-<button onclick="tab(1)">Final AI</button>
-<button onclick="tab(2)">Lab</button>
-</div>
-
-<!-- DASHBOARD -->
-<div class="section active">
-
+<!-- 🔥 FURNACE -->
 <div class="card">
-<h3>🔥 Molten Metal Calculator (Pro)</h3>
+<h3>🔥 Furnace Calculator</h3>
 
-<select id="calcMode">
-<option value="furnace">Furnace</option>
-<option value="ladle">Ladle</option>
-</select>
-
-<div id="mixBox">
 <input id="scrapPct" placeholder="Scrap %">
 <input id="spongePct" placeholder="Sponge %">
-<input id="scrapYield" placeholder="Scrap Yield %">
-<input id="spongeYield" placeholder="Sponge Yield %">
-<input id="fillPct" placeholder="Fill %">
-</div>
 
-<div id="furnaceBox">
+<input id="scrapYield" placeholder="Scrap Yield %" value="90">
+<input id="spongeYield" placeholder="Sponge Yield %" value="78">
+
+<input id="fillPct" placeholder="Fill %" value="92">
+
 <input id="topDia" placeholder="Top Dia (inch)">
 <input id="bottomDia" placeholder="Bottom Dia (inch)">
 <input id="taper" placeholder="Taper Height (inch)">
 <input id="height" placeholder="Total Height (inch)">
-</div>
-
-<div id="ladleBox" style="display:none;">
-<input id="ladleDia" placeholder="Ladle Dia (inch)">
-<input id="ladleHeight" placeholder="Height (inch)">
-<input id="ladleFill" placeholder="Fill % (e.g. 90)">
-</div>
 
 <input id="lastHeat" placeholder="Last Heat (kg) OPTIONAL">
 
 <button onclick="calcMetal()">Calculate</button>
+
 <div id="output" class="result"></div>
 <div id="aiSuggestion" class="result"></div>
-  
 </div>
 
-<h3>🧱 Ramming</h3>
-<input id="shellDia" placeholder="Shell Dia">
-<button onclick="calcRamming()">Calculate</button>
-<div id="ramOut" class="result"></div>
-
+<!-- ⚙ Mn -->
 <div class="card">
-<h3>⚙ Mn</h3>
-<input id="mnMetal" placeholder="Metal ton">
-<input id="curMn" placeholder="Current Mn">
-<input id="tarMn" placeholder="Target Mn">
-<input id="rec" placeholder="Recovery %">
-<input id="allMn" placeholder="Alloy %">
-<button onclick="calcMn()">Calculate</button>
-<div id="mnOut" class="result"></div>
+<h3>⚙ Mn Calculator</h3>
+
+<input id="mnMetal" placeholder="Metal (Ton)">
+<input id="mnCurrent" placeholder="Current Mn %">
+<input id="mnTarget" placeholder="Target Mn %">
+
+<button onclick="calcMn()">Calculate Mn</button>
+<div id="mnResult" class="result"></div>
 </div>
 
+<!-- ⚡ CARBON -->
 <div class="card">
-<h3>⚡ Carbon</h3>
+<h3>⚡ Carbon Calculator</h3>
 
-<select id="carbonMode" onchange="toggleC()">
-<option value="down">Down</option>
-<option value="up">Up</option>
-</select>
+<input id="cMetal" placeholder="Metal (Ton)">
+<input id="cCurrent" placeholder="Current C %">
+<input id="cTarget" placeholder="Target C %">
 
-<div id="cd">
-<input id="cMetal" placeholder="Metal">
-<input id="cCur" placeholder="Current C">
-<input id="cTar" placeholder="Target C">
-<input id="feo" placeholder="FeO">
-</div>
-
-<div id="cu" style="display:none;">
-<input id="cMetalUp" placeholder="Metal">
-<input id="cCurUp" placeholder="Current C">
-<input id="cTarUp" placeholder="Target C">
-<input id="ciPct" placeholder="CI %">
-</div>
-
-<button onclick="calcCarbon()">Calculate</button>
-<div id="cOut" class="result"></div>
-</div>
-
+<button onclick="calcCarbon()">Calculate Carbon</button>
+<div id="cResult" class="result"></div>
 </div>
 
 <script>
 
-// 🔥 Maintenance auto remove
-let today = new Date();
-if(today > new Date("2026-04-10")){
-document.getElementById("maint").style.display="none";
-}
-
-// 🔥 Toggle
-document.getElementById("calcMode").addEventListener("change", function(){
-
-let furnaceBox = document.getElementById("furnaceBox");
-let ladleBox = document.getElementById("ladleBox");
-let mixBox = document.getElementById("mixBox");
-
-if(this.value === "furnace"){
-furnaceBox.style.display="block";
-ladleBox.style.display="none";
-mixBox.style.display="block";
-}else{
-furnaceBox.style.display="none";
-ladleBox.style.display="block";
-mixBox.style.display="none";
-}
-
-document.getElementById("output").innerHTML="";
-});
-
-// 🔥 MAIN CALC
+// 🔥 FURNACE
 function calcMetal(){
 
 let output = document.getElementById("output");
-output.innerHTML="";
-
-let mode = document.getElementById("mode")?.value || "furnace";
-let density = 7450;
-
-// ===== FURNACE =====
-if(mode==="furnace"){
+output.innerHTML = "";
 
 let scrap = parseFloat(scrapPct.value)||0;
 let sponge = parseFloat(spongePct.value)||0;
 
-if(scrap + sponge != 100){
-output.innerHTML="❌ Scrap + Sponge = 100%";
+if((scrap + sponge) != 100){
+output.innerHTML="❌ Scrap + Sponge must = 100%";
 return;
 }
 
@@ -187,12 +110,12 @@ let v2=Math.PI*r2*r2*(height-taper);
 
 let volume=(v1+v2)*(fill/100);
 
+let density=7450;
 let theoretical=(volume*density)/1000;
 
 let totalYield=((scrap*scrapY)+(sponge*spongeY))/100;
 let practical=theoretical*(totalYield/100);
 
-// AUTO LEARN
 let last=parseFloat(lastHeat.value);
 let learn=parseFloat(localStorage.getItem("furnaceLearn"))||1;
 
@@ -204,211 +127,67 @@ localStorage.setItem("furnaceLearn",learn);
 let final=practical*learn;
 
 output.innerHTML=
-"🔥 Furnace<br>"+
-"📐 "+theoretical.toFixed(2)+" Ton<br>"+
-"⚙ "+practical.toFixed(2)+" Ton<br>"+
-"🚀 "+final.toFixed(2)+" Ton";
-  smartAI();
+"📐 Theoretical: "+theoretical.toFixed(2)+" Ton<br>"+
+"🔥 After Yield: "+practical.toFixed(2)+" Ton<br>"+
+"🚀 Final: "+final.toFixed(2)+" Ton<br>"+
+"📊 Yield: "+totalYield.toFixed(1)+"%<br>"+
+"🧠 Learn: "+learn.toFixed(3);
+
+smartAI(totalYield, scrap, sponge);
 }
 
-// ===== LADLE =====
-else{
+// 🤖 AI
+function smartAI(yieldVal, scrap, sponge){
 
-let dia=parseFloat(ladleDia.value);
-let h=parseFloat(ladleHeight.value);
-let fill=parseFloat(ladleFill.value)||90;
+let msg="";
 
-if(isNaN(dia)||isNaN(h)){
-output.innerHTML="❌ Enter ladle values";
-return;
+if(yieldVal<88){
+msg+="🔴 Low Yield → Increase scrap<br>";
 }
-
-dia*=0.0254; h*=0.0254;
-
-let r=dia/2;
-let vol=Math.PI*r*r*h*(fill/100);
-
-let theoretical=(vol*density)/1000;
-
-let last=parseFloat(lastHeat.value);
-let learn=parseFloat(localStorage.getItem("ladleLearn"))||1;
-
-if(!isNaN(last)&&last>0){
-learn=(last/1000)/theoretical;
-localStorage.setItem("ladleLearn",learn);
-}
-
-let final=theoretical*learn;
-
-output.innerHTML=
-"🪣 Ladle<br>"+
-"📐 "+theoretical.toFixed(2)+" Ton<br>"+
-"🚀 "+final.toFixed(2)+" Ton";
-}
-}
-function smartAI(){
-
-let mode = document.getElementById("calcMode").value;
-let msg = "";
-let status = "🟢 STABLE";
-let grade = "B";
-
-// ================= FURNACE =================
-if(mode === "furnace"){
-
-let scrap = parseFloat(scrapPct.value)||0;
-let sponge = parseFloat(spongePct.value)||0;
-let scrapY = parseFloat(scrapYield.value)||90;
-let spongeY = parseFloat(spongeYield.value)||78;
-let feo = parseFloat(document.getElementById("feo")?.value)||0;
-
-let totalYield = ((scrap*scrapY)+(sponge*spongeY))/100;
-
-// ===== 🎯 TARGET =====
-let targetYield = 90;
-
-// ===== 📊 YIELD GAP =====
-let gap = targetYield - totalYield;
-
-// ===== 🤖 AUTO MIX SUGGESTION =====
-if(gap > 2){
-status = "🔴 CRITICAL";
-grade = "C";
-
-let scrapAdd = Math.min(10, Math.abs(gap));
-let spongeReduce = scrapAdd;
-
-msg += "🔴 Yield Low ("+totalYield.toFixed(1)+"%)<br>";
-msg += "🤖 Auto Suggestion:<br>";
-msg += "👉 Scrap: "+scrap+" → "+(scrap+scrapAdd)+"%<br>";
-msg += "👉 Sponge: "+sponge+" → "+(sponge-spongeReduce)+"%<br><br>";
-}
-else if(gap >= -2 && gap <= 2){
-msg += "🟢 Yield Optimal ("+totalYield.toFixed(1)+"%)<br><br>";
+else if(yieldVal<92){
+msg+="🟡 Normal Yield<br>";
 }
 else{
-msg += "🟢 High Yield ("+totalYield.toFixed(1)+"%)<br><br>";
+msg+="🟢 High Yield<br>";
 }
 
-// ===== ⚖ MIX RISK =====
-if(sponge > 45){
-status = "⚠ RISK";
-grade = "C";
-
-msg += "⚠ High Sponge ("+sponge+"%)<br>";
-msg += "👉 Slag ↑ FeO ↑ Arc unstable<br>";
-msg += "👉 Reduce sponge by 5–10%<br><br>";
+if(sponge>45){
+msg+="⚠ High Sponge → Slag ↑<br>";
 }
 
-if(scrap > 85){
-msg += "⚠ Scrap High ("+scrap+"%)<br>";
-msg += "👉 Bucket density issue possible<br><br>";
+document.getElementById("aiSuggestion").innerHTML=msg;
 }
 
-// ===== 🧪 FeO AI =====
-if(feo > 15){
-status = "🔴 CRITICAL";
-grade = "C";
-
-let mnLoss = (feo * 0.02).toFixed(2);
-
-msg += "🔴 FeO High ("+feo+")<br>";
-msg += "👉 Mn Loss ≈ "+mnLoss+"%<br>";
-msg += "👉 Add Lime + Reduce O₂<br><br>";
-}
-else if(feo > 10){
-msg += "⚠ FeO Moderate ("+feo+") → Watch slag<br><br>";
-}
-
-// ===== 🧱 SLAG AI =====
-let cao = parseFloat(document.getElementById("CaO")?.value)||0;
-let sio2 = parseFloat(document.getElementById("SiO2")?.value)||0;
-
-if(cao && sio2){
-let basicity = cao/sio2;
-
-if(basicity < 2){
-status = "⚠ RISK";
-msg += "⚠ Basicity Low ("+basicity.toFixed(2)+")<br>";
-msg += "👉 Add lime to reach 2–2.5<br><br>";
-}
-else if(basicity > 3){
-msg += "⚠ Basicity High ("+basicity.toFixed(2)+")<br>";
-msg += "👉 Slag thick → fluidity issue<br><br>";
-}
-else{
-msg += "🟢 Slag Balanced ("+basicity.toFixed(2)+")<br><br>";
-}
-}
-
-// ===== 🔥 FINAL RATING =====
-msg += "🏆 Heat Grade: "+grade+"<br>";
-msg += "🔥 Status: "+status;
-
-}
-
-// ================= LADLE =================
-else{
-
-let dia = parseFloat(ladleDia.value)||0;
-let h = parseFloat(ladleHeight.value)||0;
-
-msg += "🪣 Ladle AI<br><br>";
-
-let ratio = h/dia;
-
-if(ratio > 1.5){
-msg += "⚠ High H/D Ratio ("+ratio.toFixed(2)+")<br>";
-msg += "👉 Splash risk / temp loss<br><br>";
-}
-
-msg += "🤖 Suggestion:<br>";
-msg += "• Preheat ladle properly<br>";
-msg += "• Avoid slag carryover<br>";
-msg += "• Maintain temp > 1550°C<br><br>";
-
-msg += "🏆 Grade: A<br>";
-msg += "🔥 Status: READY";
-}
-
-// ===== DEFAULT =====
-if(msg===""){
-msg = "✅ Perfect Heat";
-}
-
-document.getElementById("aiSuggestion").innerHTML = msg;
-
-  }
-  
-// RAM
-function calcRamming(){
-let s=parseFloat(shellDia.value)||0;
-ramOut.innerHTML="🧱 "+((s*s)/500).toFixed(2)+" Ton";
-}
-
-// MN
+// ⚙ Mn
 function calcMn(){
-let m=mnMetal.value||0;
-let need=m*(tarMn.value-curMn.value)*10;
-let alloy=need/(allMn.value/100)/(rec.value/100);
-mnOut.innerHTML="⚙ "+alloy.toFixed(1)+" kg";
+let metal=parseFloat(mnMetal.value)||0;
+let current=parseFloat(mnCurrent.value)||0;
+let target=parseFloat(mnTarget.value)||0;
+
+let req=((target-current)/100)*metal*1000;
+
+document.getElementById("mnResult").innerHTML=
+"⚙ Mn Required: "+req.toFixed(1)+" kg";
 }
 
-// CARBON
-function toggleC(){
-let mode=document.getElementById("carbonMode").value;
-cd.style.display=(mode==="up")?"none":"block";
-cu.style.display=(mode==="up")?"block":"none";
-}
-
+// ⚡ CARBON
 function calcCarbon(){
-if(carbonMode.value==="down"){
-let kg=(cMetal.value*(cCur.value-cTar.value)*6)/feo.value;
-cOut.innerHTML="⬇ "+kg.toFixed(1)+" kg";
-}else{
-let kg=(cMetalUp.value*(cTarUp.value-cCurUp.value)/100)/(ciPct.value/100);
-cOut.innerHTML="⬆ "+kg.toFixed(1)+" kg";
+let metal=parseFloat(cMetal.value)||0;
+let current=parseFloat(cCurrent.value)||0;
+let target=parseFloat(cTarget.value)||0;
+
+let req=((target-current)/100)*metal*1000;
+
+document.getElementById("cResult").innerHTML=
+"⚡ Carbon Required: "+req.toFixed(1)+" kg";
 }
+
+// ⏳ MAINT REMOVE
+let today=new Date();
+let lastDate=new Date("2026-04-10");
+
+if(today>lastDate){
+document.getElementById("maint").style.display="none";
 }
 
 </script>
