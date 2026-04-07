@@ -150,9 +150,8 @@ let density=7450;
 // ===== FURNACE =====
 if(modeVal==="furnace"){
 
-let scrapPct=parseFloat(scrapPct.value)||0;
-let spongePct=parseFloat(spongePct.value)||0;
-
+let scrapPct = parseFloat(document.getElementById("scrapPct").value) || 0;
+let spongePct = parseFloat(document.getElementById("spongePct").value) || 0;
 let scrapYield=parseFloat(document.getElementById("scrapYield").value)||90;
 let spongeYield=parseFloat(document.getElementById("spongeYield").value)||78;
 
