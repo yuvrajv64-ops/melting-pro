@@ -257,12 +257,18 @@ let finalTon = practical * learnFactor;
 let finalKg = finalTon * 1000;
 
 // ===== OUTPUT =====
-output.innerHTML =
-"🔥 "+finalTon.toFixed(2)+" Ton ("+finalKg.toFixed(0)+" kg)<br>"+
-"📊 Yield: "+totalYield.toFixed(1)+"%<br>"+
-"⚙ Mix: "+yieldFactor.toFixed(3)+"<br>"+
-"🧠 Learn: "+parseFloat(learnFactor).toFixed(3);
+let resultText = "🔥 "+finalTon.toFixed(2)+" Ton ("+finalKg.toFixed(0)+" kg)";
 
+// sirf furnace me extra details
+if(modeVal === "furnace"){
+    resultText += "<br>📊 Yield: "+totalYield.toFixed(1)+"%";
+    resultText += "<br>⚙ Mix: "+yieldFactor.toFixed(3);
+}
+
+// learning dono me chalega
+resultText += "<br>🧠 Learn: "+parseFloat(learnFactor).toFixed(3);
+
+output.innerHTML = resultText;
   }
                                  
   
