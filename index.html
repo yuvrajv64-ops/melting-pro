@@ -18,97 +18,115 @@ h3{color:#f97316;}
 
 <body>
 
-<div id="banner" class="banner">⚠ App under maintenance till 10 April</div>
+<div id="banner" class="banner">
+⚠ App under maintenance till 10 April 2026
+</div>
+
 <header>🔥 Furnace Metal Calculator</header>
 
+<!-- FURNACE -->
 <div class="card">
+<h3>⚙ Furnace Calculation</h3>
 
-<h3>⚙ Charge Mix</h3>
-<input id="scrapPct" placeholder="Scrap %" value="90" oninput="validateInputs()">
-<input id="spongePct" placeholder="Sponge %" value="10" oninput="validateInputs()">
+<input id="scrapPct" value="90" oninput="validateInputs()">
+<input id="spongePct" value="10" oninput="validateInputs()">
 
-<h3>📊 Yield</h3>
-<input id="scrapYield" placeholder="Scrap Yield %" value="90" oninput="validateInputs()">
-<input id="spongeYield" placeholder="Sponge Yield %" value="78" oninput="validateInputs()">
-<input id="fillPct" placeholder="Fill %" value="92">
+<input id="scrapYield" value="90">
+<input id="spongeYield" value="78">
+<input id="fillPct" value="92">
 
-<h3>📐 Furnace Geometry</h3>
 <input id="topDia" placeholder="Top Dia (inch)">
 <input id="bottomDia" placeholder="Bottom Dia (inch)">
-<input id="taper" placeholder="Taper Height (inch)">
-<input id="height" placeholder="Total Height (inch)">
-<input id="lastHeat" placeholder="Last Heat (kg) Optional">
+<input id="taper" placeholder="Taper (inch)">
+<input id="height" placeholder="Height (inch)">
+<input id="lastHeat" placeholder="Last Heat kg (Optional)">
 
 <button onclick="calcMetal()">Calculate</button>
-<button onclick="autoAdjust()">🤖 Auto Optimize Mix</button>
 
 <div id="output" class="result"></div>
 <div id="ai" class="result"></div>
-
 </div>
 
+<!-- RAMMING -->
 <div class="card">
 <h3>🧱 Ramming Mass</h3>
-<select id="liningType">
-<option>Furnace</option>
-<option>Ladle</option>
-<option>Tundish</option>
-</select>
-<input id="shellDia" placeholder="Shell Dia (mm)">
-<input id="liningThk" placeholder="Thickness (mm)">
-<input id="heightRM" placeholder="Height (mm)">
+<input id="shellDia" placeholder="Shell Dia mm">
+<input id="liningThk" placeholder="Thickness mm">
+<input id="heightRM" placeholder="Height mm">
 <button onclick="calcRamming()">Calculate</button>
 <div id="rammingResult" class="result"></div>
 </div>
 
+<!-- MN -->
 <div class="card">
 <h3>⚙ Mn Calculator</h3>
-<input id="metalTon" placeholder="Metal Ton">
+<input id="metalKg" placeholder="Metal kg">
 <input id="targetMn" placeholder="Target Mn %">
 <input id="currentMn" placeholder="Current Mn %">
+<input id="alloyMn" placeholder="Alloy Mn %">
 <input id="recoveryMn" placeholder="Recovery %">
 <button onclick="calcMn()">Calculate</button>
 <div id="mnResult" class="result"></div>
 </div>
 
+<!-- CARBON -->
 <div class="card">
 <h3>🔥 Carbon Control</h3>
-<input id="metalC" placeholder="Metal Ton">
+
+<select id="carbonMode">
+<option value="up">Carbon UP</option>
+<option value="down">Carbon DOWN</option>
+</select>
+
+<input id="metalC" placeholder="Metal kg">
 <input id="targetC" placeholder="Target C %">
 <input id="currentC" placeholder="Current C %">
+<input id="ciPercent" placeholder="C % in CI">
+<input id="feo" placeholder="FeO %">
+
 <button onclick="calcCarbon()">Calculate</button>
 <div id="carbonResult" class="result"></div>
 </div>
 
+<!-- LAB -->
 <div class="card">
-<h3>🧪 Lab Guide</h3>
+<h3>🧪 Lab Procedures</h3>
 <div class="result">
-1. Sample grind karo<br>
-2. 1g weigh karo<br>
-3. Acid digestion (HCl+HNO3)<br>
-4. Heat till dissolve<br>
-5. Filter<br>
-6. Titration<br>
-7. Result calculate<br><br>
-Fe → Dichromate<br>
-Mn → KMnO4<br>
-SiO2 → Gravimetric
+<b>FeO (Slag/Mill Scale)</b><br>
+Grind → 0.5g weigh → HCl digestion → SnCl₂ reduction → Dichromate titration<br>
+FeO = V × 1.6<br><br>
+
+<b>Sponge Iron FeM</b><br>
+CuSO₄ leaching → Filter → Dry → Weigh<br><br>
+
+<b>FeT</b><br>
+Acid dissolve → Reduction → Titration<br>
+FeT = V × 1.117<br><br>
+
+<b>Oxide</b><br>
+FeO = FeT - FeM<br>
+SiO₂ = Residue<br>
+CaO = EDTA<br>
+MnO = KMnO₄
 </div>
 </div>
 
 <script>
 
-// Maintenance auto remove
-if(new Date() > new Date("2026-04-10")){
-document.getElementById("banner").style.display="none";
+// 🔥 AUTO REMOVE BANNER AFTER 10 APRIL 2026
+let today = new Date();
+let endDate = new Date("2026-04-10T23:59:59");
+
+if(today > endDate){
+document.getElementById("banner").style.display = "none";
 }
 
-// Validation
+// validation
 function validateInputs(){
-let scrap=parseFloat(scrapPct.value)||0;
-let sponge=parseFloat(spongePct.value)||0;
+let s=parseFloat(scrapPct.value)||0;
+let sp=parseFloat(spongePct.value)||0;
 
-if(scrap+sponge!=100){
+if(s+sp!=100){
 scrapPct.style.border="2px solid red";
 spongePct.style.border="2px solid red";
 }else{
@@ -117,110 +135,78 @@ spongePct.style.border="2px solid green";
 }
 }
 
-// Furnace calc
+// furnace
 function calcMetal(){
+let s=parseFloat(scrapPct.value)||0;
+let sp=parseFloat(spongePct.value)||0;
 
-let scrap=parseFloat(scrapPct.value)||0;
-let sponge=parseFloat(spongePct.value)||0;
+if(s+sp!=100){output.innerHTML="❌ Scrap+Sponge=100%";return;}
 
-if(scrap+sponge!=100){
-output.innerHTML="❌ Scrap+Sponge=100";
-return;
-}
-
-let scrapY=parseFloat(scrapYield.value)||90;
-let spongeY=parseFloat(spongeYield.value)||78;
+let sy=parseFloat(scrapYield.value)||90;
+let spy=parseFloat(spongeYield.value)||78;
 let fill=parseFloat(fillPct.value)||92;
 
-let top=topDia.value*0.0254;
-let bottom=bottomDia.value*0.0254;
-let taperVal=taper.value*0.0254;
-let heightVal=height.value*0.0254;
+let t=parseFloat(topDia.value)*0.0254;
+let b=parseFloat(bottomDia.value)*0.0254;
+let tp=parseFloat(taper.value)*0.0254;
+let h=parseFloat(height.value)*0.0254;
 
-let r1=top/2, r2=bottom/2;
+if(!t||!b||!tp||!h){output.innerHTML="❌ Enter dimensions";return;}
 
-let v1=(Math.PI*taperVal/3)*(r1*r1+r2*r2+r1*r2);
-let v2=Math.PI*r2*r2*(heightVal-taperVal);
+let r1=t/2,r2=b/2;
 
-let volume=(v1+v2)*(fill/100);
-let theoretical=(volume*7450)/1000;
+let v=(Math.PI*tp/3)*(r1*r1+r2*r2+r1*r2)+Math.PI*r2*r2*(h-tp);
+let vol=v*(fill/100);
 
-let totalYield=((scrap*scrapY)+(sponge*spongeY))/100;
-let practical=theoretical*(totalYield/100);
+let theo=(vol*7450)/1000;
 
-let last=parseFloat(lastHeat.value);
-let learn=parseFloat(localStorage.getItem("learn"))||1;
+let y=((s*sy)+(sp*spy))/100;
+let act=theo*(y/100);
 
-if(last>0){
-learn=(last/1000)/practical;
-localStorage.setItem("learn",learn);
+output.innerHTML="🔥 "+act.toFixed(2)+" Ton<br>📊 Yield "+y.toFixed(1)+"%";
+
+ai.innerHTML = (y<88) ? "🔴 Low Yield" : "🟢 Stable Heat";
 }
 
-let final=practical*learn;
-
-output.innerHTML=
-"📐 "+theoretical.toFixed(2)+" Ton<br>"+
-"🔥 "+practical.toFixed(2)+" Ton<br>"+
-"🚀 "+final.toFixed(2)+" Ton<br>"+
-"📊 Yield "+totalYield.toFixed(1)+"%";
-
-smartAI(totalYield);
-}
-
-// Auto adjust
-function autoAdjust(){
-let scrap=50,sponge=50;
-let scrapY=scrapYield.value||90;
-let spongeY=spongeYield.value||78;
-
-for(let i=0;i<20;i++){
-let y=((scrap*scrapY)+(sponge*spongeY))/100;
-if(y<90){scrap++;sponge--;}
-}
-
-scrapPct.value=scrap;
-spongePct.value=sponge;
-}
-
-// AI
-function smartAI(y){
-if(y<88){
-ai.innerHTML="🔴 Low Yield → Increase Scrap";
-}else{
-ai.innerHTML="🟢 Stable Heat";
-}
-}
-
-// Ramming
+// ramming
 function calcRamming(){
-let d=shellDia.value/1000;
-let t=liningThk.value/1000;
-let h=heightRM.value/1000;
+let d=parseFloat(shellDia.value)/1000;
+let t=parseFloat(liningThk.value)/1000;
+let h=parseFloat(heightRM.value)/1000;
 
-let vol=Math.PI*(d/2)*(d/2)*h - Math.PI*((d/2-t)*(d/2-t))*h;
+if(!d||!t||!h){rammingResult.innerHTML="❌ Enter values";return;}
+
+let vol=Math.PI*(d/2)**2*h - Math.PI*((d/2-t)**2)*h;
 rammingResult.innerHTML="🧱 "+(vol*2600).toFixed(0)+" kg";
 }
 
-// Mn
+// mn
 function calcMn(){
-let m=metalTon.value;
-let t=targetMn.value;
-let c=currentMn.value;
-let r=recoveryMn.value/100;
+let m=parseFloat(metalKg.value);
+let t=parseFloat(targetMn.value);
+let c=parseFloat(currentMn.value);
+let a=parseFloat(alloyMn.value);
+let r=parseFloat(recoveryMn.value)/100;
 
-mnResult.innerHTML="⚙ "+((m*1000*(t-c))/(r*100)).toFixed(1)+" kg";
+if(!m||!t||!c||!a||!r){mnResult.innerHTML="❌ Enter all";return;}
+
+mnResult.innerHTML="⚙ "+((m*(t-c))/(a*r/100)).toFixed(1)+" kg";
 }
 
-// Carbon
+// carbon
 function calcCarbon(){
-let m=metalC.value;
-let t=targetC.value;
-let c=currentC.value;
+let m=parseFloat(metalC.value);
+let t=parseFloat(targetC.value);
+let c=parseFloat(currentC.value);
 
-if(t>c){
-carbonResult.innerHTML="⬆ CI: "+(m*1000*(t-c)/100).toFixed(1)+" kg";
+if(!m||!t||!c){carbonResult.innerHTML="❌ Enter values";return;}
+
+if(carbonMode.value=="up"){
+let ci=parseFloat(ciPercent.value);
+carbonResult.innerHTML="⬆ "+(m*(t-c)/(ci/100)).toFixed(1)+" kg CI";
 }else{
-carbonResult.innerHTML="⬇ Sponge: "+(m*10*(c-t)).toFixed(1)+" kg";
+let f=parseFloat(feo.value)||15;
+carbonResult.innerHTML="⬇ "+(m*(c-t)/(f/100)).toFixed(1)+" kg Sponge";
 }
 }
 
