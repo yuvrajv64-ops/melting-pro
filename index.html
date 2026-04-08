@@ -2,210 +2,226 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MeltingPro FINAL DEBUG</title>
+<title>Furnace Metal Calculator</title>
 
 <style>
 body{margin:0;font-family:Arial;background:#0f172a;color:#fff;}
 header{background:#020617;padding:12px;text-align:center;color:#f97316;font-weight:bold;}
-.card{background:#111827;padding:12px;margin:10px;border-radius:10px;}
-input{width:100%;padding:10px;margin:5px 0;background:#1e293b;color:#fff;border:none;}
-button{width:100%;padding:12px;background:#f97316;color:#000;border:none;margin-top:10px;}
-.result{background:#1e293b;padding:10px;margin-top:10px;}
 .banner{background:#f97316;color:#000;text-align:center;padding:8px;font-weight:bold;}
+.card{background:#111827;padding:15px;margin:10px;border-radius:10px;}
+input,select{width:100%;padding:10px;margin:5px 0;background:#1e293b;color:#fff;border:none;border-radius:6px;}
+button{width:100%;padding:12px;background:#f97316;border:none;color:#000;font-weight:bold;border-radius:6px;margin-top:5px;}
+.result{background:#1e293b;padding:12px;margin-top:10px;border-radius:6px;}
+h3{color:#f97316;}
 </style>
-
 </head>
 
 <body>
 
-<div id="maint" class="banner">⚠ App under maintenance till 10 April</div>
-
-<header>🔥 MeltingPro FINAL DEBUG</header>
+<div id="banner" class="banner">⚠ App under maintenance till 10 April</div>
+<header>🔥 Furnace Metal Calculator</header>
 
 <div class="card">
-<h3>🔥 Furnace Calculator</h3>
 
-<input id="scrapPct" placeholder="Scrap %">
-<input id="spongePct" placeholder="Sponge %">
+<h3>⚙ Charge Mix</h3>
+<input id="scrapPct" placeholder="Scrap %" value="90" oninput="validateInputs()">
+<input id="spongePct" placeholder="Sponge %" value="10" oninput="validateInputs()">
 
-<input id="scrapYield" placeholder="Scrap Yield %" value="90">
-<input id="spongeYield" placeholder="Sponge Yield %" value="78">
-
+<h3>📊 Yield</h3>
+<input id="scrapYield" placeholder="Scrap Yield %" value="90" oninput="validateInputs()">
+<input id="spongeYield" placeholder="Sponge Yield %" value="78" oninput="validateInputs()">
 <input id="fillPct" placeholder="Fill %" value="92">
 
+<h3>📐 Furnace Geometry</h3>
 <input id="topDia" placeholder="Top Dia (inch)">
 <input id="bottomDia" placeholder="Bottom Dia (inch)">
 <input id="taper" placeholder="Taper Height (inch)">
 <input id="height" placeholder="Total Height (inch)">
+<input id="lastHeat" placeholder="Last Heat (kg) Optional">
 
-<input id="lastHeat" placeholder="Last Heat (kg) OPTIONAL">
-
-<button id="calcBtn">Calculate</button>
+<button onclick="calcMetal()">Calculate</button>
+<button onclick="autoAdjust()">🤖 Auto Optimize Mix</button>
 
 <div id="output" class="result"></div>
-<div id="aiSuggestion" class="result"></div>
-<div id="debug" class="result"></div>
+<div id="ai" class="result"></div>
 
+</div>
+
+<div class="card">
+<h3>🧱 Ramming Mass</h3>
+<select id="liningType">
+<option>Furnace</option>
+<option>Ladle</option>
+<option>Tundish</option>
+</select>
+<input id="shellDia" placeholder="Shell Dia (mm)">
+<input id="liningThk" placeholder="Thickness (mm)">
+<input id="heightRM" placeholder="Height (mm)">
+<button onclick="calcRamming()">Calculate</button>
+<div id="rammingResult" class="result"></div>
 </div>
 
 <div class="card">
 <h3>⚙ Mn Calculator</h3>
-<input id="mnMetal" placeholder="Metal (Ton)">
-<input id="mnCurrent" placeholder="Current Mn %">
-<input id="mnTarget" placeholder="Target Mn %">
-<button onclick="calcMn()">Calculate Mn</button>
+<input id="metalTon" placeholder="Metal Ton">
+<input id="targetMn" placeholder="Target Mn %">
+<input id="currentMn" placeholder="Current Mn %">
+<input id="recoveryMn" placeholder="Recovery %">
+<button onclick="calcMn()">Calculate</button>
 <div id="mnResult" class="result"></div>
 </div>
 
 <div class="card">
-<h3>⚡ Carbon Calculator</h3>
-<input id="cMetal" placeholder="Metal (Ton)">
-<input id="cCurrent" placeholder="Current C %">
-<input id="cTarget" placeholder="Target C %">
-<button onclick="calcCarbon()">Calculate Carbon</button>
-<div id="cResult" class="result"></div>
+<h3>🔥 Carbon Control</h3>
+<input id="metalC" placeholder="Metal Ton">
+<input id="targetC" placeholder="Target C %">
+<input id="currentC" placeholder="Current C %">
+<button onclick="calcCarbon()">Calculate</button>
+<div id="carbonResult" class="result"></div>
+</div>
+
+<div class="card">
+<h3>🧪 Lab Guide</h3>
+<div class="result">
+1. Sample grind karo<br>
+2. 1g weigh karo<br>
+3. Acid digestion (HCl+HNO3)<br>
+4. Heat till dissolve<br>
+5. Filter<br>
+6. Titration<br>
+7. Result calculate<br><br>
+Fe → Dichromate<br>
+Mn → KMnO4<br>
+SiO2 → Gravimetric
+</div>
 </div>
 
 <script>
 
-// 🔥 BUTTON BIND FIX
-document.getElementById("calcBtn").addEventListener("click", calcMetal);
+// Maintenance auto remove
+if(new Date() > new Date("2026-04-10")){
+document.getElementById("banner").style.display="none";
+}
 
-// 🔥 MAIN CALC (SAFE)
+// Validation
+function validateInputs(){
+let scrap=parseFloat(scrapPct.value)||0;
+let sponge=parseFloat(spongePct.value)||0;
+
+if(scrap+sponge!=100){
+scrapPct.style.border="2px solid red";
+spongePct.style.border="2px solid red";
+}else{
+scrapPct.style.border="2px solid green";
+spongePct.style.border="2px solid green";
+}
+}
+
+// Furnace calc
 function calcMetal(){
 
-try{
+let scrap=parseFloat(scrapPct.value)||0;
+let sponge=parseFloat(spongePct.value)||0;
 
-let debug = document.getElementById("debug");
-debug.innerHTML = "Running...";
-
-// SAFE INPUT FETCH
-let scrap = parseFloat(document.getElementById("scrapPct").value) || 0;
-let sponge = parseFloat(document.getElementById("spongePct").value) || 0;
-
-let scrapY = parseFloat(document.getElementById("scrapYield").value) || 90;
-let spongeY = parseFloat(document.getElementById("spongeYield").value) || 78;
-
-let fill = parseFloat(document.getElementById("fillPct").value) || 92;
-
-let top = parseFloat(document.getElementById("topDia").value);
-let bottom = parseFloat(document.getElementById("bottomDia").value);
-let taper = parseFloat(document.getElementById("taper").value);
-let height = parseFloat(document.getElementById("height").value);
-
-let last = parseFloat(document.getElementById("lastHeat").value);
-
-let output = document.getElementById("output");
-
-// VALIDATION
-if((scrap + sponge) != 100){
-output.innerHTML="❌ Scrap + Sponge must = 100%";
+if(scrap+sponge!=100){
+output.innerHTML="❌ Scrap+Sponge=100";
 return;
 }
 
-if(isNaN(top)||isNaN(bottom)||isNaN(taper)||isNaN(height)){
-output.innerHTML="❌ Enter furnace values";
-return;
-}
+let scrapY=parseFloat(scrapYield.value)||90;
+let spongeY=parseFloat(spongeYield.value)||78;
+let fill=parseFloat(fillPct.value)||92;
 
-// CALC
-top*=0.0254; bottom*=0.0254; taper*=0.0254; height*=0.0254;
+let top=topDia.value*0.0254;
+let bottom=bottomDia.value*0.0254;
+let taperVal=taper.value*0.0254;
+let heightVal=height.value*0.0254;
 
 let r1=top/2, r2=bottom/2;
 
-let v1=(Math.PI*taper/3)*(r1*r1+r2*r2+r1*r2);
-let v2=Math.PI*r2*r2*(height-taper);
+let v1=(Math.PI*taperVal/3)*(r1*r1+r2*r2+r1*r2);
+let v2=Math.PI*r2*r2*(heightVal-taperVal);
 
 let volume=(v1+v2)*(fill/100);
-
-let density=7450;
-let theoretical=(volume*density)/1000;
+let theoretical=(volume*7450)/1000;
 
 let totalYield=((scrap*scrapY)+(sponge*spongeY))/100;
 let practical=theoretical*(totalYield/100);
 
-// AUTO LEARN
-let learn=parseFloat(localStorage.getItem("furnaceLearn"))||1;
+let last=parseFloat(lastHeat.value);
+let learn=parseFloat(localStorage.getItem("learn"))||1;
 
-if(!isNaN(last)&&last>0){
+if(last>0){
 learn=(last/1000)/practical;
-localStorage.setItem("furnaceLearn",learn);
+localStorage.setItem("learn",learn);
 }
 
 let final=practical*learn;
 
-// OUTPUT
 output.innerHTML=
-"📐 Theoretical: "+theoretical.toFixed(2)+" Ton<br>"+
-"🔥 After Yield: "+practical.toFixed(2)+" Ton<br>"+
-"🚀 Final: "+final.toFixed(2)+" Ton<br>"+
-"📊 Yield: "+totalYield.toFixed(1)+"%<br>"+
-"🧠 Learn: "+learn.toFixed(3);
+"📐 "+theoretical.toFixed(2)+" Ton<br>"+
+"🔥 "+practical.toFixed(2)+" Ton<br>"+
+"🚀 "+final.toFixed(2)+" Ton<br>"+
+"📊 Yield "+totalYield.toFixed(1)+"%";
 
-// AI CALL
-smartAI(totalYield, scrap, sponge);
-
-// DEBUG
-debug.innerHTML="✅ Success";
-
-}catch(err){
-document.getElementById("debug").innerHTML="❌ Error: "+err.message;
+smartAI(totalYield);
 }
 
+// Auto adjust
+function autoAdjust(){
+let scrap=50,sponge=50;
+let scrapY=scrapYield.value||90;
+let spongeY=spongeYield.value||78;
+
+for(let i=0;i<20;i++){
+let y=((scrap*scrapY)+(sponge*spongeY))/100;
+if(y<90){scrap++;sponge--;}
 }
 
-// 🤖 AI
-function smartAI(yieldVal, scrap, sponge){
-
-let msg="";
-
-if(yieldVal<88){
-msg+="🔴 Low Yield → Increase scrap<br>";
-}
-else if(yieldVal<92){
-msg+="🟡 Normal Yield<br>";
-}
-else{
-msg+="🟢 High Yield<br>";
+scrapPct.value=scrap;
+spongePct.value=sponge;
 }
 
-if(sponge>45){
-msg+="⚠ High Sponge → Slag ↑<br>";
+// AI
+function smartAI(y){
+if(y<88){
+ai.innerHTML="🔴 Low Yield → Increase Scrap";
+}else{
+ai.innerHTML="🟢 Stable Heat";
+}
 }
 
-document.getElementById("aiSuggestion").innerHTML=msg;
+// Ramming
+function calcRamming(){
+let d=shellDia.value/1000;
+let t=liningThk.value/1000;
+let h=heightRM.value/1000;
+
+let vol=Math.PI*(d/2)*(d/2)*h - Math.PI*((d/2-t)*(d/2-t))*h;
+rammingResult.innerHTML="🧱 "+(vol*2600).toFixed(0)+" kg";
 }
 
-// ⚙ Mn
+// Mn
 function calcMn(){
-let metal=parseFloat(document.getElementById("mnMetal").value)||0;
-let current=parseFloat(document.getElementById("mnCurrent").value)||0;
-let target=parseFloat(document.getElementById("mnTarget").value)||0;
+let m=metalTon.value;
+let t=targetMn.value;
+let c=currentMn.value;
+let r=recoveryMn.value/100;
 
-let req=((target-current)/100)*metal*1000;
-
-document.getElementById("mnResult").innerHTML=
-"⚙ Mn Required: "+req.toFixed(1)+" kg";
+mnResult.innerHTML="⚙ "+((m*1000*(t-c))/(r*100)).toFixed(1)+" kg";
 }
 
-// ⚡ Carbon
+// Carbon
 function calcCarbon(){
-let metal=parseFloat(document.getElementById("cMetal").value)||0;
-let current=parseFloat(document.getElementById("cCurrent").value)||0;
-let target=parseFloat(document.getElementById("cTarget").value)||0;
+let m=metalC.value;
+let t=targetC.value;
+let c=currentC.value;
 
-let req=((target-current)/100)*metal*1000;
-
-document.getElementById("cResult").innerHTML=
-"⚡ Carbon Required: "+req.toFixed(1)+" kg";
+if(t>c){
+carbonResult.innerHTML="⬆ CI: "+(m*1000*(t-c)/100).toFixed(1)+" kg";
+}else{
+carbonResult.innerHTML="⬇ Sponge: "+(m*10*(c-t)).toFixed(1)+" kg";
 }
-
-// ⏳ MAINT AUTO REMOVE
-let today=new Date();
-let lastDate=new Date("2026-04-10");
-
-if(today>lastDate){
-document.getElementById("maint").style.display="none";
 }
 
 </script>
