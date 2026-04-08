@@ -2,336 +2,307 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Furnace Metal Calculator</title>
+<title>MeltingPro – Furnace Metal Calculator</title>
 
 <style>
 body{margin:0;font-family:Arial;background:#0f172a;color:#fff;}
-header{background:#020617;padding:12px;text-align:center;color:#f97316;font-weight:bold;}
-.banner{background:#f97316;color:#000;text-align:center;padding:8px;font-weight:bold;}
-.card{background:#111827;padding:15px;margin:10px;border-radius:10px;}
-input,select{width:100%;padding:10px;margin:5px 0;background:#1e293b;color:#fff;border:none;border-radius:6px;}
-button{width:100%;padding:12px;background:#f97316;border:none;color:#000;font-weight:bold;border-radius:6px;margin-top:5px;}
-.result{background:#1e293b;padding:12px;margin-top:10px;border-radius:6px;}
-h3{color:#f97316;}
+
+.header{padding:10px;text-align:center;font-weight:bold;color:#f97316;}
+
+.card{background:#1e293b;padding:15px;margin:10px;border-radius:10px;}
+
+input,select{
+width:100%;padding:10px;margin:5px 0;
+background:#0f172a;color:#fff;border:none;border-radius:5px;
+}
+
+button{
+width:100%;padding:12px;background:#f97316;
+border:none;color:#000;font-weight:bold;margin-top:10px;border-radius:5px;
+}
+
+.result{margin-top:10px;padding:10px;background:#111827;border-radius:5px;}
+
+.green{border:2px solid #22c55e;}
+.red{border:2px solid #ef4444;}
+
+.banner{
+background:#f97316;color:#000;text-align:center;padding:8px;font-weight:bold;
+}
 </style>
 </head>
 
 <body>
 
-<div id="banner" class="banner">
-⚠ App under maintenance till 10 April 2026
+<div id="maint" class="banner"></div>
+
+<div class="header">
+🔥 MeltingPro – Furnace Metal Calculator
 </div>
 
-<header>🔥 Furnace Metal Calculator</header>
-
-<!-- FURNACE -->
 <div class="card">
-<h3>⚙ Furnace Calculation</h3>
-
-<input id="scrapPct" value="90" oninput="validateInputs()">
-<input id="spongePct" value="10" oninput="validateInputs()">
-
-<input id="scrapYield" value="90">
-<input id="spongeYield" value="78">
-<input id="fillPct" value="92">
-
-<input id="topDia" placeholder="Top Dia (inch)">
-<input id="bottomDia" placeholder="Bottom Dia (inch)">
-<input id="taper" placeholder="Taper (inch)">
-<input id="height" placeholder="Height (inch)">
-<input id="lastHeat" placeholder="Last Heat kg (Optional)">
-
-<button onclick="calcMetal()">Calculate</button>
-
-<div id="output" class="result"></div>
-<div id="ai" class="result"></div>
+<select id="tool" onchange="showTool()">
+<option value="furnace">Furnace Metal</option>
+<option value="carbon">Carbon</option>
+<option value="mn">Mn</option>
+<option value="simn">Si-Mn</option>
+<option value="feo">FeO</option>
+<option value="ramming">Ramming Mass</option>
+<option value="tap">Tapping AI</option>
+</select>
 </div>
 
-<!-- RAMMING -->
-<div class="card">
-<h3>🧱 Ramming Mass</h3>
-<input id="shellDia" placeholder="Shell Dia mm">
-<input id="liningThk" placeholder="Thickness mm">
-<input id="heightRM" placeholder="Height mm">
-<button onclick="calcRamming()">Calculate</button>
-<div id="rammingResult" class="result"></div>
+<!-- ================= FURNACE ================= -->
+<div id="furnace" class="card">
+
+<h3>🔥 Furnace Metal</h3>
+
+<input id="scrap" placeholder="Scrap %">
+<input id="sponge" placeholder="Sponge %">
+<input id="scrapY" placeholder="Scrap Yield %">
+<input id="spongeY" placeholder="Sponge Yield %">
+<input id="fill" placeholder="Fill %">
+<input id="density" placeholder="Density">
+<input id="vol" placeholder="Volume">
+<input id="loss" placeholder="Loss %">
+<input id="eff" placeholder="Efficiency %">
+<input id="lastHeat" placeholder="Last Heat (kg)">
+
+<button onclick="calcFurnace()">Calculate</button>
+
+<div id="furnaceOut" class="result"></div>
+<div id="furnaceSug" class="result"></div>
+
 </div>
 
-<!-- MN -->
-<div class="card">
-<h3>⚙ Mn Calculator</h3>
-<input id="metalKg" placeholder="Metal kg">
-<input id="targetMn" placeholder="Target Mn %">
-<input id="currentMn" placeholder="Current Mn %">
-<input id="alloyMn" placeholder="Alloy Mn %">
-<input id="recoveryMn" placeholder="Recovery %">
-<button onclick="calcMn()">Calculate</button>
-<div id="mnResult" class="result"></div>
-</div>
+<!-- ================= CARBON ================= -->
+<div id="carbon" class="card" style="display:none;">
 
-<!-- CARBON -->
-<div class="card">
 <h3>🔥 Carbon Control</h3>
 
-<select id="carbonMode">
+<select id="cMode">
 <option value="up">Carbon UP</option>
 <option value="down">Carbon DOWN</option>
 </select>
 
-<input id="metalC" placeholder="Metal kg">
-<input id="targetC" placeholder="Target C %">
-<input id="currentC" placeholder="Current C %">
-<input id="ciPercent" placeholder="C % in CI">
-<input id="feo" placeholder="FeO %">
+<input id="metal" placeholder="Metal kg">
+<input id="cNow" placeholder="Current C %">
+<input id="cTarget" placeholder="Target C %">
+<input id="cMat" placeholder="C % in CI">
+<input id="feoVal" placeholder="FeO % (for down)">
 
 <button onclick="calcCarbon()">Calculate</button>
-<div id="carbonResult" class="result"></div>
+
+<div id="cOut" class="result"></div>
+
 </div>
 
-<!-- LAB -->
-<div class="card">
-<h3>🧪 Lab Procedures</h3>
-<div class="result">
-<b>FeO (Slag/Mill Scale)</b><br>
-Grind → 0.5g weigh → HCl digestion → SnCl₂ reduction → Dichromate titration<br>
-FeO = V × 1.6<br><br>
+<!-- ================= MN ================= -->
+<div id="mn" class="card" style="display:none;">
 
-<b>Sponge Iron FeM</b><br>
-CuSO₄ leaching → Filter → Dry → Weigh<br><br>
+<h3>⚙ Mn Calculator</h3>
 
-<b>FeT</b><br>
-Acid dissolve → Reduction → Titration<br>
-FeT = V × 1.117<br><br>
+<input id="mnMetal" placeholder="Metal kg">
+<input id="mnNow" placeholder="Current Mn %">
+<input id="mnTarget" placeholder="Target Mn %">
+<input id="mnAlloy" placeholder="Mn % in alloy">
+<input id="mnRec" placeholder="Recovery %">
 
-<b>Oxide</b><br>
-FeO = FeT - FeM<br>
-SiO₂ = Residue<br>
-CaO = EDTA<br>
-MnO = KMnO₄
-</div>
+<button onclick="calcMn()">Calculate</button>
+
+<div id="mnOut" class="result"></div>
+
 </div>
 
-  <div class="card">
-<h3>🤖 Tapping Prediction (Spectro AI)</h3>
+<!-- ================= SIMN ================= -->
+<div id="simn" class="card" style="display:none;">
 
-<select id="steelGrade">
-<option value="fe500">Fe500</option>
-<option value="fe500d">Fe500D</option>
-<option value="e250">E250BR</option>
-<option value="xls">XLS Grade</option>
+<h3>⚡ Si-Mn</h3>
+
+<input id="simnMetal" placeholder="Metal kg">
+<input id="simnNow" placeholder="Current Mn %">
+<input id="simnTarget" placeholder="Target Mn %">
+<input id="simnAlloy" placeholder="Alloy Mn %">
+<input id="simnRec" placeholder="Recovery %">
+
+<button onclick="calcSimn()">Calculate</button>
+
+<div id="simnOut" class="result"></div>
+
+</div>
+
+<!-- ================= FEO ================= -->
+<div id="feo" class="card" style="display:none;">
+
+<h3>🧪 FeO</h3>
+
+<input id="fet" placeholder="Fe Total %">
+<input id="fem" placeholder="Fe(M) %">
+
+<button onclick="calcFeo()">Calculate</button>
+
+<div id="feoOut" class="result"></div>
+
+</div>
+
+<!-- ================= RAMMING ================= -->
+<div id="ramming" class="card" style="display:none;">
+
+<h3>🧱 Ramming Mass</h3>
+
+<input id="dia" placeholder="Diameter (m)">
+<input id="height" placeholder="Height (m)">
+<input id="thick" placeholder="Thickness (m)">
+
+<button onclick="calcRamming()">Calculate</button>
+
+<div id="ramOut" class="result"></div>
+
+</div>
+
+<!-- ================= TAPPING ================= -->
+<div id="tap" class="card" style="display:none;">
+
+<h3>🤖 Tapping AI</h3>
+
+<select id="grade">
+<option>Fe500</option>
+<option>Fe500D</option>
+<option>E250</option>
+<option>XLS</option>
 </select>
 
 <input id="c" placeholder="C %">
-<input id="mn" placeholder="Mn %">
-<input id="si" placeholder="Si %">
-<input id="p" placeholder="P %">
+<input id="mnT" placeholder="Mn %">
 <input id="s" placeholder="S %">
-
+<input id="p" placeholder="P %">
+<input id="si" placeholder="Si %">
 <input id="cr" placeholder="Cr %">
 <input id="cu" placeholder="Cu %">
 <input id="ni" placeholder="Ni %">
-<input id="al" placeholder="Al %">
 
-<input id="temp" placeholder="Temperature °C">
+<button onclick="calcTap()">Check</button>
 
-<button onclick="tappingAI()">Check Tapping</button>
+<div id="tapOut" class="result"></div>
 
-<div id="tapResult" class="result"></div>
-  </div>
+</div>
+
 <script>
 
-// 🔥 AUTO REMOVE BANNER AFTER 10 APRIL 2026
+// maintenance auto hide
 let today = new Date();
-let endDate = new Date("2026-04-10T23:59:59");
+let end = new Date("2026-04-10");
 
-if(today > endDate){
-document.getElementById("banner").style.display = "none";
-}
-
-// validation
-function validateInputs(){
-let s=parseFloat(scrapPct.value)||0;
-let sp=parseFloat(spongePct.value)||0;
-
-if(s+sp!=100){
-scrapPct.style.border="2px solid red";
-spongePct.style.border="2px solid red";
+if(today <= end){
+document.getElementById("maint").innerHTML="⚠ App under maintenance till 10 April";
 }else{
-scrapPct.style.border="2px solid green";
-spongePct.style.border="2px solid green";
+document.getElementById("maint").style.display="none";
 }
+
+// switch
+function showTool(){
+let t = tool.value;
+["furnace","carbon","mn","simn","feo","ramming","tap"].forEach(id=>{
+document.getElementById(id).style.display="none";
+});
+document.getElementById(t).style.display="block";
 }
 
 // furnace
-function calcMetal(){
-let s=parseFloat(scrapPct.value)||0;
-let sp=parseFloat(spongePct.value)||0;
+function calcFurnace(){
+let volVal = parseFloat(vol.value)||10;
+let densityVal = parseFloat(density.value)||7.5;
+let effVal = parseFloat(eff.value)||90;
 
-if(s+sp!=100){output.innerHTML="❌ Scrap+Sponge=100%";return;}
+let metal = volVal * densityVal * (effVal/100);
 
-let sy=parseFloat(scrapYield.value)||90;
-let spy=parseFloat(spongeYield.value)||78;
-let fill=parseFloat(fillPct.value)||92;
+furnaceOut.innerHTML="🔥 "+metal.toFixed(2)+" Ton";
 
-let t=parseFloat(topDia.value)*0.0254;
-let b=parseFloat(bottomDia.value)*0.0254;
-let tp=parseFloat(taper.value)*0.0254;
-let h=parseFloat(height.value)*0.0254;
-
-if(!t||!b||!tp||!h){output.innerHTML="❌ Enter dimensions";return;}
-
-let r1=t/2,r2=b/2;
-
-let v=(Math.PI*tp/3)*(r1*r1+r2*r2+r1*r2)+Math.PI*r2*r2*(h-tp);
-let vol=v*(fill/100);
-
-let theo=(vol*7450)/1000;
-
-let y=((s*sy)+(sp*spy))/100;
-let act=theo*(y/100);
-
-output.innerHTML="🔥 "+act.toFixed(2)+" Ton<br>📊 Yield "+y.toFixed(1)+"%";
-
-ai.innerHTML = (y<88) ? "🔴 Low Yield" : "🟢 Stable Heat";
+if(effVal<85){
+furnaceSug.innerHTML="⚠ Low efficiency – check slag";
+}else{
+furnaceSug.innerHTML="✅ Stable heat";
 }
-
-// ramming
-function calcRamming(){
-let d=parseFloat(shellDia.value)/1000;
-let t=parseFloat(liningThk.value)/1000;
-let h=parseFloat(heightRM.value)/1000;
-
-if(!d||!t||!h){rammingResult.innerHTML="❌ Enter values";return;}
-
-let vol=Math.PI*(d/2)**2*h - Math.PI*((d/2-t)**2)*h;
-rammingResult.innerHTML="🧱 "+(vol*2600).toFixed(0)+" kg";
-}
-
-// mn
-function calcMn(){
-let m=parseFloat(metalKg.value);
-let t=parseFloat(targetMn.value);
-let c=parseFloat(currentMn.value);
-let a=parseFloat(alloyMn.value);
-let r=parseFloat(recoveryMn.value)/100;
-
-if(!m||!t||!c||!a||!r){mnResult.innerHTML="❌ Enter all";return;}
-
-mnResult.innerHTML="⚙ "+((m*(t-c))/(a*r/100)).toFixed(1)+" kg";
 }
 
 // carbon
 function calcCarbon(){
-let m=parseFloat(metalC.value);
-let t=parseFloat(targetC.value);
-let c=parseFloat(currentC.value);
+let m = +metal.value;
+let now = +cNow.value;
+let target = +cTarget.value;
 
-if(!m||!t||!c){carbonResult.innerHTML="❌ Enter values";return;}
-
-if(carbonMode.value=="up"){
-let ci=parseFloat(ciPercent.value);
-carbonResult.innerHTML="⬆ "+(m*(t-c)/(ci/100)).toFixed(1)+" kg CI";
+if(cMode.value=="up"){
+let mat = +cMat.value;
+let kg = ((target-now)/100)*m/(mat/100);
+cOut.innerHTML="⬆ Add "+kg.toFixed(1)+" kg CI";
 }else{
-let f=parseFloat(feo.value)||15;
-carbonResult.innerHTML="⬇ "+(m*(c-t)/(f/100)).toFixed(1)+" kg Sponge";
+let feo = +feoVal.value||10;
+let kg = ((now-target)/100)*m*6/feo;
+cOut.innerHTML="⬇ Add "+kg.toFixed(1)+" kg Sponge";
 }
 }
 
-  function tappingAI(){
+// mn
+function calcMn(){
+let m=+mnMetal.value;
+let now=+mnNow.value;
+let target=+mnTarget.value;
+let alloy=+mnAlloy.value;
+let rec=+mnRec.value;
 
-let grade = steelGrade.value;
+let kg=((target-now)/100*m)/((alloy/100)*(rec/100));
 
-let C = parseFloat(c.value)||0;
-let Mn = parseFloat(mn.value)||0;
-let Si = parseFloat(si.value)||0;
-let P = parseFloat(p.value)||0;
-let S = parseFloat(s.value)||0;
-
-let Cr = parseFloat(cr.value)||0;
-let Cu = parseFloat(cu.value)||0;
-let Ni = parseFloat(ni.value)||0;
-let Al = parseFloat(al.value)||0;
-
-let tempVal = parseFloat(temp.value)||0;
-
-let msg = "";
-let ready = true;
-
-// ================= FE500 BASE =================
-let Mn_min = 0.5, Mn_max = 0.8;
-let Si_max = 0.35;
-let P_max = 0.045;
-let S_max = 0.045;
-
-// ================= XLS SPECIAL =================
-if(grade === "xls"){
-
-let total = Cr + Cu + Ni;
-
-// individual limit
-if(Cr > 0.25 || Cu > 0.25 || Ni > 0.25){
-msg += "🔴 Cr/Cu/Ni individual > 0.25%<br>";
-ready = false;
+mnOut.innerHTML="Add "+kg.toFixed(1)+" kg Mn alloy";
 }
 
-// combined limit
-if(total < 0.4 || total > 0.7){
-msg += "🔴 Cr+Cu+Ni out of range (0.4–0.7)<br>";
-ready = false;
+// simn
+function calcSimn(){
+let m=+simnMetal.value;
+let now=+simnNow.value;
+let target=+simnTarget.value;
+let alloy=+simnAlloy.value;
+let rec=+simnRec.value;
+
+let kg=((target-now)/100*m)/((alloy/100)*(rec/100));
+
+simnOut.innerHTML="Add "+kg.toFixed(1)+" kg Si-Mn";
 }
 
-// Fe500 base also apply
+// feo
+function calcFeo(){
+let feo=(fet.value-fem.value)/0.777;
+feoOut.innerHTML="FeO ≈ "+feo.toFixed(2)+"%";
 }
 
-// ================= COMMON CHECK =================
+// ramming
+function calcRamming(){
+let d=+dia.value;
+let h=+height.value;
+let t=+thick.value;
 
-// Mn
-if(Mn < Mn_min){
-msg += "⚠ Mn Low → Add SiMn<br>";
-ready = false;
+let vol=3.14*d*h*t;
+let kg=vol*2600;
+
+ramOut.innerHTML="🧱 "+kg.toFixed(0)+" kg";
 }
 
-// Si
-if(Si > Si_max){
-msg += "⚠ Si High<br>";
-ready = false;
-}
+// tapping
+function calcTap(){
+let crv=+cr.value, cuv=+cu.value, niv=+ni.value;
 
-// P & S
-if(P > P_max){
-msg += "🔴 High P<br>";
-ready = false;
-}
-if(S > S_max){
-msg += "🔴 High S<br>";
-ready = false;
-}
-
-// Temperature
-if(tempVal < 1600){
-msg += "⚠ Low Temp → Wait<br>";
-ready = false;
-}
-if(tempVal > 1680){
-msg += "⚠ Overheat<br>";
-}
-
-// Aluminium
-if(Al < 0.01){
-msg += "⚠ Al low → Deoxidation required<br>";
-}
-
-// ================= FINAL RESULT =================
-
-if(ready){
-msg = "🟢 READY TO TAP<br>" + msg;
+if(grade.value=="XLS"){
+let sum=crv+cuv+niv;
+if(crv<=0.25 && cuv<=0.25 && niv<=0.25 && sum<=0.7){
+tapOut.innerHTML="🟢 XLS OK – Ready to Tap";
 }else{
-msg = "🔴 HOLD HEAT<br>" + msg;
+tapOut.innerHTML="🔴 Not XLS – adjust alloy";
+}
+}else{
+tapOut.innerHTML="🟢 Grade OK";
+}
 }
 
-document.getElementById("tapResult").innerHTML = msg;
-  }
 </script>
 
 </body>
-</html>
+  </html>
