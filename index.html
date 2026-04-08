@@ -1,45 +1,58 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MeltingPro Smart Melt AI</title>
 
 <style>
 body{
+margin:0;
+font-family:sans-serif;
 background:#0b1a2f;
 color:#fff;
-font-family:Arial;
-padding:10px;
 }
 
-h1{
+.header{
+text-align:center;
+padding:12px;
 color:#ff7a00;
+font-size:20px;
+}
+
+.page{
+display:none;
+padding-bottom:70px;
+}
+
+.active{
+display:block;
 }
 
 .card{
 background:#16263f;
+margin:10px;
 padding:15px;
-margin:10px 0;
 border-radius:10px;
 }
 
-input,select{
+input,select,textarea{
 width:100%;
-padding:10px;
-margin:5px 0;
+padding:14px;
+margin:6px 0;
 border:none;
-border-radius:5px;
+border-radius:6px;
 background:#0f1f35;
-color:#fff;
+color:white;
+font-size:16px;
 }
 
 button{
 width:100%;
-padding:12px;
+padding:14px;
 background:#ff7a00;
-color:#fff;
 border:none;
-border-radius:5px;
+border-radius:6px;
+color:white;
 font-weight:bold;
 }
 
@@ -47,48 +60,71 @@ font-weight:bold;
 margin-top:10px;
 padding:10px;
 background:#0f1f35;
-border-radius:5px;
+border-radius:6px;
+}
+
+.nav{
+position:fixed;
+bottom:0;
+width:100%;
+display:flex;
+background:#111;
+}
+
+.nav button{
+flex:1;
+padding:12px;
+background:#111;
+color:#fff;
+border:none;
+}
+
+.nav button.active{
+background:#ff7a00;
+color:#000;
 }
 </style>
-
 </head>
+
 <body>
 
-<div id="maint" style="background:orange;color:black;padding:10px;text-align:center;">
-⚠ App under maintenance till 10 April
-</div>
+<div class="header">🔥 MeltingPro Smart Melt AI</div>
 
-<h1>🔥 MeltingPro Smart Melt AI</h1>
+<!-- ================= PAGE 1 ================= -->
+<div id="calcPage" class="page active">
 
-<select id="menu" onchange="showSection()">
-<option value="furnace">Furnace Metal</option>
-<option value="carbon">Carbon</option>
-<option value="simn">Si-Mn</option>
+<div class="card">
+<select onchange="showCalc(this.value)">
+<option value="furnace">Furnace Metal Calculator</option>
+<option value="carbon">Carbon Control</option>
+<option value="simn">Si-Mn Calculator</option>
 <option value="ram">Ramming Mass</option>
-<option value="tap">Tapping AI</option>
+<option value="spectro">Spectro AI</option>
 </select>
+</div>
 
 <!-- FURNACE -->
 <div id="furnace" class="card">
-<h2>🔥 Furnace Metal</h2>
+<h3>🔥 Furnace Metal Calculator</h3>
 
-<input id="topDia" placeholder="Top Dia (m)">
-<input id="bottomDia" placeholder="Bottom Dia (m)">
-<input id="height" placeholder="Height (m)">
+<input id="top" placeholder="Top Dia (mm)">
+<input id="bottom" placeholder="Bottom Dia (mm)">
+<input id="taper" placeholder="Taper Height (mm)">
+<input id="height" placeholder="Total Height (mm)">
+
+<input id="scrap" placeholder="Scrap %">
+<input id="sponge" placeholder="Sponge %">
+<input id="scrapY" placeholder="Scrap Yield %">
+<input id="spongeY" placeholder="Sponge Yield %">
 
 <button onclick="calcFurnace()">Calculate</button>
 
 <div id="furnaceOut" class="result"></div>
-<div class="result">
-✔ Accurate frustum calculation<br>
-✔ Avoid overfilling<br>
-✔ Maintain yield
-</div>
 </div>
 
 <!-- CARBON -->
 <div id="carbon" class="card" style="display:none;">
-<h2>🔥 Carbon Control</h2>
+<h3>🔥 Carbon Control</h3>
 
 <select id="cMode" onchange="toggleCarbon()">
 <option value="up">Carbon UP</option>
@@ -99,217 +135,205 @@ border-radius:5px;
 <input id="cNow" placeholder="Current C%">
 <input id="cTarget" placeholder="Target C%">
 
-<input id="cMat" placeholder="C% in CI">
-<input id="feoVal" placeholder="FeO%" style="display:none;">
+<input id="ci" placeholder="C% in CI">
+<input id="feo" placeholder="FeO% (Sponge)" style="display:none;">
 
 <button onclick="calcCarbon()">Calculate</button>
-
 <div id="cOut" class="result"></div>
-<div class="result">
-✔ UP = CI use<br>
-✔ DOWN = Sponge use<br>
-✔ Avoid over correction
-</div>
 </div>
 
 <!-- SIMN -->
 <div id="simn" class="card" style="display:none;">
-<h2>⚡ Si-Mn</h2>
+<h3>⚡ Si-Mn Calculator</h3>
 
-<input id="simnMetal" placeholder="Metal kg">
-<input id="simnNow" placeholder="Current Mn%">
-<input id="simnTarget" placeholder="Target Mn%">
-<input id="simnAlloy" placeholder="Alloy Mn%">
-<input id="simnRec" placeholder="Recovery %">
+<input id="m" placeholder="Metal kg">
+<input id="mnNow" placeholder="Current Mn%">
+<input id="mnTarget" placeholder="Target Mn%">
+<input id="mnAlloy" placeholder="Alloy Mn%">
+<input id="rec" placeholder="Recovery %">
 
-<button onclick="calcSimn()">Calculate</button>
-
-<div id="simnOut" class="result"></div>
-<div class="result">
-✔ Add at 1550°C+<br>
-✔ Maintain slag basicity
-</div>
+<button onclick="calcMn()">Calculate</button>
+<div id="mnOut" class="result"></div>
 </div>
 
 <!-- RAMMING -->
 <div id="ram" class="card" style="display:none;">
-<h2>🧱 Ramming Mass</h2>
+<h3>🧱 Ramming Mass</h3>
 
-<input id="diaTop" placeholder="Top Dia (m)">
-<input id="diaBottom" placeholder="Bottom Dia (m)">
-<input id="heightR" placeholder="Height (m)">
-<input id="thick" placeholder="Thickness (m)">
+<input id="shell" placeholder="Shell Dia (inch)">
+<input id="farma" placeholder="Farma Dia (inch)">
+<input id="hR" placeholder="Height (inch)">
 
 <button onclick="calcRamming()">Calculate</button>
-
 <div id="ramOut" class="result"></div>
-<div class="result">
-✔ Frustum based lining<br>
-✔ Accurate patching kg
-</div>
 </div>
 
-<!-- TAPPING -->
-<div id="tap" class="card" style="display:none;">
-<h2>🤖 Tapping AI</h2>
+<!-- SPECTRO -->
+<div id="spectro" class="card" style="display:none;">
+<h3>🤖 Spectro AI</h3>
 
-<input id="c" placeholder="C%">
-<input id="mnT" placeholder="Mn%">
-<input id="s" placeholder="S%">
-<input id="p" placeholder="P%">
-<input id="cr" placeholder="Cr%">
-<input id="cu" placeholder="Cu%">
-<input id="ni" placeholder="Ni%">
+<textarea id="spectroData" placeholder="Paste spectro report"></textarea>
 
-<button onclick="calcTap()">Check</button>
+<button onclick="analyzeSpectro()">Analyze</button>
 
+<div id="specOut" class="result"></div>
+</div>
+
+</div>
+
+<!-- ================= PAGE 2 ================= -->
+<div id="aiPage" class="page">
+
+<div class="card">
+<h3>⚙ Auto Alloy</h3>
+
+<input id="metal2" placeholder="Metal kg">
+<input id="cNow2" placeholder="Current C%">
+<input id="cTarget2" placeholder="Target C%">
+<input id="mnNow2" placeholder="Current Mn%">
+<input id="mnTarget2" placeholder="Target Mn%">
+
+<button onclick="autoAlloy()">Calculate</button>
+<div id="alloyOut" class="result"></div>
+</div>
+
+<div class="card">
+<h3>🤖 Tapping Decision</h3>
+
+<input id="mn2" placeholder="Mn%">
+<input id="s2" placeholder="S%">
+<input id="p2" placeholder="P%">
+<input id="al2" placeholder="Al%">
+
+<button onclick="tappingDecision()">Check</button>
 <div id="tapOut" class="result"></div>
-<div class="result">
-✔ BIS grade detection<br>
-✔ Deoxidation suggestion
 </div>
+
+<div class="card">
+<h3>📊 Heat History</h3>
+
+<button onclick="showHistory()">Show</button>
+<div id="historyOut" class="result"></div>
+
+<button onclick="saveHeat()">Save</button>
+</div>
+
+</div>
+
+<!-- NAV -->
+<div class="nav">
+<button onclick="openPage('calcPage',this)" class="active">🧮</button>
+<button onclick="openPage('aiPage',this)">🤖</button>
 </div>
 
 <script>
 
-// maintenance auto remove
-let today = new Date();
-let target = new Date("2026-04-10");
-if(today > target){
-document.getElementById("maint").style.display="none";
+// NAVIGATION
+function openPage(id,btn){
+document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+document.getElementById(id).classList.add('active');
+
+document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+btn.classList.add('active');
 }
 
-// navigation
-function showSection(){
-let sec = document.getElementById("menu").value;
-
-document.getElementById("furnace").style.display="none";
-document.getElementById("carbon").style.display="none";
-document.getElementById("simn").style.display="none";
-document.getElementById("ram").style.display="none";
-document.getElementById("tap").style.display="none";
-
-document.getElementById(sec).style.display="block";
+// CALC SWITCH
+function showCalc(val){
+["furnace","carbon","simn","ram","spectro"].forEach(x=>{
+document.getElementById(x).style.display="none";
+});
+document.getElementById(val).style.display="block";
 }
 
-// furnace
+// FURNACE
 function calcFurnace(){
-
-let top = +topDia.value;
-let bottom = +bottomDia.value;
-let h = +height.value;
-
-let R = top/2;
-let r = bottom/2;
-
-let vol = (3.14*h*(R*R + R*r + r*r))/3;
-
-let metal = vol * 7.5;
-
-furnaceOut.innerHTML = "🔥 "+metal.toFixed(2)+" Ton";
+let t=top.value/1000,b=bottom.value/1000,h=height.value/1000;
+let vol=(Math.PI*h/3)*(t*t + b*b + t*b);
+let metal=vol*7.5;
+let y=((scrap.value*scrapY.value)+(sponge.value*spongeY.value))/100;
+furnaceOut.innerHTML="🔥 "+(metal*(y/100)).toFixed(2)+" Ton";
 }
 
-// carbon toggle
+// CARBON
 function toggleCarbon(){
-if(cMode.value=="up"){
-cMat.style.display="block";
-feoVal.style.display="none";
-}else{
-cMat.style.display="none";
-feoVal.style.display="block";
-}
+ci.style.display=(cMode.value=="up")?"block":"none";
+feo.style.display=(cMode.value=="down")?"block":"none";
 }
 
-// carbon
 function calcCarbon(){
-
-let m = +metal.value;
-let now = +cNow.value;
-let target = +cTarget.value;
-
+let m=metal.value,d=cTarget.value-cNow.value;
 if(cMode.value=="up"){
-let mat = +cMat.value;
-let kg = ((target-now)/100*m)/(mat/100);
-cOut.innerHTML = "⬆ Add "+kg.toFixed(1)+" kg CI";
+cOut.innerHTML="⬆ "+((d*m)/(ci.value/100)).toFixed(1)+" kg CI";
 }else{
-let feo = +feoVal.value;
-let kg = ((now-target)/100*m*6)/feo;
-cOut.innerHTML = "⬇ Add "+kg.toFixed(1)+" kg Sponge";
+cOut.innerHTML="⬇ "+((Math.abs(d)*m*10)/feo.value).toFixed(1)+" kg Sponge";
 }
 }
 
-// simn
-function calcSimn(){
-
-let m=+simnMetal.value;
-let now=+simnNow.value;
-let target=+simnTarget.value;
-let alloy=+simnAlloy.value;
-let rec=+simnRec.value;
-
-let kg=((target-now)/100*m)/((alloy/100)*(rec/100));
-
-simnOut.innerHTML="⚡ Add "+kg.toFixed(1)+" kg Si-Mn";
+// SIMN
+function calcMn(){
+let kg=((mnTarget.value-mnNow.value)/100*m.value)/((mnAlloy.value/100)*(rec.value/100));
+mnOut.innerHTML="⚡ "+kg.toFixed(1)+" kg";
 }
 
-// ramming
+// RAM
 function calcRamming(){
-
-let top=+diaTop.value;
-let bottom=+diaBottom.value;
-let h=+heightR.value;
-let t=+thick.value;
-
-let R1=top/2;
-let R2=bottom/2;
-
-let r1=R1-t;
-let r2=R2-t;
-
-let outer=(3.14*h*(R1*R1+R1*R2+R2*R2))/3;
-let inner=(3.14*h*(r1*r1+r1*r2+r2*r2))/3;
-
-let vol=outer-inner;
-
-let kg=vol*2600;
-
+let shellM=shell.value*0.0254;
+let farmaM=farma.value*0.0254;
+let h=hR.value*0.0254;
+let kg=(Math.PI*(shellM**2-farmaM**2)/4*h)*2600;
 ramOut.innerHTML="🧱 "+kg.toFixed(0)+" kg";
 }
 
-// tapping
-function calcTap(){
+// SPECTRO AI
+function analyzeSpectro(){
+let txt=spectroData.value;
+function v(k){let m=txt.match(new RegExp(k+"\\s*=\\s*([0-9.]+)","i"));return m?+m[1]:0;}
 
-let c=+document.getElementById("c").value;
-let mn=+document.getElementById("mnT").value;
-let s=+document.getElementById("s").value;
-let p=+document.getElementById("p").value;
-let cr=+document.getElementById("cr").value;
-let cu=+document.getElementById("cu").value;
-let ni=+document.getElementById("ni").value;
-
+let C=v("C"),Mn=v("Mn"),S=v("S"),P=v("P"),Cr=v("Cr"),Cu=v("Cu"),Ni=v("Ni"),Al=v("Al");
+let sum=Cr+Cu+Ni;
 let grade="";
 
-if(c<=0.25 && mn>=0.5 && s<=0.05 && p<=0.05){
-grade="Fe500";
+if(Cr<=0.25 && Cu<=0.25 && Ni<=0.25 && sum>=0.4 && sum<=0.7) grade="XLS";
+else if(C<=0.25 && S<=0.045 && P<=0.045) grade="Fe500D";
+else if(C<=0.30) grade="Fe500";
+else grade="Other";
+
+let warn="";
+if(Al>0.03) warn+="🔴 Nozzle choke risk<br>";
+
+specOut.innerHTML="🏆 "+grade+"<br>"+warn;
 }
 
-if(c<=0.25 && mn>=0.5 && s<=0.045 && p<=0.045){
-grade="Fe500D";
+// AUTO ALLOY
+function autoAlloy(){
+let m=metal2.value;
+let res="";
+if(cTarget2.value>cNow2.value) res+="⬆ CI "+(((cTarget2.value-cNow2.value)/100*m)/0.035).toFixed(1)+" kg<br>";
+if(mnTarget2.value>mnNow2.value) res+="⚡ SiMn "+(((mnTarget2.value-mnNow2.value)/100*m)/(0.6*0.75)).toFixed(1)+" kg";
+alloyOut.innerHTML=res;
 }
 
-if(c<=0.25 && mn<0.5){
-grade="E250BR";
+// TAPPING
+function tappingDecision(){
+let status="🟢 READY";
+if(mn2.value<0.5||al2.value>0.03) status="🔴 HOLD";
+tapOut.innerHTML=status;
 }
 
-if(cr<=0.25 && cu<=0.25 && ni<=0.25 && (cr+cu+ni)>=0.4){
-grade+=" + XLS";
+// HISTORY
+function saveHeat(){
+let arr=JSON.parse(localStorage.getItem("h")||"[]");
+arr.push({t:new Date().toLocaleString(),m:metal2.value});
+localStorage.setItem("h",JSON.stringify(arr));
+alert("Saved");
 }
 
-tapOut.innerHTML="🟢 "+grade+"<br>✔ Ready for tapping";
-
+function showHistory(){
+let arr=JSON.parse(localStorage.getItem("h")||"[]");
+historyOut.innerHTML=arr.map(x=>x.t+" | "+x.m).join("<br>");
 }
 
 </script>
 
 </body>
-</html>
+  </html>
