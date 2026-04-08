@@ -111,6 +111,33 @@ MnO = KMnO₄
 </div>
 </div>
 
+  <div class="card">
+<h3>🤖 Tapping Prediction (Spectro AI)</h3>
+
+<select id="steelGrade">
+<option value="fe500">Fe500</option>
+<option value="fe500d">Fe500D</option>
+<option value="e250">E250BR</option>
+<option value="xls">XLS Grade</option>
+</select>
+
+<input id="c" placeholder="C %">
+<input id="mn" placeholder="Mn %">
+<input id="si" placeholder="Si %">
+<input id="p" placeholder="P %">
+<input id="s" placeholder="S %">
+
+<input id="cr" placeholder="Cr %">
+<input id="cu" placeholder="Cu %">
+<input id="ni" placeholder="Ni %">
+<input id="al" placeholder="Al %">
+
+<input id="temp" placeholder="Temperature °C">
+
+<button onclick="tappingAI()">Check Tapping</button>
+
+<div id="tapResult" class="result"></div>
+  </div>
 <script>
 
 // 🔥 AUTO REMOVE BANNER AFTER 10 APRIL 2026
@@ -210,6 +237,100 @@ carbonResult.innerHTML="⬇ "+(m*(c-t)/(f/100)).toFixed(1)+" kg Sponge";
 }
 }
 
+  function tappingAI(){
+
+let grade = steelGrade.value;
+
+let C = parseFloat(c.value)||0;
+let Mn = parseFloat(mn.value)||0;
+let Si = parseFloat(si.value)||0;
+let P = parseFloat(p.value)||0;
+let S = parseFloat(s.value)||0;
+
+let Cr = parseFloat(cr.value)||0;
+let Cu = parseFloat(cu.value)||0;
+let Ni = parseFloat(ni.value)||0;
+let Al = parseFloat(al.value)||0;
+
+let tempVal = parseFloat(temp.value)||0;
+
+let msg = "";
+let ready = true;
+
+// ================= FE500 BASE =================
+let Mn_min = 0.5, Mn_max = 0.8;
+let Si_max = 0.35;
+let P_max = 0.045;
+let S_max = 0.045;
+
+// ================= XLS SPECIAL =================
+if(grade === "xls"){
+
+let total = Cr + Cu + Ni;
+
+// individual limit
+if(Cr > 0.25 || Cu > 0.25 || Ni > 0.25){
+msg += "🔴 Cr/Cu/Ni individual > 0.25%<br>";
+ready = false;
+}
+
+// combined limit
+if(total < 0.4 || total > 0.7){
+msg += "🔴 Cr+Cu+Ni out of range (0.4–0.7)<br>";
+ready = false;
+}
+
+// Fe500 base also apply
+}
+
+// ================= COMMON CHECK =================
+
+// Mn
+if(Mn < Mn_min){
+msg += "⚠ Mn Low → Add SiMn<br>";
+ready = false;
+}
+
+// Si
+if(Si > Si_max){
+msg += "⚠ Si High<br>";
+ready = false;
+}
+
+// P & S
+if(P > P_max){
+msg += "🔴 High P<br>";
+ready = false;
+}
+if(S > S_max){
+msg += "🔴 High S<br>";
+ready = false;
+}
+
+// Temperature
+if(tempVal < 1600){
+msg += "⚠ Low Temp → Wait<br>";
+ready = false;
+}
+if(tempVal > 1680){
+msg += "⚠ Overheat<br>";
+}
+
+// Aluminium
+if(Al < 0.01){
+msg += "⚠ Al low → Deoxidation required<br>";
+}
+
+// ================= FINAL RESULT =================
+
+if(ready){
+msg = "🟢 READY TO TAP<br>" + msg;
+}else{
+msg = "🔴 HOLD HEAT<br>" + msg;
+}
+
+document.getElementById("tapResult").innerHTML = msg;
+  }
 </script>
 
 </body>
