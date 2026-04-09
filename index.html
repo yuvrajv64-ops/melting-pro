@@ -172,53 +172,57 @@ document.getElementById("p"+p).classList.add("active");
 
 // FURNACE
 function calcFurnace(){
+let scrap = Number(document.getElementById("scrapP").value) || 0;
+let sponge = Number(document.getElementById("spongeP").value) || 0;
 
-let t = toMeter(Number(document.getElementById("top").value));
-let b = toMeter(Number(document.getElementById("bottom").value));
-let totalH = toMeter(Number(document.getElementById("height").value));
-let taperH = toMeter(Number(document.getElementById("taper").value));
-
-if(!t || !b || !totalH){
-furnaceRes.innerHTML="⚠️ Enter all dimensions";
+if((scrap + sponge) !== 100){
+furnaceRes.innerHTML = "⚠️ Scrap + Sponge = 100% hona chahiye";
 return;
-}
+if((scrap + sponge) !== 100){
+let total = scrap + sponge;
+scrap = (scrap/total)*100;
+sponge = (sponge/total)*100;
+  }}
+  
+let t = toMeter(Number(top.value));
+let b = toMeter(Number(bottom.value));
+let taper = toMeter(Number(document.getElementById("taper").value));
+let totalH = toMeter(Number(height.value));
 
-// safe taper
-if(taperH > totalH) taperH = totalH;
+let cylH = totalH - taper;
 
-let straightH = totalH - taperH;
+// volume
+let v1 = (Math.PI * taper / 12) * (t*t + b*b + t*b);
+let v2 = Math.PI * Math.pow(t/2,2) * cylH;
 
-// ===== FRUSTUM =====
-let v1 = (Math.PI * taperH / 3) *
-((t/2)**2 + (b/2)**2 + (t/2)*(b/2));
+let vol = v1 + v2;
 
-// ===== CYLINDER =====
-let v2 = Math.PI * (b/2)**2 * straightH;
+// density (molten steel)
+let density = 7.8;
 
-let volume = v1 + v2;
+// fill %
+let fillP = (Number(fill.value)||90)/100;
 
-// ===== MATERIAL MIX =====
-let scrap = Number(scrapP.value) || 50;
-let sponge = Number(spongeP.value) || 50;
+// yield
+let scrapP = Number(scrapP.value)||50;
+let spongeP = Number(spongeP.value)||50;
 
-// density (REALISTIC)
-let density =
-(scrap/100 * 7.8) +
-(sponge/100 * 3.5);
+let scrapY = (Number(scrapY.value)||90)/100;
+let spongeY = (Number(spongeY.value)||85)/100;
 
-// ===== YIELD =====
-let scrapYv = Number(scrapY.value) || 90;
-let spongeYv = Number(spongeY.value) || 85;
+let yieldF = (scrapP/100)*scrapY + (spongeP/100)*spongeY;
 
-let yieldMix =
-((scrap * scrapYv) + (sponge * spongeYv)) / 10000;
+// FINAL TON
+let ton = vol * density * fillP * yieldF;
+  let prevHeat = Number(prev.value)||0;
 
-// ===== FILL =====
-let fillP = (Number(fill.value) || 90) / 100;
+if(prevHeat > 0){
+let error = prevHeat - ton;
 
-// ===== FINAL =====
-let ton = volume * density * yieldMix * fillP;
-
+// 70% correction apply
+ton = ton + (error * 0.7);
+  }
+  
 // ===== PREVIOUS HEAT =====
 let prevHeat = Number(prev.value) || 0;
 
