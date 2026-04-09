@@ -8,7 +8,7 @@
 body{
 margin:0;
 font-family:Arial;
-background:linear-gradient(180deg,#081421,#0d2236);
+background:linear-gradient(180deg,#06121f,#0d2236);
 color:white;
 }
 
@@ -24,15 +24,13 @@ color:#ff7a00;
 /* CARD */
 .card{
 background:rgba(255,255,255,0.05);
-backdrop-filter:blur(10px);
 padding:15px;
 margin:12px;
 border-radius:15px;
-box-shadow:0 0 10px rgba(0,0,0,0.5);
 }
 
 /* INPUT */
-input,select{
+input,select,textarea{
 width:100%;
 padding:12px;
 margin:6px 0;
@@ -82,17 +80,17 @@ flex:1;
 
 <body>
 
-<div class="header">🔥 MeltingPro AI (Pro)</div>
+<div class="header">🔥 MeltingPro AI PRO</div>
 
 <!-- PAGE 1 -->
 <div id="p1" class="page active">
 
 <div class="card">
-<h3>🔥 Furnace Metal</h3>
+<h3>🔥 Furnace Metal (Advanced)</h3>
 
-<input id="top" placeholder="Top Dia">
-<input id="bottom" placeholder="Bottom Dia">
-<input id="height" placeholder="Height">
+<input id="top" placeholder="Top Dia (m)">
+<input id="bottom" placeholder="Bottom Dia (m)">
+<input id="height" placeholder="Height (m)">
 
 <input id="scrapP" placeholder="Scrap %">
 <input id="spongeP" placeholder="Sponge %">
@@ -101,7 +99,7 @@ flex:1;
 <input id="spongeY" placeholder="Sponge Yield %">
 
 <input id="fill" placeholder="Fill % (default 90)">
-<input id="prev" placeholder="Previous Heat Metal">
+<input id="prev" placeholder="Previous Heat (Ton)">
 
 <button onclick="calcFurnace()">Calculate</button>
 
@@ -121,8 +119,8 @@ flex:1;
 <input id="c1" placeholder="Current C%">
 <input id="c2" placeholder="Target C%">
 
-<input id="ci" placeholder="CI %">
-<input id="feo" placeholder="FeO %">
+<input id="ci" placeholder="CI % (only UP)">
+<input id="feo" placeholder="FeO % (only DOWN)">
 
 <button onclick="calcCarbon()">Calculate</button>
 
@@ -152,9 +150,9 @@ flex:1;
 </div>
 
 <div class="card">
-<h3>🤖 Grade AI</h3>
+<h3>🤖 Grade AI (Smart)</h3>
 
-<textarea id="spec" placeholder="Paste spectro"></textarea>
+<textarea id="spec" placeholder="Paste spectro report"></textarea>
 
 <button onclick="gradeAI()">Detect</button>
 
@@ -181,7 +179,7 @@ flex:1;
 </div>
 
 <div class="card">
-<h3>📄 Report</h3>
+<h3>📄 Heat Report</h3>
 
 <textarea id="report"></textarea>
 
@@ -201,32 +199,36 @@ flex:1;
 
 <script>
 
-// PAGE SWITCH
+// PAGE
 function show(p){
 document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
 document.getElementById("p"+p).classList.add("active");
 }
 
-// FURNACE FIXED
+// FURNACE (FIXED FRUSTUM)
 function calcFurnace(){
 
-let t=Number(top.value)||0;
-let b=Number(bottom.value)||0;
-let h=Number(height.value)||0;
+let t=Number(top.value);
+let b=Number(bottom.value);
+let h=Number(height.value);
 
 if(!t||!b||!h){
 furnaceRes.innerHTML="⚠️ Enter dimensions";
 return;
 }
 
-let vol=Math.PI*h*((t/2)*(b/2));
+let vol=(Math.PI*h/12)*(t*t + b*b + t*b);
 let density=7.5;
 
 let fillP=(Number(fill.value)||90)/100;
 
-let yieldF=((scrapP.value*scrapY.value)+(spongeP.value*spongeY.value))/10000;
+let scrapP=Number(scrapP.value)||50;
+let spongeP=Number(spongeP.value)||50;
 
-if(!yieldF) yieldF=0.9;
+let scrapY=Number(scrapY.value)||90;
+let spongeY=Number(spongeY.value)||85;
+
+let yieldF=(scrapP*scrapY + spongeP*spongeY)/10000;
 
 let ton=vol*density*fillP*yieldF;
 
@@ -237,12 +239,12 @@ furnaceRes.innerHTML="🔥 "+ton.toFixed(2)+" Ton";
 
 }
 
-// CARBON FIXED
+// CARBON
 function calcCarbon(){
 
-let m=Number(metal.value)||0;
-let cStart=Number(c1.value)||0;
-let cEnd=Number(c2.value)||0;
+let m=Number(metal.value);
+let cStart=Number(c1.value);
+let cEnd=Number(c2.value);
 
 if(!m||!cStart||!cEnd){
 carbonRes.innerHTML="⚠️ Fill data";
@@ -250,33 +252,31 @@ return;
 }
 
 if(mode.value=="up"){
-let ciV=Number(ci.value)||0;
-if(!ciV){carbonRes.innerHTML="⚠️ CI% needed";return;}
+let ciV=Number(ci.value);
+if(!ciV){carbonRes.innerHTML="⚠️ Enter CI%";return;}
 
 let add=(m*(cEnd-cStart))/(ciV/100*0.8);
-
 carbonRes.innerHTML="↑ Add "+add.toFixed(1)+" kg CI";
 
 }else{
 
-let feoV=Number(feo.value)||0;
-if(!feoV){carbonRes.innerHTML="⚠️ FeO% needed";return;}
+let feoV=Number(feo.value);
+if(!feoV){carbonRes.innerHTML="⚠️ Enter FeO%";return;}
 
 let red=(m*(cStart-cEnd))/(feoV/100);
-
 carbonRes.innerHTML="↓ Use "+red.toFixed(1)+" kg Sponge";
 
 }
 
 }
 
-// MN FIXED
+// MN
 function calcMn(){
 
-let h=Number(heat.value)||0;
-let diff=(mn2.value-mn1.value)||0;
+let h=Number(heat.value);
+let diff=Number(mn2.value)-Number(mn1.value);
 
-let req=(h*diff)/((alloy.value/100)*(rec.value/100));
+let req=(h*diff)/((Number(alloy.value)/100)*(Number(rec.value)/100));
 
 mnRes.innerHTML="⚡ "+req.toFixed(1)+" kg";
 
@@ -288,31 +288,53 @@ mnAI.innerHTML=msg;
 
 }
 
-// GRADE AI (IMPROVED)
+// GRADE AI (REAL)
 function gradeAI(){
 
 let t=spec.value.toLowerCase();
 
-let grade="XLS";
+function get(k){
+let m=t.match(new RegExp(k+"[\\s:-]*([0-9.]+)"));
+return m?parseFloat(m[1]):0;
+}
 
-if(t.includes("0.22") && t.includes("0.6")) grade="Fe500";
-if(t.includes("0.04") && t.includes("s")) grade="Fe500D";
-if(t.includes("0.15") && t.includes("cu")) grade="E250Br";
+let c=get("c");
+let mn=get("mn");
+let s=get("s");
+let p=get("p");
+let cu=get("cu");
+let al=get("al");
 
-gradeRes.innerHTML="🏆 "+grade;
+let grade="Unknown";
+
+if(c<=0.25 && s<=0.04 && p<=0.04 && al<0.01) grade="XLS ⭐";
+else if(c<=0.25 && mn>=0.5){
+grade="Fe500";
+if(s<=0.04 && p<=0.04) grade="Fe500D";
+}
+if(c<=0.23 && cu>=0.15) grade="E250Br";
+
+gradeRes.innerHTML=`🏆 ${grade}<br>
+C:${c} Mn:${mn} S:${s} P:${p} Cu:${cu} Al:${al}`;
 
 }
 
-// SLAG AI SMART
+// SLAG AI
 function slagAI(){
 
-let b=(cao.value/sio2.value);
+let caoV=Number(cao.value);
+let sio2V=Number(sio2.value);
+let feoV=Number(feoS.value);
+
+let b=caoV/sio2V;
 
 let msg="Basicity: "+b.toFixed(2)+"<br>";
 
-if(b<2) msg+="➡ Add Lime (10-20 kg)<br>";
+if(b<2) msg+="➡ Add Lime ~20kg<br>";
 if(b>3) msg+="➡ Reduce Lime<br>";
-if(feoS.value>25) msg+="➡ Add Carbon / Reduce O2<br>";
+
+if(feoV>28) msg+="➡ High FeO → Add Carbon<br>";
+if(feoV<18) msg+="➡ Low FeO → Blow O2<br>";
 
 slagRes.innerHTML=msg;
 
@@ -320,17 +342,28 @@ slagRes.innerHTML=msg;
 
 // REPORT
 function makeReport(){
+
+let d=new Date();
+
 report.value=
-`🔥 Heat Report
+`🔥 HEAT REPORT
+
+Date: ${d.toLocaleDateString()}
+Time: ${d.toLocaleTimeString()}
 
 ${furnaceRes.innerText}
 ${carbonRes.innerText}
 ${mnRes.innerText}
+
 ${gradeRes.innerText}
-${slagRes.innerText}`;
+
+${slagRes.innerText}
+
+--- MeltingPro AI ---`;
+
 }
 
-// WA
+// WHATSAPP
 function sendWA(){
 window.open("https://wa.me/?text="+encodeURIComponent(report.value));
 }
