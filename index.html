@@ -20,7 +20,7 @@ button{width:100%;padding:12px;background:#ff7a00;border:none;border-radius:8px;
 
 <body>
 
-<div class="header">🔥 MeltingPro FINAL</div>
+<div class="header">🔥 MeltingPro</div>
 
 <!-- PAGE 1 -->
 <div id="p1" class="page active">
@@ -143,9 +143,7 @@ button{width:100%;padding:12px;background:#ff7a00;border:none;border-radius:8px;
   function updateUnitUI(){
 
 let u = document.getElementById("unit").value;
-
-let label = u;
-if(u=="inch") label="in";
+let label = u === "inch" ? "in" : u;
 
 document.getElementById("top").placeholder = "Top Dia ("+label+")";
 document.getElementById("bottom").placeholder = "Bottom Dia ("+label+")";
@@ -184,8 +182,8 @@ scrap = (scrap/total)*100;
 sponge = (sponge/total)*100;
 }}
   
-let t = toMeter(Number(top.value));
-let b = toMeter(Number(bottom.value));
+let t = toMeter(Number(document.getElementById("top").value)||0);
+let b = toMeter(Number(document.getElementById("bottom").value)||0);
 let taper = toMeter(Number(document.getElementById("taper").value));
 let totalH = toMeter(Number(height.value));
 
@@ -225,17 +223,14 @@ ton = ton + (error * 0.7);
   
 // ===== PREVIOUS HEAT =====
 let prevHeat = Number(prev.value) || 0;
-
-if(prevHeat > 0){
-ton = (ton + prevHeat) / 2;
 }
 
 // ===== OUTPUT =====
 furnaceRes.innerHTML =
 "🔥 "+ton.toFixed(2)+" Ton<br>" +
-"📦 Volume: "+volume.toFixed(2)+" m³<br>" +
-"⚙ Yield: "+(yieldMix*100).toFixed(1)+"%";
-
+"📦 Volume: "+vol.toFixed(2)+" m³<br>" +
+"⚙ Yield: "+(yieldF*100).toFixed(1)+"%";
+  
 }
   
 // CARBON
@@ -341,6 +336,11 @@ toggleCarbon();
 window.onload = function(){
 updateUnitUI();
    }
+  window.onload = function(){
+updateUnitUI();
+  }
+
+  
 </script>
 
 </body>
