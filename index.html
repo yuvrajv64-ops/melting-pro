@@ -26,8 +26,14 @@ button{width:100%;padding:12px;background:#ff7a00;border:none;border-radius:8px;
 <div id="p1" class="page active">
 
 <div class="card">
-<h3>🔥 Furnace Metal</h3>
+<h3>🔥 Furnace Metal calculator</h3>
 
+  <select id="unit">
+<option value="m">Meter</option>
+<option value="cm">CM</option>
+<option value="mm">MM</option>
+<option value="inch">Inch</option>
+  </select>
 <input id="top" placeholder="Top Dia (m)">
 <input id="bottom" placeholder="Bottom Dia (m)">
 <input id="taper" placeholder="Taper Height (m)">
@@ -134,6 +140,17 @@ button{width:100%;padding:12px;background:#ff7a00;border:none;border-radius:8px;
 
 <script>
 
+  function toMeter(val){
+
+let u = document.getElementById("unit").value;
+
+if(u=="m") return val;
+if(u=="cm") return val/100;
+if(u=="mm") return val/1000;
+if(u=="inch") return val*0.0254;
+
+return val;
+  }
 // PAGE
 function show(p){
 document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
@@ -143,32 +160,67 @@ document.getElementById("p"+p).classList.add("active");
 // FURNACE
 function calcFurnace(){
 
-let t=+top.value,b=+bottom.value,h=+height.value,tap=+taper.value;
+let t = toMeter(Number(document.getElementById("top").value));
+let b = toMeter(Number(document.getElementById("bottom").value));
+let totalH = toMeter(Number(document.getElementById("height").value));
+let taperH = toMeter(Number(document.getElementById("taper").value));
 
-if(!t||!b||!h){furnaceRes.innerHTML="Enter values";return;}
-
-let v1=(Math.PI*tap/3)*((t/2)**2+(b/2)**2+(t/2)*(b/2));
-let v2=Math.PI*(b/2)**2*(h-tap);
-
-let vol=v1+v2;
-
-let scrap=+scrapP.value||50;
-let sponge=+spongeP.value||50;
-
-let density=(scrap/100*7.8)+(sponge/100*3.5);
-
-let yieldF=((scrap*scrapY.value)+(sponge*spongeY.value))/10000;
-
-let fillP=(+fill.value||90)/100;
-
-let ton=vol*density*yieldF*fillP;
-
-let prevHeat=+prev.value||0;
-if(prevHeat) ton=(ton+prevHeat)/2;
-
-furnaceRes.innerHTML="🔥 "+ton.toFixed(2)+" Ton";
+if(!t || !b || !totalH){
+furnaceRes.innerHTML="⚠️ Enter all dimensions";
+return;
 }
 
+// safe taper
+if(taperH > totalH) taperH = totalH;
+
+let straightH = totalH - taperH;
+
+// ===== FRUSTUM =====
+let v1 = (Math.PI * taperH / 3) *
+((t/2)**2 + (b/2)**2 + (t/2)*(b/2));
+
+// ===== CYLINDER =====
+let v2 = Math.PI * (b/2)**2 * straightH;
+
+let volume = v1 + v2;
+
+// ===== MATERIAL MIX =====
+let scrap = Number(scrapP.value) || 50;
+let sponge = Number(spongeP.value) || 50;
+
+// density (REALISTIC)
+let density =
+(scrap/100 * 7.8) +
+(sponge/100 * 3.5);
+
+// ===== YIELD =====
+let scrapYv = Number(scrapY.value) || 90;
+let spongeYv = Number(spongeY.value) || 85;
+
+let yieldMix =
+((scrap * scrapYv) + (sponge * spongeYv)) / 10000;
+
+// ===== FILL =====
+let fillP = (Number(fill.value) || 90) / 100;
+
+// ===== FINAL =====
+let ton = volume * density * yieldMix * fillP;
+
+// ===== PREVIOUS HEAT =====
+let prevHeat = Number(prev.value) || 0;
+
+if(prevHeat > 0){
+ton = (ton + prevHeat) / 2;
+}
+
+// ===== OUTPUT =====
+furnaceRes.innerHTML =
+"🔥 "+ton.toFixed(2)+" Ton<br>" +
+"📦 Volume: "+volume.toFixed(2)+" m³<br>" +
+"⚙ Yield: "+(yieldMix*100).toFixed(1)+"%";
+
+}
+  
 // CARBON
 function toggleCarbon(){
 if(mode.value=="up"){
