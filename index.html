@@ -28,11 +28,11 @@ button{width:100%;padding:12px;background:#ff7a00;border:none;border-radius:8px;
 <div class="card">
 <h3>🔥 Furnace Metal calculator</h3>
 
-  <select id="unit">
-<option value="m">Meter</option>
-<option value="cm">CM</option>
-<option value="mm">MM</option>
-<option value="inch">Inch</option>
+  <select id="unit" onchange="updateUnitUI()">
+<option value="m">Meter (m)</option>
+<option value="cm">Centimeter (cm)</option>
+<option value="mm">Millimeter (mm)</option>
+<option value="inch">Inch (in)</option>
   </select>
 <input id="top" placeholder="Top Dia (m)">
 <input id="bottom" placeholder="Bottom Dia (m)">
@@ -140,6 +140,19 @@ button{width:100%;padding:12px;background:#ff7a00;border:none;border-radius:8px;
 
 <script>
 
+  function updateUnitUI(){
+
+let u = document.getElementById("unit").value;
+
+let label = u;
+if(u=="inch") label="in";
+
+document.getElementById("top").placeholder = "Top Dia ("+label+")";
+document.getElementById("bottom").placeholder = "Bottom Dia ("+label+")";
+document.getElementById("taper").placeholder = "Taper Height ("+label+")";
+document.getElementById("height").placeholder = "Total Height ("+label+")";
+
+  }
   function toMeter(val){
 
 let u = document.getElementById("unit").value;
@@ -321,7 +334,9 @@ window.open("https://wa.me/?text="+encodeURIComponent(report.value));
 }
 
 toggleCarbon();
-
+window.onload = function(){
+updateUnitUI();
+   }
 </script>
 
 </body>
