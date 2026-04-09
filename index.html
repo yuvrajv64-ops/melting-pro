@@ -140,18 +140,28 @@ button{width:100%;padding:12px;background:#ff7a00;border:none;border-radius:8px;
 
 <script>
 
-  function updateUnitUI(){
+// ================= UNIT UI =================
+function updateUnitUI(){
 
 let u = document.getElementById("unit").value;
-let label = u === "inch" ? "in" : u;
+let label = (u === "inch") ? "in" : u;
 
 document.getElementById("top").placeholder = "Top Dia ("+label+")";
 document.getElementById("bottom").placeholder = "Bottom Dia ("+label+")";
 document.getElementById("taper").placeholder = "Taper Height ("+label+")";
 document.getElementById("height").placeholder = "Total Height ("+label+")";
+
+}
+
+// PAGE LOAD + CHANGE
+document.addEventListener("DOMContentLoaded", function(){
+updateUnitUI();
 document.getElementById("unit").addEventListener("change", updateUnitUI);
-  }
-  function toMeter(val){
+});
+
+
+// ================= UNIT CONVERT =================
+function toMeter(val){
 
 let u = document.getElementById("unit").value;
 
@@ -161,68 +171,68 @@ if(u=="mm") return val/1000;
 if(u=="inch") return val*0.0254;
 
 return val;
-  }
-// PAGE
+}
+
+
+// ================= PAGE SWITCH =================
 function show(p){
 document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
 document.getElementById("p"+p).classList.add("active");
 }
 
-// FURNACE
+
+// ================= FURNACE CALC =================
 function calcFurnace(){
+
 let scrap = Number(document.getElementById("scrapP").value) || 0;
 let sponge = Number(document.getElementById("spongeP").value) || 0;
 
+// % validation
 if((scrap + sponge) !== 100){
 furnaceRes.innerHTML = "⚠️ Scrap + Sponge = 100% hona chahiye";
 return;
-if((scrap + sponge) !== 100){
-let total = scrap + sponge;
-scrap = (scrap/total)*100;
-sponge = (sponge/total)*100;
-}}
-  
+}
+
+// DIMENSIONS
 let t = toMeter(Number(document.getElementById("top").value)||0);
 let b = toMeter(Number(document.getElementById("bottom").value)||0);
-let taper = toMeter(Number(document.getElementById("taper").value));
-let totalH = toMeter(Number(height.value));
+let taper = toMeter(Number(document.getElementById("taper").value)||0);
+let totalH = toMeter(Number(document.getElementById("height").value)||0);
+
+if(!t || !b || !totalH){
+furnaceRes.innerHTML = "⚠️ Enter dimensions properly";
+return;
+}
 
 let cylH = totalH - taper;
+if(cylH < 0) cylH = 0;
 
-// volume
-let v1 = (Math.PI * taper / 12) * (t*t + b*b + t*b);
-let v2 = Math.PI * Math.pow(t/2,2) * cylH;
-
+// ===== VOLUME =====
+let v1 = (Math.PI * taper / 12) * (t*t + b*b + t*b); // frustum
+let v2 = Math.PI * Math.pow(t/2,2) * cylH; // cylinder
 let vol = v1 + v2;
 
-// density (molten steel)
+// ===== DENSITY =====
 let density = 7.8;
 
-// fill %
-let fillP = (Number(fill.value)||90)/100;
+// ===== FILL =====
+let fillP = (Number(document.getElementById("fill").value)||90)/100;
 
-// yield
-let scrapP = Number(scrapP.value)||50;
-let spongeP = Number(spongeP.value)||50;
+// ===== YIELD =====
+let scrapY = (Number(document.getElementById("scrapY").value)||90)/100;
+let spongeY = (Number(document.getElementById("spongeY").value)||85)/100;
 
-let scrapY = (Number(scrapY.value)||90)/100;
-let spongeY = (Number(spongeY.value)||85)/100;
+let yieldF = (scrap/100)*scrapY + (sponge/100)*spongeY;
 
-let yieldF = (scrapP/100)*scrapY + (spongeP/100)*spongeY;
-
-// FINAL TON
+// ===== FINAL TON =====
 let ton = vol * density * fillP * yieldF;
-  let prevHeat = Number(prev.value)||0;
+
+// ===== AUTO CORRECTION =====
+let prevHeat = Number(document.getElementById("prev").value)||0;
 
 if(prevHeat > 0){
 let error = prevHeat - ton;
-
-// 70% correction apply
 ton = ton + (error * 0.7);
-  }
-  
-// ===== PREVIOUS HEAT =====
-let prevHeat = Number(prev.value) || 0;
 }
 
 // ===== OUTPUT =====
@@ -230,8 +240,10 @@ furnaceRes.innerHTML =
 "🔥 "+ton.toFixed(2)+" Ton<br>" +
 "📦 Volume: "+vol.toFixed(2)+" m³<br>" +
 "⚙ Yield: "+(yieldF*100).toFixed(1)+"%";
-  
+
 }
+
+</script>
   
 // CARBON
 function toggleCarbon(){
