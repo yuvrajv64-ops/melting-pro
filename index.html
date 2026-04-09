@@ -9,53 +9,31 @@ margin:0;
 font-family:sans-serif;
 background:#0b1b2b;
 color:white;
-overflow:hidden;
-}
-
-.banner{
-background:#ff9800;
-color:black;
-text-align:center;
-padding:6px;
-font-size:12px;
 }
 
 .header{
 text-align:center;
-padding:10px;
-font-size:20px;
+padding:12px;
 color:#ff7a00;
+font-size:22px;
 font-weight:bold;
-}
-
-.slider{
-display:flex;
-width:300%;
-transition:0.3s;
-}
-
-.page{
-width:100%;
-height:85vh;
-overflow-y:auto;
-padding:10px;
 }
 
 .card{
 background:#13263d;
 padding:15px;
-margin-bottom:12px;
+margin:10px;
 border-radius:12px;
 }
 
-input, select{
+input,select,textarea{
 width:100%;
 padding:12px;
 margin:6px 0;
 background:#0b1b2b;
+color:white;
 border:none;
 border-radius:8px;
-color:white;
 }
 
 button{
@@ -74,79 +52,48 @@ padding:10px;
 background:#07121f;
 border-radius:8px;
 }
-
-.nav{
-position:fixed;
-bottom:0;
-width:100%;
-display:flex;
-}
-
-.nav button{
-flex:1;
-}
 </style>
 
 </head>
 
 <body>
 
-<div class="banner">⚠️ App under maintenance till 11 April</div>
-<div class="header">🔥 MeltingPro Smart Melt AI</div>
+<div class="header">🔥 MeltingPro Smart Assistant</div>
 
-<div id="slider" class="slider">
-
-<!-- PAGE 1 -->
-<div class="page">
-
+<!-- Furnace -->
 <div class="card">
-<h3>🔥 Furnace Metal (Advanced)</h3>
-
-<select id="unit">
-<option value="mm">mm</option>
-<option value="cm">cm</option>
-<option value="m">meter</option>
-<option value="inch">inch</option>
-</select>
+<h3>🔥 Furnace Metal</h3>
 
 <input id="top" placeholder="Top Dia">
 <input id="bottom" placeholder="Bottom Dia">
-<input id="taperH" placeholder="Taper Height">
-<input id="totalH" placeholder="Total Height">
-
-<input id="scrap" placeholder="Scrap %">
-<input id="sponge" placeholder="Sponge %">
-
-<input id="scrapY" placeholder="Scrap Yield %">
-<input id="spongeY" placeholder="Sponge Yield %">
-
-<input id="fem" placeholder="Sponge FeM %">
-
+<input id="height" placeholder="Height">
 <input id="fill" placeholder="Fill %">
 
-<button onclick="calcFurnace()">Calculate</button>
+<button onclick="calcMetal()">Calculate</button>
 
 <div id="metalRes" class="result"></div>
-
 </div>
 
+<!-- Carbon -->
 <div class="card">
-<h3>🔥 Carbon Control</h3>
+<h3>🔥 Carbon</h3>
 
 <select id="mode">
-<option value="up">Carbon UP</option>
-<option value="down">Carbon DOWN</option>
+<option value="up">UP</option>
+<option value="down">DOWN</option>
 </select>
 
 <input id="metal" placeholder="Metal kg">
 <input id="c1" placeholder="Current C%">
 <input id="c2" placeholder="Target C%">
-<input id="ci" placeholder="CI % / FeO %">
+<input id="ci" placeholder="CI% / FeO">
 
 <button onclick="calcCarbon()">Calculate</button>
+
 <div id="carbonRes" class="result"></div>
 </div>
 
+<!-- Mn -->
 <div class="card">
 <h3>⚡ Si-Mn</h3>
 
@@ -154,7 +101,7 @@ flex:1;
 <input id="mn1" placeholder="Current Mn%">
 <input id="mn2" placeholder="Target Mn%">
 <input id="alloy" placeholder="Alloy Mn%">
-<input id="rec" placeholder="Recovery %">
+<input id="rec" placeholder="Recovery">
 
 <button onclick="calcMn()">Calculate</button>
 
@@ -163,180 +110,93 @@ flex:1;
 
 </div>
 
-</div>
-
-<!-- PAGE 2 -->
-<div class="page">
-
+<!-- AI -->
 <div class="card">
 <h3>🤖 Spectro AI</h3>
 
-<textarea id="spec" placeholder="Paste spectro report"></textarea>
+<textarea id="spec"></textarea>
 
 <button onclick="analyze()">Analyze</button>
 
 <div id="aiRes" class="result"></div>
 </div>
 
-</div>
-
-<!-- PAGE 3 -->
-<div class="page">
-
+<!-- Report -->
 <div class="card">
-<h3>🧪 Slag AI</h3>
+<h3>📄 Report</h3>
 
-<input id="cao" placeholder="CaO%">
-<input id="sio2" placeholder="SiO2%">
-<input id="feo" placeholder="FeO%">
+<button onclick="genReport()">Generate</button>
+<button onclick="sendWA()">📤 WhatsApp</button>
 
-<button onclick="slagAI()">Analyze</button>
+<textarea id="report"></textarea>
 
-<div id="slagRes" class="result"></div>
-
-</div>
-
-</div>
-
-</div>
-
-<div class="nav">
-<button onclick="go(0)">📊</button>
-<button onclick="go(1)">🤖</button>
-<button onclick="go(2)">🧪</button>
 </div>
 
 <script>
 
-// swipe
-let current=0;
-function go(i){
-current=i;
-slider.style.transform="translateX(-"+(i*100)+"%)";
-}
+// Furnace
+function calcMetal(){
+let t=+top.value||0;
+let b=+bottom.value||0;
+let h=+height.value||0;
+let f=(+fill.value||90)/100;
 
-let startX=0;
-document.addEventListener("touchstart",e=>startX=e.touches[0].clientX);
-document.addEventListener("touchend",e=>{
-let endX=e.changedTouches[0].clientX;
-if(startX-endX>50 && current<2) go(current+1);
-if(endX-startX>50 && current>0) go(current-1);
-});
-
-// unit convert
-function convert(v,u){
-if(u=="mm") return v/1000;
-if(u=="cm") return v/100;
-if(u=="inch") return v*0.0254;
-return v;
-}
-
-// furnace
-function calcFurnace(){
-
-let unit=document.getElementById("unit").value;
-
-let t=convert(parseFloat(top.value)||0,unit);
-let b=convert(parseFloat(bottom.value)||0,unit);
-let taper=convert(parseFloat(taperH.value)||0,unit);
-let total=convert(parseFloat(totalH.value)||0,unit);
-
-let straight=total-taper;
-
-let scrap=parseFloat(scrap.value)||0;
-let sponge=parseFloat(sponge.value)||0;
-
-let scrapY=(parseFloat(scrapY.value)||90)/100;
-let spongeY=(parseFloat(spongeY.value)||85)/100;
-
-let fem=parseFloat(fem.value)||80;
-
-// dynamic sponge density
-let spongeDensity=3.2 + ((fem-70)/20)*0.6;
-
-let fill=(parseFloat(fill.value)||90)/100;
-
-// volume
-let v1=(Math.PI*taper/3)*((t/2)**2+(b/2)**2+(t/2)*(b/2));
-let v2=Math.PI*(b/2)**2*straight;
-let vol=v1+v2;
-
-// density mix
-let density=(scrap/100*7.8)+(sponge/100*spongeDensity);
-
-// yield mix
-let yieldMix=(scrap/100*scrapY)+(sponge/100*spongeY);
-
-// final
-let ton=vol*density*fill*yieldMix;
+let vol=Math.PI*h*(t/2)*(b/2);
+let ton=(vol*7.8*f)/1000000;
 
 metalRes.innerHTML="🔥 "+ton.toFixed(2)+" Ton";
 }
 
-// carbon
+// Carbon
 function calcCarbon(){
-let m=parseFloat(metal.value)||0;
-let c1v=parseFloat(c1.value)||0;
-let c2v=parseFloat(c2.value)||0;
-let val=parseFloat(ci.value)||0;
-let mode=document.getElementById("mode").value;
+let m=+metal.value||0;
+let c1v=+c1.value||0;
+let c2v=+c2.value||0;
+let val=+ci.value||1;
 
-if(mode=="up"){
-let add=(m*(c2v-c1v))/(val/100*0.8);
-carbonRes.innerHTML="↑ "+add.toFixed(1)+" kg CI";
+if(mode.value=="up"){
+carbonRes.innerHTML="↑ "+((m*(c2v-c1v))/(val/100*0.8)).toFixed(1)+" kg";
 }else{
-let sponge=(m*(c1v-c2v))/(val/100);
-carbonRes.innerHTML="↓ "+sponge.toFixed(1)+" kg Sponge";
+carbonRes.innerHTML="↓ "+((m*(c1v-c2v))/(val/100)).toFixed(1)+" kg";
 }
 }
 
 // Mn
 function calcMn(){
-let h=parseFloat(heat.value)||0;
-let m1=parseFloat(mn1.value)||0;
-let m2=parseFloat(mn2.value)||0;
-let alloy=parseFloat(alloy.value)||60;
-let rec=parseFloat(rec.value)||80;
-
-let req=(h*(m2-m1))/((alloy/100)*(rec/100));
+let req=(heat.value*(mn2.value-mn1.value))/((alloy.value/100)*(rec.value/100));
 mnRes.innerHTML="⚡ "+req.toFixed(1)+" kg";
 
-// AI
-let txt="";
-if(m2-m1>0.3) txt+="⚠️ Mn low → Increase SiMn<br>";
-if(rec<70) txt+="⚠️ Low recovery<br>";
-aiSuggest.innerHTML=txt;
+let msg="";
+if(mn2.value-mn1.value>0.3) msg+="⚠ Mn low<br>";
+aiSuggest.innerHTML=msg;
 }
 
-// AI grade
+// AI
 function analyze(){
 let t=spec.value.toLowerCase();
 let grade="XLS";
 
 if(t.includes("0.2")) grade="Fe500";
 if(t.includes("0.04")) grade="Fe500D";
-if(t.includes("0.15")) grade="E250BR";
+if(t.includes("0.15")) grade="E250";
 
-aiRes.innerHTML="🏆 Grade: "+grade;
+aiRes.innerHTML="🏆 "+grade;
 }
 
-// slag AI
-function slagAI(){
+// Report
+function genReport(){
+report.value=`
+Heat Report
+Metal: ${metalRes.innerText}
+Carbon: ${carbonRes.innerText}
+Mn: ${mnRes.innerText}
+AI: ${aiRes.innerText}
+`;
+}
 
-let cao=parseFloat(cao.value)||0;
-let sio2=parseFloat(sio2.value)||1;
-let feo=parseFloat(feo.value)||0;
-
-let basicity=cao/sio2;
-
-let res="Basicity: "+basicity.toFixed(2)+"<br>";
-
-if(basicity<2) res+="➕ Add Lime ~50-100 kg<br>";
-if(basicity>3) res+="➖ Reduce Lime<br>";
-
-if(feo>25) res+="⚠️ FeO high → Add Carbon<br>";
-
-slagRes.innerHTML=res;
+// WhatsApp
+function sendWA(){
+window.open("https://wa.me/?text="+encodeURIComponent(report.value));
 }
 
 </script>
