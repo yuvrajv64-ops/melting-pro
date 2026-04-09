@@ -2,36 +2,40 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MeltingPro Smart Melt AI</title>
+<title>MeltingPro Smart Melt AI PRO</title>
 
 <style>
 body{margin:0;font-family:sans-serif;background:#0b1b2b;color:white;overflow:hidden;}
 .header{text-align:center;padding:15px;color:#ff7a00;font-size:22px;font-weight:bold;}
-.slider{display:flex;width:200%;transition:0.4s;}
+
+.slider{display:flex;width:300%;transition:0.4s;}
 .page{width:100%;height:85vh;overflow-y:auto;padding:10px;}
+
 .card{background:#13263d;padding:15px;margin-bottom:12px;border-radius:12px;}
 input,select,textarea{width:100%;padding:12px;margin:6px 0;background:#0b1b2b;color:white;border:none;border-radius:8px;}
 button{width:100%;padding:12px;background:#ff7a00;border:none;border-radius:8px;color:white;font-weight:bold;}
+
 .result{margin-top:10px;padding:10px;background:#07121f;border-radius:8px;}
+
 .nav{position:fixed;bottom:0;width:100%;display:flex;}
-.nav button{flex:1;border-radius:0;}
+.nav button{flex:1;}
 .active{background:#ff7a00;}
 </style>
 
 </head>
+
 <body>
 
 <div class="header">🔥 MeltingPro Smart Melt AI</div>
 
 <div id="slider" class="slider">
 
-<!-- ================= PAGE 1 ================= -->
+<!-- ================= PAGE 1 CALC ================= -->
 <div class="page">
 
 <div class="card">
 <select id="calcType" onchange="showCalc()">
 <option value="metal">Furnace Metal</option>
-<option value="ramming">Ramming Mass</option>
 <option value="carbon">Carbon</option>
 <option value="simn">Si-Mn</option>
 </select>
@@ -39,51 +43,35 @@ button{width:100%;padding:12px;background:#ff7a00;border:none;border-radius:8px;
 
 <!-- FURNACE -->
 <div id="metalBox" class="card">
+
 <h3>🔥 Furnace Metal</h3>
 
-<select id="unit">
-<option value="inch">Inch</option>
-<option value="mm">MM</option>
-<option value="cm">CM</option>
-<option value="m">Meter</option>
-</select>
+<input id="topDia" placeholder="Top Dia">
+<input id="bottomDia" placeholder="Bottom Dia">
+<input id="taperH" placeholder="Taper Height">
+<input id="totalH" placeholder="Total Height">
 
-<input id="top" placeholder="Top Dia">
-<input id="bottom" placeholder="Bottom Dia">
-<input id="height" placeholder="Height">
-<input id="density" placeholder="Density (7.8)">
+<input id="fillPct" placeholder="Fill %">
+
+<input id="scrapPct" placeholder="Scrap %">
+<input id="spongePct" placeholder="Sponge %">
+
+<input id="scrapYield" placeholder="Scrap Yield %">
+<input id="spongeYield" placeholder="Sponge Yield %">
 
 <button onclick="calcMetal()">Calculate</button>
 <div id="metalRes" class="result"></div>
-</div>
 
-<!-- RAMMING -->
-<div id="rammingBox" class="card" style="display:none;">
-<h3>🧱 Ramming</h3>
-
-<input id="od" placeholder="Outer Dia">
-<input id="id" placeholder="Inner Dia">
-<input id="h" placeholder="Height">
-<input id="rho" placeholder="Density (2600)">
-
-<button onclick="calcRamming()">Calculate</button>
-<div id="ramRes" class="result"></div>
 </div>
 
 <!-- CARBON -->
 <div id="carbonBox" class="card" style="display:none;">
 <h3>🔥 Carbon</h3>
 
-<select id="mode">
-<option value="up">UP</option>
-<option value="down">DOWN</option>
-</select>
-
 <input id="metalKg" placeholder="Metal kg">
 <input id="c1" placeholder="Current C%">
 <input id="c2" placeholder="Target C%">
 <input id="ci" placeholder="C% in CI">
-<input id="feo" placeholder="FeO%">
 
 <button onclick="calcCarbon()">Calculate</button>
 <div id="carbonRes" class="result"></div>
@@ -105,33 +93,61 @@ button{width:100%;padding:12px;background:#ff7a00;border:none;border-radius:8px;
 
 </div>
 
-<!-- ================= PAGE 2 ================= -->
+<!-- ================= PAGE 2 AI ================= -->
 <div class="page">
 
 <div class="card">
-<h3>🤖 Spectro AI</h3>
+<h3>🤖 Spectro AI + Grade</h3>
+
 <textarea id="spec" placeholder="Paste spectro report"></textarea>
+
+<input id="unit" placeholder="Total Unit">
+<input id="metalTon" placeholder="Metal Ton">
+
 <button onclick="analyze()">Analyze</button>
+
 <div id="aiRes" class="result"></div>
 </div>
 
 <div class="card">
-<h3>🔥 Slag AI</h3>
-<button onclick="slag()">Predict</button>
-<div id="slagRes" class="result"></div>
+<h3>📄 Auto Heat Report</h3>
+
+<button onclick="genReport()">Generate</button>
+<textarea id="report"></textarea>
+
+</div>
+
+</div>
+
+<!-- ================= PAGE 3 LAB ================= -->
+<div class="page">
+
+<div class="card">
+<h3>🧪 FeO (Slag) Procedure</h3>
+<p>
+1. Sample grind karo<br>
+2. HCl me dissolve karo<br>
+3. SnCl2 add karo<br>
+4. KMnO4 titration<br>
+5. FeO calculate
+</p>
 </div>
 
 <div class="card">
-<h3>📄 Heat Report</h3>
-<input id="heatNo" placeholder="Heat No">
-<input id="shift" placeholder="Shift">
-<input id="metalTon" placeholder="Metal Ton">
-<input id="unitVal" placeholder="Unit">
+<h3>🧪 Sponge Iron Analysis</h3>
+<p>
+FeT = Total Fe<br>
+FeM = Metallic Fe<br>
+FeO = (FeT - FeM)/0.777<br>
+</p>
+</div>
 
-<button onclick="generateReport()">Generate</button>
-<button onclick="sendWA()">WhatsApp</button>
-
-<textarea id="reportOut"></textarea>
+<div class="card">
+<h3>🧪 Basicity</h3>
+<p>
+Basicity = CaO / SiO2<br>
+Target = 2 to 2.5
+</p>
 </div>
 
 </div>
@@ -140,8 +156,9 @@ button{width:100%;padding:12px;background:#ff7a00;border:none;border-radius:8px;
 
 <!-- NAV -->
 <div class="nav">
-<button class="active" onclick="slide(0)">📊</button>
+<button onclick="slide(0)" class="active">📊</button>
 <button onclick="slide(1)">🤖</button>
+<button onclick="slide(2)">🧪</button>
 </div>
 
 <script>
@@ -149,9 +166,9 @@ button{width:100%;padding:12px;background:#ff7a00;border:none;border-radius:8px;
 // SLIDE
 function slide(i){
 slider.style.transform="translateX(-"+(i*100)+"%)";
-let btns=document.querySelectorAll(".nav button");
-btns.forEach(b=>b.classList.remove("active"));
-btns[i].classList.add("active");
+let b=document.querySelectorAll(".nav button");
+b.forEach(x=>x.classList.remove("active"));
+b[i].classList.add("active");
 }
 
 // SWIPE
@@ -163,141 +180,88 @@ if(startX-endX>50) slide(1);
 if(endX-startX>50) slide(0);
 });
 
-// SHOW CALC
+// SHOW
 function showCalc(){
-["metal","ramming","carbon","simn"].forEach(x=>{
+["metal","carbon","simn"].forEach(x=>{
 document.getElementById(x+"Box").style.display="none";
 });
 document.getElementById(calcType.value+"Box").style.display="block";
 }
 
-// UNIT
-function conv(x){
-let u=unit.value;
-x=+x||0;
-if(u=="inch") return x*0.0254;
-if(u=="mm") return x/1000;
-if(u=="cm") return x/100;
-return x;
-}
-
-// METAL FIXED
+// FURNACE
 function calcMetal(){
-let t=conv(top.value);
-let b=conv(bottom.value);
-let h=conv(height.value);
-let d=+density.value||7.8;
 
-if(!t||!b||!h){
-metalRes.innerHTML="⚠ Fill inputs";
-return;
-}
+let top=+topDia.value||0;
+let bottom=+bottomDia.value||0;
+let taper=+taperH.value||0;
+let total=+totalH.value||0;
 
-let vol=(Math.PI*h/12)*(t*t+t*b+b*b);
-metalRes.innerHTML="🔥 "+(vol*d).toFixed(2)+" Ton";
-}
+let fill=(+fillPct.value||90)/100;
 
-// RAMMING
-function calcRamming(){
-let OD=conv(od.value);
-let ID=conv(id.value);
-let H=conv(h.value);
-let rho=+document.getElementById("rho").value||2600;
+let scrapP=+scrapPct.value||0;
+let spongeP=+spongePct.value||0;
 
-ramRes.innerHTML="🧱 "+(Math.PI*(OD*OD-ID*ID)/4*H*rho).toFixed(0)+" kg";
+let scrapY=+scrapYield.value||90;
+let spongeY=+spongeYield.value||80;
+
+let density=7.8;
+
+let R1=top/2;
+let R2=bottom/2;
+
+let v1=(Math.PI*taper/3)*(R1*R1+R2*R2+R1*R2);
+let v2=Math.PI*R2*R2*(total-taper);
+
+let vol=(v1+v2)*fill;
+let theoretical=vol*density;
+
+let yield=((scrapP*scrapY)+(spongeP*spongeY))/100;
+let final=theoretical*(yield/100);
+
+metalRes.innerHTML="🔥 "+final.toFixed(2)+" Ton";
 }
 
 // CARBON
 function calcCarbon(){
 let m=+metalKg.value||0;
-let c=+c1.value||0;
-let t=+c2.value||0;
-
-if(mode.value=="up"){
-let ciP=+ci.value||0;
-carbonRes.innerHTML="↑ "+(((t-c)*m)/(ciP/100)).toFixed(1)+" kg CI";
-}else{
-let feoP=+feo.value||1;
-carbonRes.innerHTML="↓ "+(((c-t)*m*6)/feoP).toFixed(1)+" kg Sponge";
-}
+let add=((c2.value-c1.value)*m)/(ci.value/100);
+carbonRes.innerHTML="↑ "+add.toFixed(1)+" kg CI";
 }
 
 // SIMN
 function calcSimn(){
-let w=+heat.value||0;
-let c=+mn1.value||0;
-let t=+mn2.value||0;
-let a=+mnAlloy.value||0;
-let r=+rec.value||100;
-
-simnRes.innerHTML="⚡ "+(((t-c)*w)/(a/100)/(r/100)).toFixed(1)+" kg";
+let req=((mn2.value-mn1.value)*heat.value)/(mnAlloy.value/100)/(rec.value/100);
+simnRes.innerHTML="⚡ "+req.toFixed(1)+" kg";
 }
 
-// AI BIS LOGIC
+// AI
 function analyze(){
 
-let txt = spec.value.toLowerCase();
-
-function val(k){
-let m = txt.match(new RegExp(k+"[-:= ]*([0-9.]+)","i"));
-return m ? parseFloat(m[1]) : 0;
-}
-
-let C=val("c"), Mn=val("mn"), S=val("s"), P=val("p");
-let Cr=val("cr"), Cu=val("cu"), Ni=val("ni"), Al=val("al");
-
-let sum=Cr+Cu+Ni;
-
-let grade="", warn="", decision="🟢 READY";
-
-if(Cr<=0.25 && Cu<=0.25 && Ni<=0.25 && sum>=0.4 && sum<=0.7){
-grade="XLS";
-}
-else if(C<=0.25 && S<=0.045 && P<=0.045){
-grade="Fe500D";
-}
-else if(C<=0.30){
-grade="Fe500";
-}
-else if(C<=0.22){
-grade="E250BR";
-}
-else{
-grade="NOT MATCH";
-decision="🔴 HOLD";
-}
-
-if(Al>0.03){warn+="⚠ Al high<br>";decision="🔴 HOLD";}
-if(P>0.055){warn+="⚠ P high<br>";decision="🔴 HOLD";}
-if(S>0.05){warn+="⚠ S high<br>";}
-
-aiRes.innerHTML=`🏆 ${grade}<br>${warn}<br>${decision}`;
-}
-
-// SLAG
-function slag(){
 let txt=spec.value.toLowerCase();
-let msg="✔ Slag Normal";
-if(txt.includes("feo")) msg="⚠ High FeO → Loss";
-if(txt.includes("sio2")) msg="⚠ Slag thick";
-slagRes.innerHTML=msg;
-}
 
-// REPORT
-function generateReport(){
-reportOut.value=`
-Date: ${new Date().toLocaleDateString()}
-Shift: ${shift.value}
-Heat No: ${heatNo.value}
-Metal: ${metalTon.value} Ton
-Unit: ${unitVal.value}
-Result: ${aiRes.innerText}
+let grade="XLS";
+
+if(txt.includes("c-0.2")) grade="Fe500";
+if(txt.includes("s-0.04")) grade="Fe500D";
+if(txt.includes("c-0.15")) grade="E250BR";
+
+let unitVal=+unit.value||0;
+let ton=+metalTon.value||1;
+
+let ebt=(unitVal/ton).toFixed(0);
+
+aiRes.innerHTML=`
+🏆 Grade: ${grade}<br>
+⚡ Unit/Ton: ${ebt}
 `;
 }
 
-// WA
-function sendWA(){
-window.open("https://wa.me/?text="+encodeURIComponent(reportOut.value));
+// REPORT
+function genReport(){
+report.value=`
+Heat Report
+Grade: ${aiRes.innerText}
+`;
 }
 
 </script>
