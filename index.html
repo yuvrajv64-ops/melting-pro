@@ -53,30 +53,106 @@ button{width:100%;padding:12px;background:#ff7a00;border:none;border-radius:8px;
 </div>
 
 <div class="card">
-<h3>🔥 Carbon</h3>
+// ===== CARBON AI (SMART ENGINE) =====
+function calcCarbon(){
 
-<select id="mode" onchange="toggleCarbon()">
-<option value="up">UP</option>
-<option value="down">DOWN</option>
-</select>
+let mode = document.getElementById("mode").value;
 
-<input id="metal" placeholder="Metal kg">
-<input id="c1" placeholder="Current C%">
-<input id="c2" placeholder="Target C%">
-<input id="ci" placeholder="CI %">
-<input id="feo" placeholder="FeO %">
+let m = Number(document.getElementById("metal").value)||0;
+let c1 = Number(document.getElementById("c1").value)||0;
+let c2 = Number(document.getElementById("c2").value)||0;
 
-<button onclick="calcCarbon()">Calculate</button>
-<div id="carbonRes" class="result"></div>
+let ciV = Number(document.getElementById("ci").value)||0;
+let feoV = Number(document.getElementById("feo").value)||0;
 
-</div>
+if(!m || !c1 || !c2){
+carbonRes.innerHTML="⚠️ Fill all values";
+return;
+}
 
-</div>
+let msg = "";
 
-<!-- PAGE 2 -->
-<div id="p2" class="page">
+// ================= UP MODE =================
+if(mode=="up"){
 
-<div class="card">
+if(!ciV){
+carbonRes.innerHTML="⚠️ Enter CI%";
+return;
+}
+
+// 🔥 dynamic recovery based on FeO
+let recovery = 0.80;
+
+if(feoV > 25) recovery = 0.70;
+else if(feoV < 15) recovery = 0.85;
+
+// calculation
+let add = (m*(c2-c1))/((ciV/100)*recovery);
+
+// ===== AI MESSAGE =====
+msg += "⬆ Add "+add.toFixed(1)+" kg CI<br>";
+msg += "⚙ Recovery: "+(recovery*100)+"%<br>";
+
+// AI decision
+if(feoV > 25){
+msg += "⚠ High FeO → Carbon burn fast<br>";
+msg += "👉 Add little extra CI or reduce oxygen<br>";
+}
+else if(feoV < 15){
+msg += "✔ Low FeO → Good recovery<br>";
+msg += "👉 Normal CI addition sufficient<br>";
+}
+
+// safety
+if(c1 >= c2){
+msg = "✔ Carbon already sufficient";
+}
+
+carbonRes.innerHTML = msg;
+}
+
+
+
+// ================= DOWN MODE =================
+else{
+
+// dynamic factor based on FeO
+let factor = 0.30;
+
+if(feoV > 25) factor = 0.35;
+else if(feoV < 15) factor = 0.25;
+
+// calculation
+let sponge = (m*(c1-c2))/factor;
+
+// ===== AI MESSAGE =====
+msg += "⬇ Use "+sponge.toFixed(1)+" kg Sponge<br>";
+msg += "🔥 FeO Factor: "+factor+"<br>";
+
+// AI decision
+if(feoV > 25){
+msg += "⚠ High FeO → Carbon burn fast<br>";
+msg += "👉 Use LESS sponge or use oxygen blowing<br>";
+}
+else if(feoV < 15){
+msg += "⚠ Low FeO → Carbon burn slow<br>";
+msg += "👉 Use MORE sponge or increase oxygen<br>";
+}
+else{
+msg += "✔ Normal FeO → Balanced reaction<br>";
+}
+
+// safety
+if(c1 <= c2){
+msg = "✔ Carbon already low";
+}
+
+carbonRes.innerHTML = msg;
+
+}
+
+}
+  
 <h3>⚡ Mn</h3>
 
 <input id="heat" placeholder="Heat kg">
@@ -245,30 +321,17 @@ furnaceRes.innerHTML =
 
 </script>
   
-// CARBON
-function toggleCarbon(){
-if(mode.value=="up"){
-ci.style.display="block";
-feo.style.display="none";
-}else{
-ci.style.display="none";
-feo.style.display="block";
-}
-}
+<select id="mode" onchange="toggleCarbon()">
+<option value="up">UP (CI)</option>
+<option value="down">DOWN (FeO)</option>
+</select>
 
-function calcCarbon(){
+<input id="metal" placeholder="Metal (kg)">
+<input id="c1" placeholder="Current C%">
+<input id="c2" placeholder="Target C%">
 
-let m=+metal.value,c1v=+c1.value,c2v=+c2.value;
-
-if(mode.value=="up"){
-let ciV=+ci.value;
-let add=(m*(c2v-c1v))/(ciV/100*0.8);
-carbonRes.innerHTML="Add "+add.toFixed(1)+" kg CI";
-}else{
-let sponge=(m*(c1v-c2v))/0.5;
-carbonRes.innerHTML="Use "+sponge.toFixed(1)+" kg Sponge";
-}
-}
+<input id="ci" placeholder="CI %" />
+<input id="feo" placeholder="FeO %" />
 
 // MN
 function calcMn(){
