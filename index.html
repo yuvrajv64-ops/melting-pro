@@ -171,8 +171,10 @@ document.getElementById("p"+p).classList.add("active");
 // ===== FURNACE =====
 function calcFurnace(){
 
-let scrap=+scrapP.value||0;
-let sponge=+spongeP.value||0;
+let furnaceRes = document.getElementById("furnaceRes");
+
+let scrap = Number(document.getElementById("scrapP").value)||0;
+let sponge = Number(document.getElementById("spongeP").value)||0;
 
 if(scrap+sponge!==100){
 furnaceRes.innerHTML="⚠ Scrap+Sponge=100%";
@@ -184,47 +186,46 @@ let b = toMeter(Number(document.getElementById("bottom").value)||0);
 let taperH = toMeter(Number(document.getElementById("taper").value)||0);
 let h = toMeter(Number(document.getElementById("height").value)||0);
 
-let cylH=h-taperH;
+if(!t||!b||!h){
+furnaceRes.innerHTML="⚠ Enter dimensions";
+return;
+}
+
+let cylH = h - taperH;
 if(cylH<0)cylH=0;
 
 let v1=(Math.PI*taperH/12)*(t*t+b*b+t*b);
 let v2=Math.PI*Math.pow(t/2,2)*cylH;
 let vol=v1+v2;
 
-let yieldF=(scrap/100)*(+scrapY.value/100)+(sponge/100)*(+spongeY.value/100);
-vt
-let ton=vol*7.5*(+fill.value/100||0.9)*yieldF;
+let scrapY = Number(document.getElementById("scrapY").value)||90;
+let spongeY = Number(document.getElementById("spongeY").value)||85;
 
-let prevH=+prev.value||0;
-if(prevH>0) ton=ton+(prevH-ton)*0.7;
+let yieldF = (scrap/100)*(scrapY/100)+(sponge/100)*(spongeY/100);
 
-let suggestion = "";
+let fillP = (Number(document.getElementById("fill").value)||90)/100;
 
-// Yield based AI
-if(yieldF < 0.88){
-suggestion += "🔴 Low Yield → Check FeO / Slag loss<br>";
-}
-else if(yieldF > 0.93){
-suggestion += "🟢 Good Yield → Process stable<br>";
-}
-else{
-suggestion += "⚠ Medium Yield → Improve control<br>";
+let ton = vol*7.3*fillP*yieldF;
+
+let prevH = Number(document.getElementById("prev").value)||0;
+if(prevH>0){
+ton = ton + (prevH - ton)*0.7;
 }
 
-// Fill level AI
-if(fillP < 0.85){
-suggestion += "⚠ Low Fill → Furnace underutilized<br>";
-}
-else if(fillP > 0.95){
-suggestion += "🔴 Over Fill → Slag carryover risk<br>";
-}
+let suggestion="";
+if(yieldF<0.88) suggestion+="🔴 Low Yield<br>";
+else if(yieldF>0.93) suggestion+="🟢 Good Yield<br>";
+else suggestion+="⚠ Medium Yield<br>";
 
-// Final output
+if(fillP<0.85) suggestion+="⚠ Low Fill<br>";
+else if(fillP>0.95) suggestion+="🔴 Over Fill<br>";
+
 furnaceRes.innerHTML =
 "🔥 "+ton.toFixed(2)+" Ton<br>" +
 "📦 Volume: "+vol.toFixed(2)+" m³<br>" +
 "📊 Yield: "+(yieldF*100).toFixed(1)+"%<br><br>" +
-"🤖 AI Suggestion:<br>"+suggestion;
+"🤖 AI:<br>"+suggestion;
+
 }
 
 // ===== CARBON =====
