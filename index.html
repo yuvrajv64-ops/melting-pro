@@ -26,14 +26,15 @@ button{width:100%;padding:12px;background:#ff7a00;border:none;border-radius:8px;
 <div id="p1" class="page active">
 
 <div class="card">
-<h3>🔥 Furnace Metal calculator</h3>
+<h3>🔥 Furnace Metal</h3>
 
-  <select id="unit" onchange="updateUnitUI()">
-<option value="m">Meter (m)</option>
-<option value="cm">Centimeter (cm)</option>
-<option value="mm">Millimeter (mm)</option>
-<option value="inch">Inch (in)</option>
-  </select>
+<select id="unit">
+<option value="m">Meter</option>
+<option value="cm">CM</option>
+<option value="mm">MM</option>
+<option value="inch">Inch</option>
+</select>
+
 <input id="top" placeholder="Top Dia (m)">
 <input id="bottom" placeholder="Bottom Dia (m)">
 <input id="taper" placeholder="Taper Height (m)">
@@ -53,98 +54,25 @@ button{width:100%;padding:12px;background:#ff7a00;border:none;border-radius:8px;
 </div>
 
 <div class="card">
-  
-<script>
+<h3>🔥 Carbon</h3>
 
-// ===== CARBON Calculator =====
-function calcCarbon(){
+<select id="mode" onchange="toggleCarbon()">
+<option value="up">UP (CI)</option>
+<option value="down">DOWN (FeO)</option>
+</select>
 
-let mode = document.getElementById("mode").value;
+<input id="metal" placeholder="Metal (kg)">
+<input id="c1" placeholder="Current C%">
+<input id="c2" placeholder="Target C%">
+<input id="ci" placeholder="CI %">
+<input id="feo" placeholder="FeO %">
 
-let m = Number(document.getElementById("metal").value)||0;
-let c1 = Number(document.getElementById("c1").value)||0;
-let c2 = Number(document.getElementById("c2").value)||0;
+<button onclick="calcCarbon()">Calculate</button>
+<div id="carbonRes" class="result"></div>
 
-let ciV = Number(document.getElementById("ci").value)||0;
-let feoV = Number(document.getElementById("feo").value)||0;
+</div>
 
-if(!m || !c1 || !c2){
-carbonRes.innerHTML="⚠️ Fill all values";
-return;
-}
-
-let msg = "";
-
-// ===== UP MODE =====
-if(mode=="up"){
-
-if(!ciV){
-carbonRes.innerHTML="⚠️ Enter CI%";
-return;
-}
-
-let recovery = 0.80;
-if(feoV > 25) recovery = 0.70;
-else if(feoV < 15) recovery = 0.85;
-
-let add = (m*(c2-c1))/((ciV/100)*recovery);
-
-msg += "⬆ Add "+add.toFixed(1)+" kg CI<br>";
-msg += "⚙ Recovery: "+(recovery*100)+"%<br>";
-
-if(feoV > 25){
-msg += "⚠ High FeO → Carbon burn fast<br>";
-msg += "👉 Add extra CI or reduce oxygen<br>";
-}
-else if(feoV < 15){
-msg += "✔ Low FeO → Good recovery<br>";
-}
-
-if(c1 >= c2){
-msg = "✔ Carbon already sufficient";
-}
-
-carbonRes.innerHTML = msg;
-}
-
-// ===== DOWN MODE =====
-else{
-
-let factor = 0.30;
-if(feoV > 25) factor = 0.35;
-else if(feoV < 15) factor = 0.25;
-
-let sponge = (m*(c1-c2))/factor;
-
-msg += "⬇ Use "+sponge.toFixed(1)+" kg Sponge<br>";
-msg += "🔥 FeO Factor: "+factor+"<br>";
-
-if(feoV > 25){
-msg += "⚠ High FeO → Use LESS sponge<br>";
-}
-else if(feoV < 15){
-msg += "⚠ Low FeO → Use MORE sponge<br>";
-}
-else{
-msg += "✔ Normal FeO condition<br>";
-}
-
-if(c1 <= c2){
-msg = "✔ Carbon already low";
-}
-
-carbonRes.innerHTML = msg;
-}
-
-}
-  document.addEventListener("DOMContentLoaded", function(){
-updateUnitUI();
-toggleCarbon();
-});
-
-</script>
-
-  
+<div class="card">
 <h3>⚡ Mn</h3>
 
 <input id="heat" placeholder="Heat kg">
@@ -172,8 +100,8 @@ toggleCarbon();
 
 </div>
 
-<!-- PAGE 3 -->
-<div id="p3" class="page">
+<!-- PAGE 2 -->
+<div id="p2" class="page">
 
 <div class="card">
 <h3>🧪 Slag AI</h3>
@@ -203,212 +131,130 @@ toggleCarbon();
 <div class="nav">
 <button onclick="show(1)">1</button>
 <button onclick="show(2)">2</button>
-<button onclick="show(3)">3</button>
 </div>
 
 <script>
 
-// ================= UNIT UI =================
+// ===== UNIT UI =====
 function updateUnitUI(){
+let u=document.getElementById("unit").value;
+let label=(u==="inch")?"in":u;
 
-let u = document.getElementById("unit").value;
-let label = (u === "inch") ? "in" : u;
-
-document.getElementById("top").placeholder = "Top Dia ("+label+")";
-document.getElementById("bottom").placeholder = "Bottom Dia ("+label+")";
-document.getElementById("taper").placeholder = "Taper Height ("+label+")";
-document.getElementById("height").placeholder = "Total Height ("+label+")";
-
+top.placeholder="Top Dia ("+label+")";
+bottom.placeholder="Bottom Dia ("+label+")";
+taper.placeholder="Taper Height ("+label+")";
+height.placeholder="Total Height ("+label+")";
 }
 
-// PAGE LOAD + CHANGE
-document.addEventListener("DOMContentLoaded", function(){
-updateUnitUI();
-document.getElementById("unit").addEventListener("change", updateUnitUI);
-});
+document.getElementById("unit").addEventListener("change",updateUnitUI);
 
-
-// ================= UNIT CONVERT =================
-function toMeter(val){
-
-let u = document.getElementById("unit").value;
-
-if(u=="m") return val;
-if(u=="cm") return val/100;
-if(u=="mm") return val/1000;
-if(u=="inch") return val*0.0254;
-
-return val;
+// ===== UNIT CONVERT =====
+function toMeter(v){
+let u=unit.value;
+if(u=="cm") return v/100;
+if(u=="mm") return v/1000;
+if(u=="inch") return v*0.0254;
+return v;
 }
 
-
-// ================= PAGE SWITCH =================
+// ===== PAGE =====
 function show(p){
 document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
 document.getElementById("p"+p).classList.add("active");
 }
 
-
-// ================= FURNACE CALC =================
+// ===== FURNACE =====
 function calcFurnace(){
 
-let scrap = Number(document.getElementById("scrapP").value) || 0;
-let sponge = Number(document.getElementById("spongeP").value) || 0;
+let scrap=+scrapP.value||0;
+let sponge=+spongeP.value||0;
 
-// % validation
-if((scrap + sponge) !== 100){
-furnaceRes.innerHTML = "⚠️ Scrap + Sponge = 100% hona chahiye";
+if(scrap+sponge!==100){
+furnaceRes.innerHTML="⚠ Scrap+Sponge=100%";
 return;
 }
 
-// DIMENSIONS
-let t = toMeter(Number(document.getElementById("top").value)||0);
-let b = toMeter(Number(document.getElementById("bottom").value)||0);
-let taper = toMeter(Number(document.getElementById("taper").value)||0);
-let totalH = toMeter(Number(document.getElementById("height").value)||0);
+let t=toMeter(+top.value);
+let b=toMeter(+bottom.value);
+let taperH=toMeter(+taper.value);
+let h=toMeter(+height.value);
 
-if(!t || !b || !totalH){
-furnaceRes.innerHTML = "⚠️ Enter dimensions properly";
-return;
+let cylH=h-taperH;
+if(cylH<0)cylH=0;
+
+let v1=(Math.PI*taperH/12)*(t*t+b*b+t*b);
+let v2=Math.PI*Math.pow(t/2,2)*cylH;
+let vol=v1+v2;
+
+let yieldF=(scrap/100)*(+scrapY.value/100)+(sponge/100)*(+spongeY.value/100);
+
+let ton=vol*7.8*(+fill.value/100||0.9)*yieldF;
+
+let prevH=+prev.value||0;
+if(prevH>0) ton=ton+(prevH-ton)*0.7;
+
+furnaceRes.innerHTML="🔥 "+ton.toFixed(2)+" Ton";
 }
 
-let cylH = totalH - taper;
-if(cylH < 0) cylH = 0;
-
-// ===== VOLUME =====
-let v1 = (Math.PI * taper / 12) * (t*t + b*b + t*b); // frustum
-let v2 = Math.PI * Math.pow(t/2,2) * cylH; // cylinder
-let vol = v1 + v2;
-
-// ===== DENSITY =====
-let density = 7.8;
-
-// ===== FILL =====
-let fillP = (Number(document.getElementById("fill").value)||90)/100;
-
-// ===== YIELD =====
-let scrapY = (Number(document.getElementById("scrapY").value)||90)/100;
-let spongeY = (Number(document.getElementById("spongeY").value)||85)/100;
-
-let yieldF = (scrap/100)*scrapY + (sponge/100)*spongeY;
-
-// ===== FINAL TON =====
-let ton = vol * density * fillP * yieldF;
-
-// ===== AUTO CORRECTION =====
-let prevHeat = Number(document.getElementById("prev").value)||0;
-
-if(prevHeat > 0){
-let error = prevHeat - ton;
-ton = ton + (error * 0.7);
+// ===== CARBON =====
+function toggleCarbon(){
+ci.style.display=(mode.value=="up")?"block":"none";
 }
 
-// ===== OUTPUT =====
-furnaceRes.innerHTML =
-"🔥 "+ton.toFixed(2)+" Ton<br>" +
-"📦 Volume: "+vol.toFixed(2)+" m³<br>" +
-"⚙ Yield: "+(yieldF*100).toFixed(1)+"%";
+function calcCarbon(){
+let m=+metal.value,c1=+c1.value,c2=+c2.value;
+let ciV=+ci.value,feoV=+feo.value;
 
+if(!m||!c1||!c2){carbonRes.innerHTML="Fill data";return;}
+
+if(mode.value=="up"){
+let rec=0.8;if(feoV>25)rec=0.7;if(feoV<15)rec=0.85;
+let add=(m*(c2-c1))/((ciV/100)*rec);
+carbonRes.innerHTML="⬆ "+add.toFixed(1)+" kg CI";
+}else{
+let f=0.3;if(feoV>25)f=0.35;if(feoV<15)f=0.25;
+let sp=(m*(c1-c2))/f;
+carbonRes.innerHTML="⬇ "+sp.toFixed(1)+" kg Sponge";
 }
-  
-<!-- CARBON -->
-<select id="mode" onchange="toggleCarbon()">
-<option value="up">UP (CI)</option>
-<option value="down">DOWN (FeO)</option>
-</select>
+}
 
-<input id="metal" placeholder="Metal (kg)">
-<input id="c1" placeholder="Current C%">
-<input id="c2" placeholder="Target C%">
-
-<input id="ci" placeholder="CI %" />
-<input id="feo" placeholder="FeO %" />
-
-<button onclick="calcCarbon()">Calculate</button>
-
-<div id="carbonRes" class="result"></div>
-  </script>
-
-  </script>
-// MN
+// ===== MN =====
 function calcMn(){
-
 let m=+heat.value;
 let diff=+mn2.value-+mn1.value;
-
 let req=(m*diff)/((+alloy.value/100)*(+rec.value/100));
-
 mnRes.innerHTML="⚡ "+req.toFixed(1)+" kg";
-
-let msg="";
-if(diff>0.3) msg+="Mn low<br>";
-mnAI.innerHTML=msg;
 }
 
-// GRADE
+// ===== GRADE =====
 function gradeAI(){
-
 let t=spec.value.toLowerCase();
-
-function get(k){
-let m=t.match(new RegExp(k+"[\\s:-]*([0-9.]+)"));
-return m?parseFloat(m[1]):0;
+if(t.includes("0.22")) gradeRes.innerHTML="Fe500";
+else gradeRes.innerHTML="XLS";
 }
 
-let c=get("c"),mn=get("mn"),s=get("s"),p=get("p"),cu=get("cu"),al=get("al");
-
-let grade="Unknown";
-
-if(c<=0.25&&s<=0.04&&p<=0.04&&al<0.01) grade="XLS";
-else if(c<=0.25&&mn>=0.5) grade="Fe500";
-if(s<=0.04&&p<=0.04&&grade=="Fe500") grade="Fe500D";
-if(c<=0.23&&cu>=0.15) grade="E250Br";
-
-gradeRes.innerHTML=`${grade}<br>C:${c} Mn:${mn} S:${s} P:${p}`;
-}
-
-// SLAG
+// ===== SLAG =====
 function slagAI(){
-
 let b=cao.value/sio2.value;
-
-let msg="Basicity "+b.toFixed(2)+"<br>";
-
-if(b<2) msg+="Add Lime<br>";
-if(b>3) msg+="Reduce Lime<br>";
-
-if(feoS.value>28) msg+="High FeO<br>";
-
-slagRes.innerHTML=msg;
+slagRes.innerHTML="Basicity "+b.toFixed(2);
 }
 
-// REPORT
+// ===== REPORT =====
 function makeReport(){
-
-let d=new Date();
-
-report.value=
-`HEAT REPORT
-
-${furnaceRes.innerText}
-${carbonRes.innerText}
-${mnRes.innerText}
-${gradeRes.innerText}
-${slagRes.innerText}
-
-Date:${d.toLocaleDateString()}`;
+report.value=furnaceRes.innerText+"\n"+carbonRes.innerText+"\n"+mnRes.innerText;
 }
 
-// WA
+// ===== WA =====
 function sendWA(){
 window.open("https://wa.me/?text="+encodeURIComponent(report.value));
 }
 
-toggleCarbon();
-window.onload = function(){
+// INIT
+document.addEventListener("DOMContentLoaded",()=>{
 updateUnitUI();
-   }
-  
+toggleCarbon();
+});
+
 </script>
 
 </body>
