@@ -53,6 +53,8 @@ button{width:100%;padding:12px;background:#ff7a00;border:none;border-radius:8px;
 </div>
 
 <div class="card">
+<script>
+
 // ===== CARBON AI (SMART ENGINE) =====
 function calcCarbon(){
 
@@ -72,7 +74,7 @@ return;
 
 let msg = "";
 
-// ================= UP MODE =================
+// ===== UP MODE =====
 if(mode=="up"){
 
 if(!ciV){
@@ -80,30 +82,23 @@ carbonRes.innerHTML="⚠️ Enter CI%";
 return;
 }
 
-// 🔥 dynamic recovery based on FeO
 let recovery = 0.80;
-
 if(feoV > 25) recovery = 0.70;
 else if(feoV < 15) recovery = 0.85;
 
-// calculation
 let add = (m*(c2-c1))/((ciV/100)*recovery);
 
-// ===== AI MESSAGE =====
 msg += "⬆ Add "+add.toFixed(1)+" kg CI<br>";
 msg += "⚙ Recovery: "+(recovery*100)+"%<br>";
 
-// AI decision
 if(feoV > 25){
 msg += "⚠ High FeO → Carbon burn fast<br>";
-msg += "👉 Add little extra CI or reduce oxygen<br>";
+msg += "👉 Add extra CI or reduce oxygen<br>";
 }
 else if(feoV < 15){
 msg += "✔ Low FeO → Good recovery<br>";
-msg += "👉 Normal CI addition sufficient<br>";
 }
 
-// safety
 if(c1 >= c2){
 msg = "✔ Carbon already sufficient";
 }
@@ -111,47 +106,39 @@ msg = "✔ Carbon already sufficient";
 carbonRes.innerHTML = msg;
 }
 
-
-
-// ================= DOWN MODE =================
+// ===== DOWN MODE =====
 else{
 
-// dynamic factor based on FeO
 let factor = 0.30;
-
 if(feoV > 25) factor = 0.35;
 else if(feoV < 15) factor = 0.25;
 
-// calculation
 let sponge = (m*(c1-c2))/factor;
 
-// ===== AI MESSAGE =====
 msg += "⬇ Use "+sponge.toFixed(1)+" kg Sponge<br>";
 msg += "🔥 FeO Factor: "+factor+"<br>";
 
-// AI decision
 if(feoV > 25){
-msg += "⚠ High FeO → Carbon burn fast<br>";
-msg += "👉 Use LESS sponge or use oxygen blowing<br>";
+msg += "⚠ High FeO → Use LESS sponge<br>";
 }
 else if(feoV < 15){
-msg += "⚠ Low FeO → Carbon burn slow<br>";
-msg += "👉 Use MORE sponge or increase oxygen<br>";
+msg += "⚠ Low FeO → Use MORE sponge<br>";
 }
 else{
-msg += "✔ Normal FeO → Balanced reaction<br>";
+msg += "✔ Normal FeO condition<br>";
 }
 
-// safety
 if(c1 <= c2){
 msg = "✔ Carbon already low";
 }
 
 carbonRes.innerHTML = msg;
-
 }
 
 }
+
+</script>
+
   
 <h3>⚡ Mn</h3>
 
