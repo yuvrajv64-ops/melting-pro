@@ -146,13 +146,16 @@ document.getElementById("top").placeholder = "Top Dia ("+label+")";
 document.getElementById("bottom").placeholder = "Bottom Dia ("+label+")";
 document.getElementById("taper").placeholder = "Taper Height ("+label+")";
 document.getElementById("height").placeholder = "Total Height ("+label+")";
-
+document.addEventListener("DOMContentLoaded", function(){
+updateUnitUI();
+});
+  
 }
 document.getElementById("unit").addEventListener("change",updateUnitUI);
 
 // ===== UNIT CONVERT =====
 function toMeter(v){
-let u=unit.value;
+  let u = document.getElementById("unit").value;
 if(u=="cm") return v/100;
 if(u=="mm") return v/1000;
 if(u=="inch") return v*0.0254;
@@ -176,10 +179,10 @@ furnaceRes.innerHTML="⚠ Scrap+Sponge=100%";
 return;
 }
 
-let t=toMeter(+top.value);
-let b=toMeter(+bottom.value);
-let taperH=toMeter(+taper.value);
-let h=toMeter(+height.value);
+let t = toMeter(Number(document.getElementById("top").value)||0);
+let b = toMeter(Number(document.getElementById("bottom").value)||0);
+let taperH = toMeter(Number(document.getElementById("taper").value)||0);
+let h = toMeter(Number(document.getElementById("height").value)||0);
 
 let cylH=h-taperH;
 if(cylH<0)cylH=0;
