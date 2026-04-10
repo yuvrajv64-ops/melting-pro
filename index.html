@@ -26,7 +26,7 @@ button{width:100%;padding:12px;background:#ff7a00;border:none;border-radius:8px;
 <div id="p1" class="page active">
 
 <div class="card">
-<h3>🔥 Furnace Metal</h3>
+<h3>🔥 Furnace Metal calculator</h3>
 
 <select id="unit">
 <option value="m">Meter</option>
@@ -137,15 +137,17 @@ button{width:100%;padding:12px;background:#ff7a00;border:none;border-radius:8px;
 
 // ===== UNIT UI =====
 function updateUnitUI(){
-let u=document.getElementById("unit").value;
-let label=(u==="inch")?"in":u;
 
-top.placeholder="Top Dia ("+label+")";
-bottom.placeholder="Bottom Dia ("+label+")";
-taper.placeholder="Taper Height ("+label+")";
-height.placeholder="Total Height ("+label+")";
+let u = document.getElementById("unit").value;
+let label = (u === "inch") ? "in" : u;
+
+// ✅ FIX: proper element targeting
+document.getElementById("top").placeholder = "Top Dia ("+label+")";
+document.getElementById("bottom").placeholder = "Bottom Dia ("+label+")";
+document.getElementById("taper").placeholder = "Taper Height ("+label+")";
+document.getElementById("height").placeholder = "Total Height ("+label+")";
+
 }
-
 document.getElementById("unit").addEventListener("change",updateUnitUI);
 
 // ===== UNIT CONVERT =====
