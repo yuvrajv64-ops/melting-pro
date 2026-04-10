@@ -310,9 +310,8 @@ furnaceRes.innerHTML =
 "⚙ Yield: "+(yieldF*100).toFixed(1)+"%";
 
 }
-
-</script>
   
+<!-- CARBON -->
 <select id="mode" onchange="toggleCarbon()">
 <option value="up">UP (CI)</option>
 <option value="down">DOWN (FeO)</option>
@@ -325,6 +324,10 @@ furnaceRes.innerHTML =
 <input id="ci" placeholder="CI %" />
 <input id="feo" placeholder="FeO %" />
 
+<button onclick="calcCarbon()">Calculate</button>
+
+<div id="carbonRes" class="result"></div>
+  
 // MN
 function calcMn(){
 
