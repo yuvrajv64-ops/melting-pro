@@ -192,13 +192,13 @@ let v2=Math.PI*Math.pow(t/2,2)*cylH;
 let vol=v1+v2;
 
 let yieldF=(scrap/100)*(+scrapY.value/100)+(sponge/100)*(+spongeY.value/100);
-
-let ton=vol*7.8*(+fill.value/100||0.9)*yieldF;
+vt
+let ton=vol*7.5*(+fill.value/100||0.9)*yieldF;
 
 let prevH=+prev.value||0;
 if(prevH>0) ton=ton+(prevH-ton)*0.7;
 
-furnaceRes.innerHTML="🔥 "+ton.toFixed(2)+" Ton";
+furnaceRes.innerHTML="r🔥 "+ton.toFixed(2)+" Ton";
 }
 
 // ===== CARBON =====
