@@ -198,7 +198,33 @@ let ton=vol*7.5*(+fill.value/100||0.9)*yieldF;
 let prevH=+prev.value||0;
 if(prevH>0) ton=ton+(prevH-ton)*0.7;
 
-furnaceRes.innerHTML="r🔥 "+ton.toFixed(2)+" Ton";
+let suggestion = "";
+
+// Yield based AI
+if(yieldF < 0.88){
+suggestion += "🔴 Low Yield → Check FeO / Slag loss<br>";
+}
+else if(yieldF > 0.93){
+suggestion += "🟢 Good Yield → Process stable<br>";
+}
+else{
+suggestion += "⚠ Medium Yield → Improve control<br>";
+}
+
+// Fill level AI
+if(fillP < 0.85){
+suggestion += "⚠ Low Fill → Furnace underutilized<br>";
+}
+else if(fillP > 0.95){
+suggestion += "🔴 Over Fill → Slag carryover risk<br>";
+}
+
+// Final output
+furnaceRes.innerHTML =
+"🔥 "+ton.toFixed(2)+" Ton<br>" +
+"📦 Volume: "+vol.toFixed(2)+" m³<br>" +
+"📊 Yield: "+(yieldF*100).toFixed(1)+"%<br><br>" +
+"🤖 AI Suggestion:<br>"+suggestion;
 }
 
 // ===== CARBON =====
