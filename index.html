@@ -64,7 +64,7 @@ button{width:100%;padding:12px;background:#ff7a00;border:none;border-radius:8px;
 <input id="metal" placeholder="Metal (kg)">
 <input id="c1" placeholder="Current C%">
 <input id="c2" placeholder="Target C%">
-<input id="ci" placeholder="CI %">
+<input id="ci" placeholder="Carbon Source %">
 <input id="feo" placeholder="FeO %">
 
 <button onclick="calcCarbon()">Calculate</button>
@@ -253,35 +253,35 @@ let res = document.getElementById("carbonRes");
 
 let mode = document.getElementById("mode").value;
 
-let m = Number(document.getElementById("metal").value)||0;
-let c1 = Number(document.getElementById("c1").value)||0;
-let c2 = Number(document.getElementById("c2").value)||0;
+let m = Number(document.getElementById("metal").value);
+let c1 = Number(document.getElementById("c1").value);
+let c2 = Number(document.getElementById("c2").value);
 
-let addC = Number(document.getElementById("ci").value)||0;   // %
-let feoV = Number(document.getElementById("feo").value)||0;
-let scale = Number(document.getElementById("scale").value)||0;
+let addC = Number(document.getElementById("ci").value);
+let feoV = Number(document.getElementById("feo").value);
+let scale = Number(document.getElementById("scale").value) || 0;
 
-if(!m || !c1 || !c2){
-res.innerHTML="⚠ Fill all values";
+// ✅ validation
+if(isNaN(m) || isNaN(c1) || isNaN(c2)){
+res.innerHTML="⚠ Fill all values properly";
 return;
 }
 
 let msg = "";
 
-// ================= CARBON UP =================
+// ================= UP =================
 if(mode=="up"){
 
-if(!addC){
+if(isNaN(addC) || addC==0){
 res.innerHTML="⚠ Enter Carbon Source %";
 return;
 }
 
-// 🔥 Recovery
 let recovery = 0.80;
 if(feoV > 25) recovery = 0.70;
 else if(feoV < 15) recovery = 0.85;
 
-// ❗ FIX: % → fraction
+// ✅ FIXED FORMULA
 let add = (m * (c2 - c1)) / ((addC/100) * recovery);
 
 if(c1 >= c2){
@@ -289,13 +289,11 @@ res.innerHTML="✔ Carbon OK";
 return;
 }
 
-msg += "⬆ Carbon Source: "+add.toFixed(0)+" kg<br>";
-msg += "⚙ Recovery: "+(recovery*100)+"%";
+msg += "⬆ Carbon Source: "+add.toFixed(0)+" kg";
 
 }
 
-
-// ================= CARBON DOWN =================
+// ================= DOWN =================
 else{
 
 if(c1 <= c2){
@@ -303,33 +301,31 @@ res.innerHTML="✔ Carbon OK";
 return;
 }
 
-// Step 1
+// carbon removal
 let carbonRemove = m * (c1 - c2) / 100;
 
-// Step 2
+// FeO required
 let FeO_req = carbonRemove * 6;
 
-// Step 3 (scale)
+// scale effect
 let scaleFeO = scale * 0.70;
 let FeO_rem = FeO_req - scaleFeO;
 if(FeO_rem < 0) FeO_rem = 0;
 
-// Step 4 (efficiency)
+// efficiency
 let efficiency = 0.35;
 if(feoV > 25) efficiency = 0.45;
 else if(feoV < 15) efficiency = 0.25;
 
-// Step 5 (sponge)
+// sponge
 let sponge = FeO_rem / (0.10 * efficiency);
 
-msg += "⬇ Sponge Iron: "+sponge.toFixed(0)+" kg<br>";
-msg += "🧱 Scale Used: "+scale.toFixed(0)+" kg";
+msg += "⬇ Sponge Iron: "+sponge.toFixed(0)+" kg";
 
 }
 
 res.innerHTML = msg;
-
-  }
+}
   
 // ===== MN =====
 function calcMn(){
