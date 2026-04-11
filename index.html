@@ -71,7 +71,7 @@ button{width:100%;padding:12px;background:#ff7a00;border:none;border-radius:8px;
 
 <button onclick="calcCarbon()">Calculate</button>
 
-<div id="carbonRes" class="result"></div>
+<div id="carbonRes"></div>
 
 <div class="card">
 <h3>⚡ Mn</h3>
@@ -237,13 +237,13 @@ let mode = document.getElementById("mode").value;
 let ci = document.getElementById("ci");
 let scale = document.getElementById("scale");
 
-// UP → carbon source show
+// Carbon UP
 if(mode === "up"){
 ci.style.display = "block";
 scale.style.display = "none";
 }
 
-// DOWN → scale show
+// Carbon DOWN
 else{
 ci.style.display = "none";
 scale.style.display = "block";
@@ -257,18 +257,18 @@ function calcCarbon(){
 
 let res = document.getElementById("carbonRes");
 
-// INPUTS
+// ===== INPUT =====
 let mode = document.getElementById("mode").value;
 
-let m = parseFloat(document.getElementById("metal").value);
+let m  = parseFloat(document.getElementById("metal").value);
 let c1 = parseFloat(document.getElementById("c1").value);
 let c2 = parseFloat(document.getElementById("c2").value);
 
-let carbonP = parseFloat(document.getElementById("ci").value); // carbon source %
-let feo = parseFloat(document.getElementById("feo").value);    // slag FeO %
+let carbonP = parseFloat(document.getElementById("ci").value);   // %
+let feo = parseFloat(document.getElementById("feo").value);      // slag %
 let scale = parseFloat(document.getElementById("scale").value) || 0;
 
-// VALIDATION
+// ===== VALIDATION =====
 if(isNaN(m) || isNaN(c1) || isNaN(c2)){
 res.innerHTML = "⚠ Fill all values";
 return;
@@ -289,23 +289,20 @@ res.innerHTML = "✔ Carbon already OK";
 return;
 }
 
-// 🔥 Recovery (practical)
+// 🔥 Recovery (slag FeO based)
 let recovery = 0.75;
 if(feo > 25) recovery = 0.65;
 else if(feo < 15) recovery = 0.80;
 
-// ✅ FINAL FORMULA (correct)
-let add = (m * (c2 - c1)) / ((carbonP/100) * recovery);
-
-// 🔧 limit (over result avoid)
-if(add > m * 0.15){
-add = add * 0.7;
-}
+// 🔥 Mass balance (CORRECT)
+let carbonReq = m * (c2 - c1) / 100;
+let add = carbonReq / ((carbonP/100) * recovery);
 
 msg += "⬆ Carbon Source: " + add.toFixed(0) + " kg<br>";
 msg += "⚙ Recovery: " + (recovery*100).toFixed(0) + "%";
 
 }
+
 
 // ================= 🔽 CARBON DOWN =================
 else{
@@ -318,28 +315,19 @@ return;
 // 🔥 Carbon removal
 let carbonRemove = m * (c1 - c2) / 100;
 
-// 🔥 FeO required (practical tuned)
-let FeO_req = carbonRemove * 4;
+// 🔥 FeO required (plant tuned)
+let FeO_req = carbonRemove * 3.5;
 
-// 🔥 Mill scale contribution (~70% FeO)
+// 🔥 Mill scale FeO (~70%)
 let FeO_scale = scale * 0.70;
 
-// 🔥 Remaining FeO
+// remaining FeO
 let FeO_need = FeO_req - FeO_scale;
 if(FeO_need < 0) FeO_need = 0;
 
-// 🔥 Efficiency (realistic)
-let eff = 0.30;
-if(feo > 25) eff = 0.40;
-else if(feo < 15) eff = 0.25;
-
-// 🔥 Sponge FeO ~10%
-let sponge = FeO_need / (0.10 * eff);
-
-// 🔧 practical correction
-if(sponge > m * 0.25){
-sponge = sponge * 0.6;
-}
+// 🔥 Sponge FeO = 10–12%, use 11% avg
+// 🔥 Efficiency ≈ 30%
+let sponge = FeO_need / (0.11 * 0.30);
 
 msg += "⬇ Sponge Iron: " + sponge.toFixed(0) + " kg<br>";
 msg += "🧱 Mill Scale: " + scale.toFixed(0) + " kg";
@@ -348,8 +336,7 @@ msg += "🧱 Mill Scale: " + scale.toFixed(0) + " kg";
 
 res.innerHTML = msg;
 
-                         }
-
+}
   
 // ===== MN =====
 function calcMn(){
