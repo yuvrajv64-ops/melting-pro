@@ -235,19 +235,17 @@ let mode = document.getElementById("mode").value;
 let ci = document.getElementById("ci");
 let feo = document.getElementById("feo");
 
-// UP → CI dikhega
+// UP → additive C% dikhega
 if(mode === "up"){
 ci.style.display = "block";
 feo.style.display = "block";
 }
-
-// DOWN → CI hide
 else{
 ci.style.display = "none";
 feo.style.display = "block";
 }
 
-  }
+}
 
 function calcCarbon(){
 
@@ -259,7 +257,7 @@ let m = Number(document.getElementById("metal").value)||0;
 let c1 = Number(document.getElementById("c1").value)||0;
 let c2 = Number(document.getElementById("c2").value)||0;
 
-let ciV = Number(document.getElementById("ci").value)||0;
+let ciV = Number(document.getElementById("ci").value)||0; // additive C%
 let feoV = Number(document.getElementById("feo").value)||0;
 
 if(!m || !c1 || !c2){
@@ -269,26 +267,26 @@ return;
 
 let msg = "";
 
-// ================= UP MODE =================
+// ================= CARBON UP =================
 if(mode=="up"){
 
 if(!ciV){
-carbonRes.innerHTML="⚠ Enter CI%";
+carbonRes.innerHTML="⚠ Enter Additive C%";
 return;
 }
 
-// 🔥 Dynamic recovery
+// 🔥 recovery (FeO based)
 let recovery = 0.80;
 if(feoV > 25) recovery = 0.70;
 else if(feoV < 15) recovery = 0.85;
 
-// calculation
-let add = (m*(c2-c1))/((ciV/100)*recovery);
+// % → fraction
+let c1f = c1/100;
+let c2f = c2/100;
+let addCf = ciV/100;
 
-// 🔧 practical limit
-if(add > m*0.25){
-add = add * 0.6; // realistic correction
-}
+// ✅ CORRECT MASS BALANCE
+let add = (m * (c2f - c1f)) / (addCf * recovery);
 
 // safety
 if(c1 >= c2){
@@ -297,13 +295,13 @@ return;
 }
 
 // output
-msg += "⬆ Add "+add.toFixed(1)+" kg CI<br>";
+msg += "⬆ Add "+add.toFixed(1)+" kg Carbon Source<br>";
 msg += "⚙ Recovery: "+(recovery*100)+"%<br>";
 
-// AI suggestion
+// AI
 if(feoV > 25){
 msg += "🔴 High FeO → Carbon burn fast<br>";
-msg += "👉 Add slightly extra CI or reduce O₂<br>";
+msg += "👉 थोड़ा extra addition रखो / O₂ control करो<br>";
 }
 else if(feoV < 15){
 msg += "🟢 Low FeO → Good recovery<br>";
@@ -314,7 +312,7 @@ msg += "⚠ Normal FeO condition<br>";
 
 }
 
-// ================= DOWN MODE =================
+// ================= CARBON DOWN =================
 else{
 
 if(c1 <= c2){
@@ -322,25 +320,28 @@ carbonRes.innerHTML="✔ Carbon already low";
 return;
 }
 
-// 🔥 FeO based factor
-let factor = 0.30;
-if(feoV > 25) factor = 0.35;
-else if(feoV < 15) factor = 0.25;
+// % → fraction
+let c1f = c1/100;
+let c2f = c2/100;
 
-// calculation
-let sponge = (m*(c1-c2))/(0.5 * factor);
+// ✅ CORRECT DILUTION FORMULA
+let sponge = m * (c1f - c2f) / c2f;
+
+// FeO correction (practical)
+if(feoV > 25) sponge *= 0.85;
+else if(feoV < 15) sponge *= 1.15;
+
 // output
 msg += "⬇ Use "+sponge.toFixed(1)+" kg Sponge<br>";
-msg += "🔥 FeO Effect: "+factor+"<br>";
 
-// AI suggestion
+// AI
 if(feoV > 25){
-msg += "🟢 High FeO → Carbon removes fast<br>";
-msg += "👉 Use less sponge<br>";
+msg += "🟢 High FeO → Fast carbon removal<br>";
+msg += "👉 Sponge kam lagega<br>";
 }
 else if(feoV < 15){
-msg += "🔴 Low FeO → Carbon removal slow<br>";
-msg += "👉 Use more sponge or increase O₂<br>";
+msg += "🔴 Low FeO → Slow carbon removal<br>";
+msg += "👉 Sponge zyada lagega / O₂ badhao<br>";
 }
 else{
 msg += "⚠ Normal FeO condition<br>";
@@ -350,8 +351,8 @@ msg += "⚠ Normal FeO condition<br>";
 
 carbonRes.innerHTML = msg;
 
-}
-
+  }
+  
 // ===== MN =====
 function calcMn(){
 let m=+heat.value;
