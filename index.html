@@ -307,7 +307,7 @@ let carbonRemove = m * (c1 - c2) / 100;
 // FeO required
 let FeO_req = carbonRemove * 6;
 
-// scale effect
+// no scale
 let FeO_rem = FeO_req;
 
 // efficiency
@@ -318,7 +318,7 @@ else if(feoV < 15) efficiency = 0.25;
 // sponge
 let sponge = FeO_rem / (0.10 * efficiency);
 
-msg += "⬇ Sponge Iron: "+sponge.toFixed(0)+" kg";
+msg += "⬇ Sponge Iron: " + sponge.toFixed(0) + " kg";
 
 }
 
