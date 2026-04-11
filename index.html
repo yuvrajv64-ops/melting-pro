@@ -54,7 +54,7 @@ button{width:100%;padding:12px;background:#ff7a00;border:none;border-radius:8px;
 </div>
 
 <div class="card">
-<h3>🔥 Carbon</h3>
+<h3>🔥 Carbon Calculator</h3>
 
 <select id="mode" onchange="toggleCarbon()">
 <option value="up">UP (CI)</option>
@@ -230,8 +230,24 @@ furnaceRes.innerHTML =
 
 // ===== CARBON =====
 function toggleCarbon(){
-ci.style.display=(mode.value=="up")?"block":"none";
+
+let mode = document.getElementById("mode").value;
+let ci = document.getElementById("ci");
+let feo = document.getElementById("feo");
+
+// UP → CI dikhega
+if(mode === "up"){
+ci.style.display = "block";
+feo.style.display = "block";
 }
+
+// DOWN → CI hide
+else{
+ci.style.display = "none";
+feo.style.display = "block";
+}
+
+  }
 
 function calcCarbon(){
 
