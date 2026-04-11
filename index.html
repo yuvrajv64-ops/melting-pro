@@ -234,20 +234,102 @@ ci.style.display=(mode.value=="up")?"block":"none";
 }
 
 function calcCarbon(){
-let m=+metal.value,c1=+c1.value,c2=+c2.value;
-let ciV=+ci.value,feoV=+feo.value;
 
-if(!m||!c1||!c2){carbonRes.innerHTML="Fill data";return;}
+let carbonRes = document.getElementById("carbonRes");
 
-if(mode.value=="up"){
-let rec=0.8;if(feoV>25)rec=0.7;if(feoV<15)rec=0.85;
-let add=(m*(c2-c1))/((ciV/100)*rec);
-carbonRes.innerHTML="⬆ "+add.toFixed(1)+" kg CI";
-}else{
-let f=0.3;if(feoV>25)f=0.35;if(feoV<15)f=0.25;
-let sp=(m*(c1-c2))/f;
-carbonRes.innerHTML="⬇ "+sp.toFixed(1)+" kg Sponge";
+let mode = document.getElementById("mode").value;
+
+let m = Number(document.getElementById("metal").value)||0;
+let c1 = Number(document.getElementById("c1").value)||0;
+let c2 = Number(document.getElementById("c2").value)||0;
+
+let ciV = Number(document.getElementById("ci").value)||0;
+let feoV = Number(document.getElementById("feo").value)||0;
+
+if(!m || !c1 || !c2){
+carbonRes.innerHTML="⚠ Fill all values";
+return;
 }
+
+let msg = "";
+
+// ================= UP MODE =================
+if(mode=="up"){
+
+if(!ciV){
+carbonRes.innerHTML="⚠ Enter CI%";
+return;
+}
+
+// 🔥 Dynamic recovery
+let recovery = 0.80;
+if(feoV > 25) recovery = 0.70;
+else if(feoV < 15) recovery = 0.85;
+
+// calculation
+let add = (m*(c2-c1))/((ciV/100)*recovery);
+
+// safety
+if(c1 >= c2){
+carbonRes.innerHTML="✔ Carbon already sufficient";
+return;
+}
+
+// output
+msg += "⬆ Add "+add.toFixed(1)+" kg CI<br>";
+msg += "⚙ Recovery: "+(recovery*100)+"%<br>";
+
+// AI suggestion
+if(feoV > 25){
+msg += "🔴 High FeO → Carbon burn fast<br>";
+msg += "👉 Add slightly extra CI or reduce O₂<br>";
+}
+else if(feoV < 15){
+msg += "🟢 Low FeO → Good recovery<br>";
+}
+else{
+msg += "⚠ Normal FeO condition<br>";
+}
+
+}
+
+// ================= DOWN MODE =================
+else{
+
+if(c1 <= c2){
+carbonRes.innerHTML="✔ Carbon already low";
+return;
+}
+
+// 🔥 FeO based factor
+let factor = 0.30;
+if(feoV > 25) factor = 0.35;
+else if(feoV < 15) factor = 0.25;
+
+// calculation
+let sponge = (m*(c1-c2))/factor;
+
+// output
+msg += "⬇ Use "+sponge.toFixed(1)+" kg Sponge<br>";
+msg += "🔥 FeO Effect: "+factor+"<br>";
+
+// AI suggestion
+if(feoV > 25){
+msg += "🟢 High FeO → Carbon removes fast<br>";
+msg += "👉 Use less sponge<br>";
+}
+else if(feoV < 15){
+msg += "🔴 Low FeO → Carbon removal slow<br>";
+msg += "👉 Use more sponge or increase O₂<br>";
+}
+else{
+msg += "⚠ Normal FeO condition<br>";
+}
+
+}
+
+carbonRes.innerHTML = msg;
+
 }
 
 // ===== MN =====
