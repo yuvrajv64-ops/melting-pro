@@ -304,8 +304,7 @@ msg += "⚙ Recovery: " + (recovery*100).toFixed(0) + "%";
 }
 
 
-// ================= 🔽 CARBON DOWN =================
-else{
+// ================= 🔽 CARBON DOWN (AUTO MIX) =================
 
 if(c1 <= c2){
 res.innerHTML = "✔ Carbon already OK";
@@ -315,27 +314,56 @@ return;
 // 🔥 Carbon removal
 let carbonRemove = m * (c1 - c2) / 100;
 
-// 🔥 FeO required (plant tuned)
+// 🔥 FeO required
 let FeO_req = carbonRemove * 3.5;
 
-// 🔥 Mill scale FeO (~70%)
-let FeO_scale = scale * 0.70;
+// 🔥 AI MIX LOGIC
+let scaleUse = 0;
+let sponge = 0;
 
-// remaining FeO
-let FeO_need = FeO_req - FeO_scale;
-if(FeO_need < 0) FeO_need = 0;
-
-// 🔥 Sponge FeO = 10–12%, use 11% avg
-// 🔥 Efficiency ≈ 30%
-let sponge = FeO_need / (0.11 * 0.30);
-
-msg += "⬇ Sponge Iron: " + sponge.toFixed(0) + " kg<br>";
-msg += "🧱 Mill Scale: " + scale.toFixed(0) + " kg";
-
+// CASE 1: Low FeO → more scale
+if(feo < 15){
+scaleUse = FeO_req * 0.5;   // 50% FeO from scale
 }
 
-res.innerHTML = msg;
+// CASE 2: Normal FeO → balanced
+else if(feo <= 25){
+scaleUse = FeO_req * 0.35;
+}
 
+// CASE 3: High FeO → less scale
+else{
+scaleUse = FeO_req * 0.20;
+}
+
+// 🔥 convert FeO → scale kg (70%)
+scaleUse = scaleUse / 0.70;
+
+// 🔥 remaining FeO
+let FeO_balance = FeO_req - (scaleUse * 0.70);
+if(FeO_balance < 0) FeO_balance = 0;
+
+// 🔥 sponge calc (FeO 11%, eff 30%)
+sponge = FeO_balance / (0.11 * 0.30);
+
+// 🔧 safety limit
+if(sponge > m*0.25){
+sponge *= 0.7;
+}
+
+// ===== OUTPUT =====
+msg += "⬇ Sponge Iron: " + sponge.toFixed(0) + " kg<br>";
+msg += "🧱 Mill Scale: " + scaleUse.toFixed(0) + " kg<br>";
+
+// ===== AI MESSAGE =====
+if(feo < 15){
+msg += "🔴 Low FeO → More scale used<br>";
+}
+else if(feo > 25){
+msg += "🟢 High FeO → Sponge priority<br>";
+}
+else{
+msg += "⚖ Balanced FeO → Optimized mix<br>";
 }
   
 // ===== MN =====
