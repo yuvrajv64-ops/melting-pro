@@ -237,20 +237,19 @@ let mode = document.getElementById("mode").value;
 let ci = document.getElementById("ci");
 let scale = document.getElementById("scale");
 
-// Carbon UP
+// UP
 if(mode === "up"){
-ci.style.display = "block";
-scale.style.display = "none";
+ci.style.display="block";
+scale.style.display="none";
 }
 
-// Carbon DOWN
+// DOWN
 else{
-ci.style.display = "none";
-scale.style.display = "block";
+ci.style.display="none";
+scale.style.display="block";
 }
 
 }
-
 
 // ===== FINAL CARBON CALCULATOR =====
 function calcCarbon(){
@@ -398,9 +397,11 @@ window.open("https://wa.me/?text="+encodeURIComponent(report.value));
 }
 
 // INIT
-document.addEventListener("DOMContentLoaded",()=>{
-updateUnitUI();
-toggleCarbon();
+document.addEventListener("DOMContentLoaded", function(){
+
+updateUnitUI();     // 🔥 unit fix
+toggleCarbon();     // 🔥 carbon toggle fix
+
 });
 
 </script>
