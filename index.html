@@ -323,8 +323,7 @@ if(feoV > 25) factor = 0.35;
 else if(feoV < 15) factor = 0.25;
 
 // calculation
-let sponge = (m*(c1-c2))/factor;
-
+let sponge = (m*(c1-c2))/(0.5 * factor);
 // output
 msg += "⬇ Use "+sponge.toFixed(1)+" kg Sponge<br>";
 msg += "🔥 FeO Effect: "+factor+"<br>";
