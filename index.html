@@ -66,6 +66,7 @@ button{width:100%;padding:12px;background:#ff7a00;border:none;border-radius:8px;
 <input id="c2" placeholder="Target C%">
 <input id="ci" placeholder="Carbon Source %">
 <input id="feo" placeholder="FeO %">
+  <input id="scale" placeholder="Mill Scale (kg)">
 
 <button onclick="calcCarbon()">Calculate</button>
 <div id="carbonRes" class="result"></div>
@@ -259,7 +260,6 @@ let c2 = Number(document.getElementById("c2").value);
 
 let addC = Number(document.getElementById("ci").value);
 let feoV = Number(document.getElementById("feo").value);
-let scale = Number(document.getElementById("scale").value) || 0;
 
 // ✅ validation
 if(isNaN(m) || isNaN(c1) || isNaN(c2)){
@@ -308,9 +308,7 @@ let carbonRemove = m * (c1 - c2) / 100;
 let FeO_req = carbonRemove * 6;
 
 // scale effect
-let scaleFeO = scale * 0.70;
-let FeO_rem = FeO_req - scaleFeO;
-if(FeO_rem < 0) FeO_rem = 0;
+let FeO_rem = FeO_req;
 
 // efficiency
 let efficiency = 0.35;
