@@ -57,8 +57,8 @@ button{width:100%;padding:12px;background:#ff7a00;border:none;border-radius:8px;
 <h3>🔥 Carbon Calculator</h3>
 
 <select id="mode" onchange="toggleCarbon()">
-<option value="up">UP (CI)</option>
-<option value="down">DOWN (FeO)</option>
+<option value="up">Carbon UP</option>
+<option value="down">Carbon DOWN</option>
 </select>
 
 <input id="metal" placeholder="Metal (kg)">
@@ -234,9 +234,11 @@ function toggleCarbon(){
 let mode = document.getElementById("mode").value;
 let ci = document.getElementById("ci");
 
+// Carbon UP → show additive %
 if(mode === "up"){
 ci.style.display = "block";
 }
+// Carbon DOWN → hide
 else{
 ci.style.display = "none";
 }
@@ -255,9 +257,9 @@ let m = Number(document.getElementById("metal").value)||0;
 let c1 = Number(document.getElementById("c1").value)||0;
 let c2 = Number(document.getElementById("c2").value)||0;
 
-let addC = Number(document.getElementById("ci").value)||0;   // Carbon source %
-let feoV = Number(document.getElementById("feo").value)||0;  // SLAG FeO
-let scale = Number(document.getElementById("scale").value)||0; // mill scale kg
+let addC = Number(document.getElementById("ci").value)||0;   // %
+let feoV = Number(document.getElementById("feo").value)||0;
+let scale = Number(document.getElementById("scale").value)||0;
 
 if(!m || !c1 || !c2){
 res.innerHTML="⚠ Fill all values";
@@ -274,13 +276,13 @@ res.innerHTML="⚠ Enter Carbon Source %";
 return;
 }
 
-// 🔥 Recovery (FeO based)
+// 🔥 Recovery
 let recovery = 0.80;
 if(feoV > 25) recovery = 0.70;
 else if(feoV < 15) recovery = 0.85;
 
-// ✅ FINAL (stable)
-let add = (m * (c2 - c1)) / (addC * recovery);
+// ❗ FIX: % → fraction
+let add = (m * (c2 - c1)) / ((addC/100) * recovery);
 
 if(c1 >= c2){
 res.innerHTML="✔ Carbon OK";
@@ -301,27 +303,25 @@ res.innerHTML="✔ Carbon OK";
 return;
 }
 
-// 🔥 Step 1: Carbon remove
+// Step 1
 let carbonRemove = m * (c1 - c2) / 100;
 
-// 🔥 Step 2: FeO required
+// Step 2
 let FeO_req = carbonRemove * 6;
 
-// 🔥 Step 3: Scale use (priority)
+// Step 3 (scale)
 let scaleFeO = scale * 0.70;
 let FeO_rem = FeO_req - scaleFeO;
 if(FeO_rem < 0) FeO_rem = 0;
 
-// 🔥 Step 4: Efficiency (plant calibrated)
+// Step 4 (efficiency)
 let efficiency = 0.35;
-
 if(feoV > 25) efficiency = 0.45;
 else if(feoV < 15) efficiency = 0.25;
 
-// 🔥 Step 5: Sponge
+// Step 5 (sponge)
 let sponge = FeO_rem / (0.10 * efficiency);
 
-// OUTPUT
 msg += "⬇ Sponge Iron: "+sponge.toFixed(0)+" kg<br>";
 msg += "🧱 Scale Used: "+scale.toFixed(0)+" kg";
 
