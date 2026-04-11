@@ -64,14 +64,14 @@ button{width:100%;padding:12px;background:#ff7a00;border:none;border-radius:8px;
 <input id="metal" placeholder="Metal (kg)">
 <input id="c1" placeholder="Current C%">
 <input id="c2" placeholder="Target C%">
+
 <input id="ci" placeholder="Carbon Source %">
-<input id="feo" placeholder="FeO %">
-  <input id="scale" placeholder="Mill Scale (kg)">
+<input id="feo" placeholder="Slag FeO %">
+<input id="scale" placeholder="Mill Scale (kg)">
 
 <button onclick="calcCarbon()">Calculate</button>
-<div id="carbonRes" class="result"></div>
 
-</div>
+<div id="carbonRes" class="result"></div>
 
 <div class="card">
 <h3>⚡ Mn</h3>
@@ -233,15 +233,20 @@ furnaceRes.innerHTML =
 function toggleCarbon(){
 
 let mode = document.getElementById("mode").value;
-let ci = document.getElementById("ci");
 
-// Carbon UP → show additive %
+let ci = document.getElementById("ci");
+let scale = document.getElementById("scale");
+
+// UP → carbon source show
 if(mode === "up"){
 ci.style.display = "block";
+scale.style.display = "none";
 }
-// Carbon DOWN → hide
+
+// DOWN → scale show
 else{
 ci.style.display = "none";
+scale.style.display = "block";
 }
 
 }
@@ -252,78 +257,99 @@ function calcCarbon(){
 
 let res = document.getElementById("carbonRes");
 
+// INPUTS
 let mode = document.getElementById("mode").value;
 
-let m = Number(document.getElementById("metal").value);
-let c1 = Number(document.getElementById("c1").value);
-let c2 = Number(document.getElementById("c2").value);
+let m = parseFloat(document.getElementById("metal").value);
+let c1 = parseFloat(document.getElementById("c1").value);
+let c2 = parseFloat(document.getElementById("c2").value);
 
-let addC = Number(document.getElementById("ci").value);
-let feoV = Number(document.getElementById("feo").value);
+let carbonP = parseFloat(document.getElementById("ci").value); // carbon source %
+let feo = parseFloat(document.getElementById("feo").value);    // slag FeO %
+let scale = parseFloat(document.getElementById("scale").value) || 0;
 
-// ✅ validation
+// VALIDATION
 if(isNaN(m) || isNaN(c1) || isNaN(c2)){
-res.innerHTML="⚠ Fill all values properly";
+res.innerHTML = "⚠ Fill all values";
 return;
 }
 
 let msg = "";
 
-// ================= UP =================
-if(mode=="up"){
+// ================= 🔼 CARBON UP =================
+if(mode === "up"){
 
-if(isNaN(addC) || addC==0){
-res.innerHTML="⚠ Enter Carbon Source %";
+if(isNaN(carbonP) || carbonP <= 0){
+res.innerHTML = "⚠ Enter Carbon Source %";
 return;
 }
-
-let recovery = 0.80;
-if(feoV > 25) recovery = 0.70;
-else if(feoV < 15) recovery = 0.85;
-
-// ✅ FIXED FORMULA
-let add = (m * (c2 - c1)) / ((addC/100) * recovery);
 
 if(c1 >= c2){
-res.innerHTML="✔ Carbon OK";
+res.innerHTML = "✔ Carbon already OK";
 return;
 }
 
-msg += "⬆ Carbon Source: "+add.toFixed(0)+" kg";
+// 🔥 Recovery (practical)
+let recovery = 0.75;
+if(feo > 25) recovery = 0.65;
+else if(feo < 15) recovery = 0.80;
+
+// ✅ FINAL FORMULA (correct)
+let add = (m * (c2 - c1)) / ((carbonP/100) * recovery);
+
+// 🔧 limit (over result avoid)
+if(add > m * 0.15){
+add = add * 0.7;
+}
+
+msg += "⬆ Carbon Source: " + add.toFixed(0) + " kg<br>";
+msg += "⚙ Recovery: " + (recovery*100).toFixed(0) + "%";
 
 }
 
-// ================= DOWN =================
+// ================= 🔽 CARBON DOWN =================
 else{
 
 if(c1 <= c2){
-res.innerHTML="✔ Carbon OK";
+res.innerHTML = "✔ Carbon already OK";
 return;
 }
 
-// carbon removal
+// 🔥 Carbon removal
 let carbonRemove = m * (c1 - c2) / 100;
 
-// FeO required
-let FeO_req = carbonRemove * 6;
+// 🔥 FeO required (practical tuned)
+let FeO_req = carbonRemove * 4;
 
-// no scale
-let FeO_rem = FeO_req;
+// 🔥 Mill scale contribution (~70% FeO)
+let FeO_scale = scale * 0.70;
 
-// efficiency
-let efficiency = 0.35;
-if(feoV > 25) efficiency = 0.45;
-else if(feoV < 15) efficiency = 0.25;
+// 🔥 Remaining FeO
+let FeO_need = FeO_req - FeO_scale;
+if(FeO_need < 0) FeO_need = 0;
 
-// sponge
-let sponge = FeO_rem / (0.10 * efficiency);
+// 🔥 Efficiency (realistic)
+let eff = 0.30;
+if(feo > 25) eff = 0.40;
+else if(feo < 15) eff = 0.25;
 
-msg += "⬇ Sponge Iron: " + sponge.toFixed(0) + " kg";
+// 🔥 Sponge FeO ~10%
+let sponge = FeO_need / (0.10 * eff);
+
+// 🔧 practical correction
+if(sponge > m * 0.25){
+sponge = sponge * 0.6;
+}
+
+msg += "⬇ Sponge Iron: " + sponge.toFixed(0) + " kg<br>";
+msg += "🧱 Mill Scale: " + scale.toFixed(0) + " kg";
 
 }
 
 res.innerHTML = msg;
-}
+
+                         }
+
   
 // ===== MN =====
 function calcMn(){
