@@ -228,28 +228,26 @@ furnaceRes.innerHTML =
 
 }
 
-// ===== CARBON =====
+// ===== CARBON TOGGLE =====
 function toggleCarbon(){
 
 let mode = document.getElementById("mode").value;
 let ci = document.getElementById("ci");
-let feo = document.getElementById("feo");
 
-// UP → additive C% dikhega
 if(mode === "up"){
 ci.style.display = "block";
-feo.style.display = "block";
 }
 else{
 ci.style.display = "none";
-feo.style.display = "block";
 }
 
 }
 
+
+// ===== FINAL CARBON CALCULATOR =====
 function calcCarbon(){
 
-let carbonRes = document.getElementById("carbonRes");
+let res = document.getElementById("carbonRes");
 
 let mode = document.getElementById("mode").value;
 
@@ -257,11 +255,12 @@ let m = Number(document.getElementById("metal").value)||0;
 let c1 = Number(document.getElementById("c1").value)||0;
 let c2 = Number(document.getElementById("c2").value)||0;
 
-let ciV = Number(document.getElementById("ci").value)||0; // additive C%
-let feoV = Number(document.getElementById("feo").value)||0;
+let addC = Number(document.getElementById("ci").value)||0;   // Carbon source %
+let feoV = Number(document.getElementById("feo").value)||0;  // SLAG FeO
+let scale = Number(document.getElementById("scale").value)||0; // mill scale kg
 
 if(!m || !c1 || !c2){
-carbonRes.innerHTML="⚠ Fill all values";
+res.innerHTML="⚠ Fill all values";
 return;
 }
 
@@ -270,86 +269,65 @@ let msg = "";
 // ================= CARBON UP =================
 if(mode=="up"){
 
-if(!ciV){
-carbonRes.innerHTML="⚠ Enter Additive C%";
+if(!addC){
+res.innerHTML="⚠ Enter Carbon Source %";
 return;
 }
 
-// 🔥 recovery (FeO based)
+// 🔥 Recovery (FeO based)
 let recovery = 0.80;
 if(feoV > 25) recovery = 0.70;
 else if(feoV < 15) recovery = 0.85;
 
-// % → fraction
-let c1f = c1/100;
-let c2f = c2/100;
-let addCf = ciV/100;
+// ✅ FINAL (stable)
+let add = (m * (c2 - c1)) / (addC * recovery);
 
-// ✅ CORRECT MASS BALANCE
-let add = (m * (c2f - c1f)) / (addCf * recovery);
-
-// safety
 if(c1 >= c2){
-carbonRes.innerHTML="✔ Carbon already sufficient";
+res.innerHTML="✔ Carbon OK";
 return;
 }
 
-// output
-msg += "⬆ Add "+add.toFixed(1)+" kg Carbon Source<br>";
-msg += "⚙ Recovery: "+(recovery*100)+"%<br>";
-
-// AI
-if(feoV > 25){
-msg += "🔴 High FeO → Carbon burn fast<br>";
-msg += "👉 थोड़ा extra addition रखो / O₂ control करो<br>";
-}
-else if(feoV < 15){
-msg += "🟢 Low FeO → Good recovery<br>";
-}
-else{
-msg += "⚠ Normal FeO condition<br>";
-}
+msg += "⬆ Carbon Source: "+add.toFixed(0)+" kg<br>";
+msg += "⚙ Recovery: "+(recovery*100)+"%";
 
 }
+
 
 // ================= CARBON DOWN =================
 else{
 
 if(c1 <= c2){
-carbonRes.innerHTML="✔ Carbon already low";
+res.innerHTML="✔ Carbon OK";
 return;
 }
 
-// % → fraction
-let c1f = c1/100;
-let c2f = c2/100;
+// 🔥 Step 1: Carbon remove
+let carbonRemove = m * (c1 - c2) / 100;
 
-// ✅ CORRECT DILUTION FORMULA
-let sponge = m * (c1f - c2f) / c2f;
+// 🔥 Step 2: FeO required
+let FeO_req = carbonRemove * 6;
 
-// FeO correction (practical)
-if(feoV > 25) sponge *= 0.85;
-else if(feoV < 15) sponge *= 1.15;
+// 🔥 Step 3: Scale use (priority)
+let scaleFeO = scale * 0.70;
+let FeO_rem = FeO_req - scaleFeO;
+if(FeO_rem < 0) FeO_rem = 0;
 
-// output
-msg += "⬇ Use "+sponge.toFixed(1)+" kg Sponge<br>";
+// 🔥 Step 4: Efficiency (plant calibrated)
+let efficiency = 0.35;
 
-// AI
-if(feoV > 25){
-msg += "🟢 High FeO → Fast carbon removal<br>";
-msg += "👉 Sponge kam lagega<br>";
-}
-else if(feoV < 15){
-msg += "🔴 Low FeO → Slow carbon removal<br>";
-msg += "👉 Sponge zyada lagega / O₂ badhao<br>";
-}
-else{
-msg += "⚠ Normal FeO condition<br>";
-}
+if(feoV > 25) efficiency = 0.45;
+else if(feoV < 15) efficiency = 0.25;
+
+// 🔥 Step 5: Sponge
+let sponge = FeO_rem / (0.10 * efficiency);
+
+// OUTPUT
+msg += "⬇ Sponge Iron: "+sponge.toFixed(0)+" kg<br>";
+msg += "🧱 Scale Used: "+scale.toFixed(0)+" kg";
 
 }
 
-carbonRes.innerHTML = msg;
+res.innerHTML = msg;
 
   }
   
