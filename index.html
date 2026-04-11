@@ -285,6 +285,11 @@ else if(feoV < 15) recovery = 0.85;
 // calculation
 let add = (m*(c2-c1))/((ciV/100)*recovery);
 
+// 🔧 practical limit
+if(add > m*0.25){
+add = add * 0.6; // realistic correction
+}
+
 // safety
 if(c1 >= c2){
 carbonRes.innerHTML="✔ Carbon already sufficient";
