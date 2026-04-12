@@ -409,6 +409,24 @@ res.innerHTML = msg;
 
   }
 
+  function getRecoveryFromFeO(feo){
+
+if(feo > 28) return 0.55;
+if(feo > 25) return 0.60;
+if(feo > 20) return 0.65;
+if(feo > 15) return 0.70;
+if(feo > 10) return 0.75;
+
+return 0.80;
+
+}
+  function saveHeatData(recovery){
+localStorage.setItem("lastRecovery", recovery);
+}
+
+function getHeatRecovery(){
+return parseFloat(localStorage.getItem("lastRecovery")) || 0;
+}
  // ===== Mn TOGGLE =====
 function toggleMn(){
 
