@@ -418,19 +418,19 @@ let mn1 = document.getElementById("mn1");
 let mn2 = document.getElementById("mn2");
 
 let finalMn = document.getElementById("finalMn");
-let achMn = document.getElementById("achMn");
+let simn = document.getElementById("simn");
 
 if(mode === "req"){
   mn1.style.display="block";
   mn2.style.display="block";
   finalMn.style.display="none";
-  achMn.style.display="none";
+  simn.style.display="none";
 }
 else{
   mn1.style.display="none";
   mn2.style.display="none";
   finalMn.style.display="block";
-  achMn.style.display="block";
+  simn.style.display="block";
 }
 }
 // ===== MN Calculator =====
@@ -441,9 +441,8 @@ let res = document.getElementById("mnRes");
 let mode = document.getElementById("mnMode").value;
 
 let m = parseFloat(document.getElementById("heat").value);
-let feo = parseFloat(document.getElementById("feoMn").value);
-
 let mnP = parseFloat(document.getElementById("mnP").value);
+let feo = parseFloat(document.getElementById("feoMn").value);
 
 let msg = "";
 
@@ -453,28 +452,59 @@ if(mode === "req"){
 let mn1 = parseFloat(document.getElementById("mn1").value);
 let mn2 = parseFloat(document.getElementById("mn2").value);
 
-if(isNaN(m) || isNaN(mn1) || isNaN(mn2) || isNaN(mnP)){
+if(isNaN(m)||isNaN(mn1)||isNaN(mn2)||isNaN(mnP)){
 res.innerHTML="⚠ Fill all values";
 return;
 }
 
-// recovery
-let recovery = 0.75;
-if(feo > 25) recovery = 0.65;
-else if(feo < 15) recovery = 0.80;
+// 🔥 AUTO recovery
+let rec = getRecoveryFromFeO(feo);
 
-// Mn required
-let mnReq = m * (mn2 - mn1) / 100;
+// 🔥 AI learning correction
+let lastRec = getHeatRecovery();
+if(lastRec > 0){
+rec = (rec + lastRec)/2;   // smart averaging
+}
 
-// SiMn required
-let simn = mnReq / ((mnP/100) * recovery);
+// 🔥 Mn required
+let mn_req = m * (mn2 - mn1) / 100;
 
-msg += "📦 SiMn Required: " + simn.toFixed(0) + " kg<br>";
-msg += "⚙ Recovery: " + (recovery*100).toFixed(0) + "%<br>";
+// 🔥 SiMn required
+let simn = mn_req / ((mnP/100) * rec);
 
-// smart suggestion
-msg += "👉 70% Furnace: " + (simn*0.7).toFixed(0) + " kg<br>";
-msg += "👉 30% Ladle: " + (simn*0.3).toFixed(0) + " kg";
+// 🔥 OVERSHOOT CHECK
+let expectedMn = mn1 + ((simn * mnP/100 * rec)/m)*100;
+
+if(expectedMn > mn2 + 0.02){
+msg += "⚠ Mn Overshoot Risk<br>";
+}
+
+// OUTPUT
+msg += "📦 SiMn Required: "+simn.toFixed(0)+" kg<br>";
+msg += "⚙ Auto Recovery: "+(rec*100).toFixed(0)+" %<br>";
+
+// save learning
+saveHeatData(rec);
+
+// OPTIONAL chemistry
+let siP = parseFloat(document.getElementById("siP").value)||0;
+let cP  = parseFloat(document.getElementById("cP").value)||0;
+let pP  = parseFloat(document.getElementById("pP").value)||0;
+
+if(siP || cP || pP){
+
+let si_inc = (simn*(siP/100))/m*100;
+let c_inc  = (simn*(cP/100))/m*100;
+let p_inc  = (simn*(pP/100))/m*100;
+
+msg += "<br>📊 Chemistry Impact:<br>";
+msg += "Si ↑ "+si_inc.toFixed(3)+"%<br>";
+msg += "C ↑ "+c_inc.toFixed(3)+"%<br>";
+msg += "P ↑ "+p_inc.toFixed(3)+"%<br>";
+}
+
+// suggestion
+msg += "<br>👉 Add 70% furnace + 30% ladle";
 
 }
 
@@ -483,35 +513,48 @@ msg += "👉 30% Ladle: " + (simn*0.3).toFixed(0) + " kg";
 else{
 
 let finalMn = parseFloat(document.getElementById("finalMn").value);
-let achMn = parseFloat(document.getElementById("achMn").value);
+let simn = parseFloat(document.getElementById("simn").value);
 
-if(isNaN(finalMn) || isNaN(achMn)){
+if(isNaN(m)||isNaN(finalMn)||isNaN(simn)||isNaN(mnP)){
 res.innerHTML="⚠ Fill all values";
 return;
 }
 
-// recovery calculation
-let recovery = (achMn / finalMn) * 100;
+// Mn gained
+let mn_gain = m * finalMn / 100;
 
-msg += "⚡ Mn Recovery: " + recovery.toFixed(1) + " %<br>";
+// Mn added
+let mn_added = simn * (mnP/100);
 
-// AI suggestion
-if(recovery < 65){
-msg += "🔴 Low Recovery → High FeO / Late addition";
+// recovery
+let recovery = (mn_gain / mn_added);
+
+// save learning
+saveHeatData(recovery);
+
+// OUTPUT
+msg += "⚡ Mn Recovery: "+(recovery*100).toFixed(1)+" %<br>";
+
+// FeO AI
+if(feo > 28){
+msg += "🔴 Very High FeO → Mn loss very high<br>";
 }
-else if(recovery > 80){
-msg += "🟢 Good Recovery";
+else if(feo > 25){
+msg += "🟠 High FeO → Recovery low<br>";
+}
+else if(feo < 15){
+msg += "🟢 Low FeO → Excellent recovery<br>";
 }
 else{
-msg += "⚠ Normal Recovery";
+msg += "⚖ Normal FeO<br>";
 }
 
 }
 
 res.innerHTML = msg;
 
-                                  }
-
+}
+  
 // ===== GRADE =====
 function gradeAI(){
 let t=spec.value.toLowerCase();
