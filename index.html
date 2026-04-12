@@ -496,7 +496,7 @@ return;
 
 // 🔥 AUTO recovery
 let rec = getRecoveryFromFeO(feo);
-
+  
 // 🔥 AI learning correction
 let lastRec = getHeatRecovery();
 if(lastRec > 0){
@@ -508,10 +508,10 @@ let mn_req = m * (mn2 - mn1) / 100;
 
 // 🔥 SiMn required
 let simn = mn_req / ((mnP/100) * rec);
-
-// 🔥 OVERSHOOT CHECK
+// 🔥 Expected Mn after addition
 let expectedMn = mn1 + ((simn * mnP/100 * rec)/m)*100;
-
+  
+// 🔥 OVERSHOOT CHECK
 if(expectedMn > mn2 + 0.02){
 msg += "⚠ Mn Overshoot Risk<br>";
 }
