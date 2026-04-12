@@ -256,18 +256,16 @@ function calcCarbon(){
 
 let res = document.getElementById("carbonRes");
 
-// ===== INPUT =====
 let mode = document.getElementById("mode").value;
 
 let m  = parseFloat(document.getElementById("metal").value);
 let c1 = parseFloat(document.getElementById("c1").value);
 let c2 = parseFloat(document.getElementById("c2").value);
 
-let carbonP = parseFloat(document.getElementById("ci").value);   // %
-let feo = parseFloat(document.getElementById("feo").value);      // slag %
+let carbonP = parseFloat(document.getElementById("ci").value);
+let feo = parseFloat(document.getElementById("feo").value);
 let scale = parseFloat(document.getElementById("scale").value) || 0;
 
-// ===== VALIDATION =====
 if(isNaN(m) || isNaN(c1) || isNaN(c2)){
 res.innerHTML = "⚠ Fill all values";
 return;
@@ -288,12 +286,12 @@ res.innerHTML = "✔ Carbon already OK";
 return;
 }
 
-// 🔥 Recovery (slag FeO based)
+// recovery
 let recovery = 0.75;
 if(feo > 25) recovery = 0.65;
 else if(feo < 15) recovery = 0.80;
 
-// 🔥 Mass balance (CORRECT)
+// mass balance
 let carbonReq = m * (c2 - c1) / 100;
 let add = carbonReq / ((carbonP/100) * recovery);
 
@@ -302,68 +300,69 @@ msg += "⚙ Recovery: " + (recovery*100).toFixed(0) + "%";
 
 }
 
-
-// ================= 🔽 CARBON DOWN (AUTO MIX) =================
+// ================= 🔽 CARBON DOWN =================
+else{
 
 if(c1 <= c2){
 res.innerHTML = "✔ Carbon already OK";
 return;
 }
 
-// 🔥 Carbon removal
+// carbon remove
 let carbonRemove = m * (c1 - c2) / 100;
 
-// 🔥 FeO required
+// FeO required
 let FeO_req = carbonRemove * 3.5;
 
-// 🔥 AI MIX LOGIC
+// mix
 let scaleUse = 0;
 let sponge = 0;
 
-// CASE 1: Low FeO → more scale
 if(feo < 15){
-scaleUse = FeO_req * 0.5;   // 50% FeO from scale
+scaleUse = FeO_req * 0.5;
 }
-
-// CASE 2: Normal FeO → balanced
 else if(feo <= 25){
 scaleUse = FeO_req * 0.35;
 }
-
-// CASE 3: High FeO → less scale
 else{
 scaleUse = FeO_req * 0.20;
 }
 
-// 🔥 convert FeO → scale kg (70%)
+// scale kg
 scaleUse = scaleUse / 0.70;
 
-// 🔥 remaining FeO
+// balance
 let FeO_balance = FeO_req - (scaleUse * 0.70);
 if(FeO_balance < 0) FeO_balance = 0;
 
-// 🔥 sponge calc (FeO 11%, eff 30%)
+// sponge
 sponge = FeO_balance / (0.11 * 0.30);
 
-// 🔧 safety limit
+// limit
 if(sponge > m*0.25){
 sponge *= 0.7;
 }
 
-// ===== OUTPUT =====
+// output
 msg += "⬇ Sponge Iron: " + sponge.toFixed(0) + " kg<br>";
 msg += "🧱 Mill Scale: " + scaleUse.toFixed(0) + " kg<br>";
 
-// ===== AI MESSAGE =====
+// AI
 if(feo < 15){
-msg += "🔴 Low FeO → More scale used<br>";
+msg += "🔴 Low FeO → More scale<br>";
 }
 else if(feo > 25){
-msg += "🟢 High FeO → Sponge priority<br>";
+msg += "🟢 High FeO → Less scale<br>";
 }
 else{
-msg += "⚖ Balanced FeO → Optimized mix<br>";
+msg += "⚖ Balanced mix<br>";
 }
+
+}
+
+res.innerHTML = msg;
+
+  }
   
 // ===== MN =====
 function calcMn(){
