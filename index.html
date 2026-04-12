@@ -308,54 +308,73 @@ res.innerHTML = "✔ Carbon already OK";
 return;
 }
 
-// carbon remove
+// 🔥 Carbon removal (kg)
 let carbonRemove = m * (c1 - c2) / 100;
 
-// FeO required
+// 🔥 FeO required
 let FeO_req = carbonRemove * 3.5;
 
-// mix
-let scaleUse = 0;
-let sponge = 0;
+// ================= USER INPUT =================
+let scaleKg = scale || 0;
 
-if(feo < 15){
-scaleUse = FeO_req * 0.5;
-}
-else if(feo <= 25){
-scaleUse = FeO_req * 0.35;
-}
-else{
-scaleUse = FeO_req * 0.20;
-}
+// Mill scale FeO (~70%)
+let FeO_from_scale = scaleKg * 0.70;
 
-// scale kg
-scaleUse = scaleUse / 0.70;
-
-// balance
-let FeO_balance = FeO_req - (scaleUse * 0.70);
+// remaining FeO
+let FeO_balance = FeO_req - FeO_from_scale;
 if(FeO_balance < 0) FeO_balance = 0;
 
-// sponge
-sponge = FeO_balance / (0.11 * 0.30);
+// sponge calc (FeO 11%, eff 30%)
+let sponge = FeO_balance / (0.11 * 0.30);
 
-// limit
-if(sponge > m*0.25){
-sponge *= 0.7;
-}
+// ================= WITHOUT SCALE =================
+let sponge_no_scale = FeO_req / (0.11 * 0.30);
 
-// output
-msg += "⬇ Sponge Iron: " + sponge.toFixed(0) + " kg<br>";
-msg += "🧱 Mill Scale: " + scaleUse.toFixed(0) + " kg<br>";
+// ================= 🔥 AUTO BEST MIX =================
+// Target: FeO safe zone (22–25%)
 
-// AI
-if(feo < 15){
-msg += "🔴 Low FeO → More scale<br>";
-}
-else if(feo > 25){
-msg += "🟢 High FeO → Less scale<br>";
+let targetFeO = 23;
+
+// required FeO to reach safe zone
+let targetFeO_total = (targetFeO - feo) * m / 100;
+if(targetFeO_total < 0) targetFeO_total = 0;
+
+// best split (40% scale, 60% sponge)
+let best_scale = (targetFeO_total * 0.40) / 0.70;
+let best_sponge = (targetFeO_total * 0.60) / (0.11 * 0.30);
+
+// ================= FINAL FeO ESTIMATE =================
+let finalFeO = feo + (FeO_req / m * 100);
+
+// ================= OUTPUT =================
+msg += "⬇ Sponge (your input): " + sponge.toFixed(0) + " kg<br>";
+msg += "🧱 Mill Scale (your input): " + scaleKg.toFixed(0) + " kg<br><br>";
+
+msg += "📊 Without mill scale: " + sponge_no_scale.toFixed(0) + " kg<br><br>";
+
+msg += "🤖 Auto Best Mix:<br>";
+msg += "➡ Sponge: " + best_sponge.toFixed(0) + " kg<br>";
+msg += "➡ Mill Scale: " + best_scale.toFixed(0) + " kg<br><br>";
+
+msg += "🔥 Est. Slag FeO: " + finalFeO.toFixed(1) + "%<br>";
+
+// ================= AI =================
+if(scaleKg == 0){
+msg += "⚠ No mill scale → Higher sponge needed<br>";
 }
 else{
-msg += "⚖ Balanced mix<br>";
+msg += "🟢 Mill scale used → Sponge reduced<br>";
+}
+
+// ================= FeO WARNING =================
+if(finalFeO > 28){
+msg += "🔴 High FeO → Mn/Si loss risk<br>";
+}
+else if(finalFeO < 18){
+msg += "⚠ Low FeO → Carbon removal slow<br>";
+}
+else{
+msg += "🟢 Safe FeO range (18–28%)<br>";
 }
 
 }
