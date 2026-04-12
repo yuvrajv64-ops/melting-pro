@@ -330,19 +330,35 @@ let sponge = FeO_balance / (0.11 * 0.30);
 // ================= WITHOUT SCALE =================
 let sponge_no_scale = FeO_req / (0.11 * 0.30);
 
-// ================= 🔥 AUTO BEST MIX =================
-// Target: FeO safe zone (22–25%)
+// ================= 🔥 AUTO BEST MIX (FIXED) =================
 
-let targetFeO = 23;
+// same FeO_req use karo (carbon based)
+let best_scale = 0;
+let best_sponge = 0;
 
-// required FeO to reach safe zone
-let targetFeO_total = (targetFeO - feo) * m / 100;
-if(targetFeO_total < 0) targetFeO_total = 0;
+// FeO level ke basis pe split
+if(feo < 15){
+    // low FeO → more scale
+    best_scale = FeO_req * 0.5;
+}
+else if(feo <= 25){
+    // normal → balanced
+    best_scale = FeO_req * 0.35;
+}
+else{
+    // high FeO → less scale
+    best_scale = FeO_req * 0.2;
+}
 
-// best split (40% scale, 60% sponge)
-let best_scale = (targetFeO_total * 0.40) / 0.70;
-let best_sponge = (targetFeO_total * 0.60) / (0.11 * 0.30);
+// convert to kg
+best_scale = best_scale / 0.70;
 
+// remaining FeO
+let FeO_rem_best = FeO_req - (best_scale * 0.70);
+if(FeO_rem_best < 0) FeO_rem_best = 0;
+
+// sponge
+best_sponge = FeO_rem_best / (0.11 * 0.30);
 // ================= FINAL FeO ESTIMATE =================
 let finalFeO = feo + (FeO_req / m * 100);
 
