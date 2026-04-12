@@ -76,19 +76,20 @@ button{width:100%;padding:12px;background:#ff7a00;border:none;border-radius:8px;
 <div class="card">
 <h3>⚡ Mn Calculator</h3>
 
-<select id="mnMode">
-<option value="recovery">Mn Recovery</option>
-<option value="required">Mn Required (kg)</option>
+<select id="mnMode" onchange="toggleMn()">
+<option value="req">Mn Required (kg)</option>
+<option value="rec">Mn Recovery</option>
 </select>
 
 <input id="heat" placeholder="Metal (kg)">
+
 <input id="mn1" placeholder="Current Mn %">
 <input id="mn2" placeholder="Target Mn %">
 
 <input id="finalMn" placeholder="Final Mn %">
-<input id="achMn" placeholder="Achieved Mn %">
-<input id="mnP" placeholder="Mn % in SiMn">
+<input id="simn" placeholder="SiMn Added (kg)">
 
+<input id="mnP" placeholder="Mn % in SiMn">
 <input id="feoMn" placeholder="Slag FeO %">
 
 <input id="siP" placeholder="Si % in SiMn">
@@ -438,18 +439,36 @@ let mn2 = document.getElementById("mn2");
 let finalMn = document.getElementById("finalMn");
 let simn = document.getElementById("simn");
 
+let siP = document.getElementById("siP");
+let cP = document.getElementById("cP");
+let pP = document.getElementById("pP");
+
+// ===== Mn REQUIRED =====
 if(mode === "req"){
   mn1.style.display="block";
   mn2.style.display="block";
+
   finalMn.style.display="none";
   simn.style.display="none";
+
+  siP.style.display="block";
+  cP.style.display="block";
+  pP.style.display="block";
 }
+
+// ===== Mn RECOVERY =====
 else{
   mn1.style.display="none";
   mn2.style.display="none";
+
   finalMn.style.display="block";
   simn.style.display="block";
+
+  siP.style.display="none";
+  cP.style.display="none";
+  pP.style.display="none";
 }
+
 }
 // ===== MN Calculator =====
 function calcMn(){
