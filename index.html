@@ -74,20 +74,29 @@ button{width:100%;padding:12px;background:#ff7a00;border:none;border-radius:8px;
 <div id="carbonRes"></div>
 
 <div class="card">
-<h3>⚡ Mn</h3>
+<h3>⚡ Mn Calculator</h3>
 
-<input id="heat" placeholder="Heat kg">
-<input id="mn1" placeholder="Current Mn%">
-<input id="mn2" placeholder="Target Mn%">
-<input id="alloy" placeholder="Alloy Mn%">
-<input id="rec" placeholder="Recovery %">
+<select id="mnMode">
+<option value="mn">Mn Only</option>
+<option value="full">Full Chemistry</option>
+</select>
+
+<input id="heat" placeholder="Metal (kg)">
+<input id="mn1" placeholder="Current Mn %">
+<input id="mn2" placeholder="Target Mn %">
+
+<input id="simn" placeholder="SiMn (kg)">
+<input id="mnP" placeholder="Mn % in SiMn">
+
+<input id="feoMn" placeholder="Slag FeO %">
+
+<input id="siP" placeholder="Si % in SiMn">
+<input id="cP" placeholder="C % in SiMn">
+<input id="pP" placeholder="P % in SiMn">
 
 <button onclick="calcMn()">Calculate</button>
 
 <div id="mnRes" class="result"></div>
-<div id="mnAI" class="result"></div>
-
-</div>
 
 <div class="card">
 <h3>🤖 Grade AI</h3>
@@ -399,12 +408,89 @@ res.innerHTML = msg;
 
   }
   
-// ===== MN =====
+// ===== MN Calculator =====
 function calcMn(){
-let m=+heat.value;
-let diff=+mn2.value-+mn1.value;
-let req=(m*diff)/((+alloy.value/100)*(+rec.value/100));
-mnRes.innerHTML="⚡ "+req.toFixed(1)+" kg";
+
+let res = document.getElementById("mnRes");
+
+let mode = document.getElementById("mnMode").value;
+
+let m = Number(document.getElementById("heat").value);
+let mn1 = Number(document.getElementById("mn1").value);
+let mn2 = Number(document.getElementById("mn2").value);
+
+let simn = Number(document.getElementById("simn").value);
+let mnP = Number(document.getElementById("mnP").value);
+
+let feo = Number(document.getElementById("feoMn").value);
+
+let siP = Number(document.getElementById("siP").value) || 0;
+let cP = Number(document.getElementById("cP").value) || 0;
+let pP = Number(document.getElementById("pP").value) || 0;
+
+if(!m || !mn1){
+res.innerHTML = "⚠ Fill required values";
+return;
+}
+
+let msg = "";
+
+// ================= 🔥 AUTO Mn RECOVERY =================
+let rec = 0.75;
+
+if(feo > 25) rec = 0.60;
+else if(feo < 15) rec = 0.85;
+
+// ================= MN CALC =================
+let mnGain = simn * (mnP/100) * rec;
+
+let finalMn = ((m * mn1/100) + mnGain) / m * 100;
+
+msg += "⚡ Final Mn: " + finalMn.toFixed(3) + " %<br>";
+msg += "⚙ Mn Recovery: " + (rec*100).toFixed(0) + "%<br><br>";
+
+// ================= FULL CHEMISTRY =================
+if(mode === "full"){
+
+// 🔥 Si pickup (80% recovery assumed)
+let siRec = 0.80;
+let siGain = simn * (siP/100) * siRec;
+let finalSi = siGain / m * 100;
+
+// 🔥 Carbon pickup
+let cGain = simn * (cP/100);
+let finalC = cGain / m * 100;
+
+// 🔥 Phosphorus pickup
+let pGain = simn * (pP/100);
+let finalP = pGain / m * 100;
+
+msg += "⚡ Si Pickup: +" + finalSi.toFixed(3) + " %<br>";
+msg += "🔥 C Pickup: +" + finalC.toFixed(3) + " %<br>";
+msg += "🧪 P Pickup: +" + finalP.toFixed(3) + " %<br><br>";
+
+// ================= FINAL PREDICTION =================
+msg += "📊 Final Chemistry:<br>";
+msg += "➡ Mn: " + finalMn.toFixed(3) + " %<br>";
+msg += "➡ Si: " + finalSi.toFixed(3) + " %<br>";
+msg += "➡ C: +" + finalC.toFixed(3) + " %<br>";
+msg += "➡ P: +" + finalP.toFixed(3) + " %<br>";
+
+}
+
+// ================= AI =================
+if(feo > 28){
+msg += "<br>🔴 High FeO → Mn loss high, recovery low<br>";
+}
+else if(feo < 15){
+msg += "<br>⚠ Low FeO → Recovery good but slow refining<br>";
+}
+else{
+msg += "<br>🟢 FeO optimal → Good Mn recovery<br>";
+}
+
+res.innerHTML = msg;
+
 }
 
 // ===== GRADE =====
