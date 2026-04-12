@@ -77,8 +77,8 @@ button{width:100%;padding:12px;background:#ff7a00;border:none;border-radius:8px;
 <h3>⚡ Mn Calculator</h3>
 
 <select id="mnMode">
-<option value="mn">Mn Only</option>
-<option value="full">Full Chemistry</option>
+<option value="recovery">Mn Recovery</option>
+<option value="required">Mn Required (kg)</option>
 </select>
 
 <input id="heat" placeholder="Metal (kg)">
@@ -433,65 +433,119 @@ res.innerHTML = "⚠ Fill required values";
 return;
 }
 
-let msg = "";
-
-// ================= 🔥 AUTO Mn RECOVERY =================
+// 🔥 AUTO Mn RECOVERY (FeO based)
 let rec = 0.75;
-
 if(feo > 25) rec = 0.60;
 else if(feo < 15) rec = 0.85;
 
-// ================= MN CALC =================
-let mnGain = simn * (mnP/100) * rec;
+let msg = "";
 
+// ================= 🔹 Mn RECOVERY MODE =================
+if(mode === "recovery"){
+
+if(!simn || !mnP){
+res.innerHTML = "⚠ Enter SiMn & Mn%";
+return;
+}
+
+// Mn gain
+let mnGain = simn * (mnP/100) * rec;
 let finalMn = ((m * mn1/100) + mnGain) / m * 100;
 
 msg += "⚡ Final Mn: " + finalMn.toFixed(3) + " %<br>";
-msg += "⚙ Mn Recovery: " + (rec*100).toFixed(0) + "%<br><br>";
+msg += "⚙ Recovery: " + (rec*100).toFixed(0) + "%<br><br>";
 
-// ================= FULL CHEMISTRY =================
-if(mode === "full"){
-
-// 🔥 Si pickup (80% recovery assumed)
-let siRec = 0.80;
-let siGain = simn * (siP/100) * siRec;
+// chemistry pickup
+let siGain = simn * (siP/100) * 0.80;
 let finalSi = siGain / m * 100;
 
-// 🔥 Carbon pickup
-let cGain = simn * (cP/100);
-let finalC = cGain / m * 100;
+let finalC = (simn * (cP/100)) / m * 100;
+let finalP = (simn * (pP/100)) / m * 100;
 
-// 🔥 Phosphorus pickup
-let pGain = simn * (pP/100);
-let finalP = pGain / m * 100;
+msg += "📊 Pickup:<br>";
+msg += "➡ Si: +" + finalSi.toFixed(3) + "%<br>";
+msg += "➡ C: +" + finalC.toFixed(3) + "%<br>";
+msg += "➡ P: +" + finalP.toFixed(3) + "%<br>";
+}
 
-msg += "⚡ Si Pickup: +" + finalSi.toFixed(3) + " %<br>";
-msg += "🔥 C Pickup: +" + finalC.toFixed(3) + " %<br>";
-msg += "🧪 P Pickup: +" + finalP.toFixed(3) + " %<br><br>";
 
-// ================= FINAL PREDICTION =================
-msg += "📊 Final Chemistry:<br>";
-msg += "➡ Mn: " + finalMn.toFixed(3) + " %<br>";
-msg += "➡ Si: " + finalSi.toFixed(3) + " %<br>";
-msg += "➡ C: +" + finalC.toFixed(3) + " %<br>";
-msg += "➡ P: +" + finalP.toFixed(3) + " %<br>";
+// ================= 🔹 Mn REQUIRED MODE =================
+else{
 
+if(!mn2 || !mnP){
+res.innerHTML = "⚠ Enter Target Mn & Mn%";
+return;
+}
+
+if(mn2 <= mn1){
+res.innerHTML = "✔ Already above target";
+return;
+}
+
+// required Mn metal
+let Mn_req = m * (mn2 - mn1) / 100;
+
+// required SiMn
+let simn_req = Mn_req / ((mnP/100) * rec);
+
+// practical correction
+if(simn_req > m*0.05){
+simn_req *= 0.9;
+}
+
+// verify Mn
+let mnGain = simn_req * (mnP/100) * rec;
+let finalMn = ((m * mn1/100) + mnGain) / m * 100;
+
+// ================= 🔥 AUTO SPLIT =================
+let furnaceAdd = simn_req * 0.70;
+let ladleAdd = simn_req * 0.30;
+
+if(feo > 25){
+furnaceAdd = simn_req * 0.60;
+ladleAdd = simn_req * 0.40;
+}
+else if(feo < 15){
+furnaceAdd = simn_req * 0.80;
+ladleAdd = simn_req * 0.20;
+}
+
+// chemistry impact
+let siGain = simn_req * (siP/100) * 0.80;
+let finalSi = siGain / m * 100;
+
+let finalC = (simn_req * (cP/100)) / m * 100;
+let finalP = (simn_req * (pP/100)) / m * 100;
+
+// output
+msg += "🎯 Required SiMn: " + simn_req.toFixed(0) + " kg<br>";
+msg += "⚡ Expected Mn: " + finalMn.toFixed(3) + " %<br>";
+msg += "⚙ Recovery: " + (rec*100).toFixed(0) + "%<br><br>";
+
+msg += "🔥 Suggested Addition:<br>";
+msg += "🏭 Furnace: " + furnaceAdd.toFixed(0) + " kg<br>";
+msg += "🪣 Ladle: " + ladleAdd.toFixed(0) + " kg<br><br>";
+
+msg += "📊 Chemistry Impact:<br>";
+msg += "➡ Si: +" + finalSi.toFixed(3) + "%<br>";
+msg += "➡ C: +" + finalC.toFixed(3) + "%<br>";
+msg += "➡ P: +" + finalP.toFixed(3) + "%<br>";
 }
 
 // ================= AI =================
 if(feo > 28){
-msg += "<br>🔴 High FeO → Mn loss high, recovery low<br>";
+msg += "<br>🔴 High FeO → Mn loss high<br>";
 }
 else if(feo < 15){
-msg += "<br>⚠ Low FeO → Recovery good but slow refining<br>";
+msg += "<br>🟢 Low FeO → Good recovery<br>";
 }
 else{
-msg += "<br>🟢 FeO optimal → Good Mn recovery<br>";
+msg += "<br>⚠ Normal FeO condition<br>";
 }
 
 res.innerHTML = msg;
 
-}
+  }
 
 // ===== GRADE =====
 function gradeAI(){
