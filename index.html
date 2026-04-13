@@ -488,19 +488,31 @@ if(mode === "req"){
 
 let mn1 = parseFloat(document.getElementById("mn1").value);
 let mn2 = parseFloat(document.getElementById("mn2").value);
+let recInput = parseFloat(document.getElementById("recInput").value);
 
-if(isNaN(m)||isNaN(mn1)||isNaN(mn2)||isNaN(mnP)||isNaN(feo)){
-res.innerHTML="⚠ Fill all values";
+if(isNaN(m)||isNaN(mn1)||isNaN(mn2)||isNaN(mnP)){
+res.innerHTML="⚠ Fill required values";
 return;
 }
 
-// 🔥 AUTO recovery (ONLY HERE, no overwrite)
-let rec = getRecoveryFromFeO(feo);
+// 🔥 RECOVERY LOGIC (FeO optional)
+let rec;
+
+if(!isNaN(feo)){
+  rec = getRecoveryFromFeO(feo);
+}
+else if(!isNaN(recInput)){
+  rec = recInput/100;
+}
+else{
+  res.innerHTML="⚠ Enter FeO or Recovery %";
+  return;
+}
 
 // 🔥 AI learning
 let lastRec = getHeatRecovery();
 if(lastRec > 0){
-rec = (rec + lastRec)/2;
+  rec = (rec + lastRec)/2;
 }
 
 // 🔥 Mn required
@@ -512,7 +524,7 @@ let simn = mn_req / ((mnP/100) * rec);
 // 🔥 Expected Mn
 let expectedMn = mn1 + ((simn * mnP/100 * rec)/m)*100;
 
-// 🔥 Mn LOSS (kg)
+// 🔥 Mn LOSS
 let mn_theoretical = simn * (mnP/100);
 let mn_actual = mn_theoretical * rec;
 let mn_loss = mn_theoretical - mn_actual;
@@ -527,10 +539,23 @@ msg += "📦 SiMn Required: "+simn.toFixed(0)+" kg<br>";
 msg += "⚙ Recovery: "+(rec*100).toFixed(0)+" %<br>";
 msg += "📉 Mn Loss: "+mn_loss.toFixed(1)+" kg<br>";
 
-// save learning
-saveHeatData(rec);
+// ===== DISTRIBUTION =====
+let furnaceRatio = 0.70;
+let ladleRatio = 0.30;
 
-// ===== OPTIONAL CHEMISTRY =====
+if(!isNaN(feo) && feo > 25){
+  furnaceRatio = 0.80;
+  ladleRatio = 0.20;
+}
+
+let furnaceAdd = simn * furnaceRatio;
+let ladleAdd   = simn * ladleRatio;
+
+msg += "<br>👉 Suggested Addition:<br>";
+msg += "🔥 Furnace: " + furnaceAdd.toFixed(0) + " kg<br>";
+msg += "🪣 Ladle: " + ladleAdd.toFixed(0) + " kg<br>";
+
+// ===== CHEMISTRY IMPACT =====
 let siP = parseFloat(document.getElementById("siP").value)||0;
 let cP  = parseFloat(document.getElementById("cP").value)||0;
 let pP  = parseFloat(document.getElementById("pP").value)||0;
@@ -547,21 +572,30 @@ msg += "C ↑ "+c_inc.toFixed(3)+"%<br>";
 msg += "P ↑ "+p_inc.toFixed(3)+"%<br>";
 }
 
-// ===== AI SUGGESTION =====
-msg += "<br>👉 Add 70% furnace + 30% ladle<br>";
+// ===== CARBON SUGGESTION =====
+if(!isNaN(feo)){
+
+msg += "<br>🔥 FeO Control Suggestion:<br>";
 
 if(feo > 28){
-msg += "🔴 Reduce FeO (add carbon / reduce oxidation)<br>";
+  let carbon = m * 0.002;
+  msg += "👉 Add Carbon: "+carbon.toFixed(0)+" kg (urgent)<br>";
 }
 else if(feo > 25){
-msg += "🟠 Slightly high FeO → control slag<br>";
+  let carbon = m * 0.0015;
+  msg += "👉 Add Carbon: "+carbon.toFixed(0)+" kg<br>";
 }
 else if(feo < 15){
-msg += "🟢 Low FeO → good condition<br>";
+  msg += "👉 No carbon needed<br>";
 }
 else{
-msg += "⚖ Balanced FeO<br>";
+  msg += "👉 Maintain current practice<br>";
 }
+
+}
+
+// save learning
+saveHeatData(rec);
 
 }
 
@@ -572,8 +606,8 @@ else{
 let finalMn = parseFloat(document.getElementById("finalMn").value);
 let simn = parseFloat(document.getElementById("simn").value);
 
-if(isNaN(m)||isNaN(finalMn)||isNaN(simn)||isNaN(mnP)||isNaN(feo)){
-res.innerHTML="⚠ Fill all values";
+if(isNaN(m)||isNaN(finalMn)||isNaN(simn)||isNaN(mnP)){
+res.innerHTML="⚠ Fill required values";
 return;
 }
 
@@ -583,23 +617,24 @@ let mn_gain = m * finalMn / 100;
 // Mn added
 let mn_added = simn * (mnP/100);
 
-// 🔥 REAL recovery
+// recovery
 let recovery = mn_gain / mn_added;
 
-// 🔥 Mn loss
+// Mn loss
 let mn_loss = mn_added - mn_gain;
 
 // save learning
 saveHeatData(recovery);
 
-// ===== OUTPUT =====
+// OUTPUT
 msg += "⚡ Mn Recovery: "+(recovery*100).toFixed(1)+" %<br>";
 msg += "📉 Mn Loss: "+mn_loss.toFixed(1)+" kg<br>";
 
-// ===== AI BASED ON FeO =====
+// FeO optional AI
+if(!isNaN(feo)){
+
 if(feo > 28){
 msg += "🔴 Very High FeO → Mn loss very high<br>";
-msg += "👉 Add carbon / reduce oxygen blowing<br>";
 }
 else if(feo > 25){
 msg += "🟠 High FeO → Recovery low<br>";
@@ -612,11 +647,18 @@ msg += "⚖ Normal FeO<br>";
 }
 
 }
+else{
+let lastRec = getHeatRecovery();
+if(lastRec > 0){
+msg += "🤖 Using last heat recovery: "+(lastRec*100).toFixed(0)+"%<br>";
+}
+}
 
-// FINAL OUTPUT
+}
+
 res.innerHTML = msg;
 
-  }
+}
   
 // ===== GRADE =====
 function gradeAI(){
