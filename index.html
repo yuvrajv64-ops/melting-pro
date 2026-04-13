@@ -434,6 +434,7 @@ function toggleMn(){
 
 let mode = document.getElementById("mnMode").value;
 
+// inputs
 let mn1 = document.getElementById("mn1");
 let mn2 = document.getElementById("mn2");
 
@@ -444,8 +445,14 @@ let siP = document.getElementById("siP");
 let cP = document.getElementById("cP");
 let pP = document.getElementById("pP");
 
-// ===== Mn REQUIRED =====
+// 🔥 NEW (important)
+let recInput = document.getElementById("recInput");
+let feoInput = document.getElementById("feoMn");
+
+
+// ================= Mn REQUIRED =================
 if(mode === "req"){
+
   mn1.style.display="block";
   mn2.style.display="block";
 
@@ -455,10 +462,16 @@ if(mode === "req"){
   siP.style.display="block";
   cP.style.display="block";
   pP.style.display="block";
+
+  // ✅ OPTIONAL INPUTS
+  if(recInput) recInput.style.display="block";   // recovery optional
+  if(feoInput) feoInput.style.display="block";   // FeO optional
 }
 
-// ===== Mn RECOVERY =====
+
+// ================= Mn RECOVERY =================
 else{
+
   mn1.style.display="none";
   mn2.style.display="none";
 
@@ -468,9 +481,16 @@ else{
   siP.style.display="none";
   cP.style.display="none";
   pP.style.display="none";
+
+  // ❌ REMOVE recovery input here
+  if(recInput) recInput.style.display="none";
+
+  // ✔ FeO optional (visible)
+  if(feoInput) feoInput.style.display="block";
 }
 
-}
+  }
+  
 // ===== MN Calculator =====
 function calcMn(){
 
