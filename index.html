@@ -91,7 +91,8 @@ button{width:100%;padding:12px;background:#ff7a00;border:none;border-radius:8px;
 
 <input id="mnP" placeholder="Mn % in SiMn">
 <input id="feoMn" placeholder="Slag FeO %">
-
+<input id="recInput" placeholder="Recovery % (optional)">
+  
 <input id="siP" placeholder="Si % in SiMn">
 <input id="cP" placeholder="C % in SiMn">
 <input id="pP" placeholder="P % in SiMn">
@@ -495,19 +496,26 @@ res.innerHTML="⚠ Fill required values";
 return;
 }
 
-// 🔥 RECOVERY LOGIC (FeO optional)
+// 🔥 RECOVERY LOGIC (FINAL FIX)
 let rec;
 
+// case 1: FeO available → auto
 if(!isNaN(feo)){
   rec = getRecoveryFromFeO(feo);
 }
-else if(!isNaN(recInput)){
-  rec = recInput/100;
-}
+
+// case 2: FeO nahi → manual recovery
 else{
-  res.innerHTML="⚠ Enter FeO or Recovery %";
-  return;
-}
+  let recInput = parseFloat(document.getElementById("recInput").value);
+
+  if(!isNaN(recInput)){
+    rec = recInput / 100;
+  }
+  else{
+    res.innerHTML = "⚠ Enter FeO or Recovery %";
+    return;
+  }
+  }
 
 // 🔥 AI learning
 let lastRec = getHeatRecovery();
