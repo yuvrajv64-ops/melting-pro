@@ -580,7 +580,8 @@ msg += "🪣 Ladle: " + ladleAdd.toFixed(0) + " kg<br>";
 let siP = parseFloat(document.getElementById("siP").value)||0;
 let cP  = parseFloat(document.getElementById("cP").value)||0;
 let pP  = parseFloat(document.getElementById("pP").value)||0;
-
+let basicity = parseFloat(document.getElementById("basicity").value);
+  
 if(siP || cP || pP){
 
 let si_inc = (simn*(siP/100))/m*100;
