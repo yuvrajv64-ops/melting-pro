@@ -705,32 +705,34 @@ else{
 // ================= 🧠 AI SUGGESTIONS =================
 msg += "<br><b>🧠 AI Suggestions:</b><br>";
 
-// ===== FeO Based =====
+// ================= FeO =================
 if(!isNaN(feo)){
 
   if(feo > 28){
-    let carbon = m * 0.002;
+    let ci = m * 0.002; // 2 kg/ton approx
     msg += "<span class='red'>🔴 FeO Very High ("+feo+"%)</span><br>";
-    msg += "👉 Carbon: "+carbon.toFixed(0)+"–"+(carbon+5).toFixed(0)+" kg<br>";
+    msg += "👉 Add CI/Carbon: "+ci.toFixed(0)+" kg (before alloy)<br>";
   }
-  else if(feo > 22){
+  else if(feo > 25){
+    let ci = m * 0.0015;
     msg += "<span class='orange'>🟠 FeO High ("+feo+"%)</span><br>";
+    msg += "👉 Add Carbon: "+ci.toFixed(0)+" kg<br>";
+  }
+  else if(feo < 15){
+    msg += "<span class='green'>🟢 FeO Low → Good recovery</span><br>";
   }
   else{
-    msg += "<span class='green'>🟢 FeO OK ("+feo+"%)</span><br>";
+    msg += "⚖ Normal FeO<br>";
   }
 }
 
-// ===== Basicity (safe) =====
-let basicityInput = document.getElementById("basicity");
-let basicity = basicityInput ? parseFloat(basicityInput.value) : NaN;
-
+// ================= BASICITY =================
 if(!isNaN(basicity)){
 
   if(basicity < 2.0){
-    let lime = (2.5 - basicity) * 40;
+    let lime = (2.5 - basicity) * 30;  // controlled (not high)
     msg += "<br><span class='red'>🔴 Low Basicity ("+basicity.toFixed(2)+")</span><br>";
-    msg += "👉 Lime: "+lime.toFixed(0)+" kg (2–3 steps)<br>";
+    msg += "👉 Add Lime: "+lime.toFixed(0)+" kg (2–3 steps)<br>";
   }
   else if(basicity < 2.3){
     msg += "<br><span class='orange'>🟠 Slight Low Basicity</span><br>";
@@ -740,53 +742,60 @@ if(!isNaN(basicity)){
   }
 }
 
-// ===== Remix =====
+// ================= REMIX =================
 if(!isNaN(feo) && feo > 25){
-  msg += "👉 Remix77: 10–20 kg<br>";
+  msg += "👉 Remix77: 10–15 kg (slag separation)<br>";
 }
 
-// ===== Pre-Deoxidation =====
-let al = m * 0.00008;
-let si = m * 0.0002;
+// ================= PRE-DEOX =================
+let al = m * 0.00006;   // reduced (practical)
+let si = m * 0.00015;
 
-msg += "<br><b>⚡ Pre-Deoxidation:</b><br>";
-msg += "👉 Al: "+al.toFixed(1)+" kg | Si: "+si.toFixed(1)+" kg<br>";
+msg += "<br><b>⚡ Pre-Deoxidation (Before SiMn):</b><br>";
+msg += "👉 Aluminium: "+al.toFixed(1)+" kg<br>";
+msg += "👉 Silicon: "+si.toFixed(1)+" kg<br>";
 
-// ===== Temperature =====
+// ================= ADDITION DISTRIBUTION =================
+let furnaceRatio = 0.70;
+let ladleRatio = 0.30;
+
+if(!isNaN(feo) && feo > 25){
+  furnaceRatio = 0.80;
+  ladleRatio = 0.20;
+}
+
+let furnaceAdd = simn * furnaceRatio;
+let ladleAdd   = simn * ladleRatio;
+
+msg += "<br><b>📦 SiMn Distribution:</b><br>";
+msg += "🔥 Furnace: "+furnaceAdd.toFixed(0)+" kg<br>";
+msg += "🪣 Ladle: "+ladleAdd.toFixed(0)+" kg<br>";
+
+// ================= TEMPERATURE =================
 msg += "<br><b>🌡 Addition Timing:</b><br>";
-msg += "👉 1600–1610°C start Si-Mn<br>";
+msg += "👉 1600–1620°C (furnace)<br>";
+msg += "👉 Avoid below 1580°C<br>";
 
-// ===== Purging =====
+// ================= PURGING =================
 msg += "<br><b>💨 Purging:</b><br>";
 msg += "👉 Nitrogen: 60–90 sec only<br>";
 
-// ================= 🚨 ALERT =================
-msg += "<br><br><b>🚨 Alerts:</b><br>";
+// ================= WRONG PRACTICE ALERT =================
+msg += "<br><b>🚨 Auto Alerts:</b><br>";
 
 if(!isNaN(feo) && feo > 25){
   msg += "<span class='red'>❌ High FeO → Mn loss risk</span><br>";
 }
 
 if(!isNaN(basicity) && basicity < 2.0){
-  msg += "<span class='red'>❌ Low Basicity → Add Lime</span><br>";
+  msg += "<span class='red'>❌ Low Basicity → Slag weak</span><br>";
 }
 
-// overshoot only in req mode
-if(mode === "req"){
-  let mn1 = parseFloat(document.getElementById("mn1").value);
-  let mn2 = parseFloat(document.getElementById("mn2").value);
-
-  if(typeof expectedMn !== "undefined" && expectedMn > mn2 + 0.02){
-    msg += "<span class='orange'>⚠ Mn Overshoot Risk</span><br>";
-  }
-}
-
-if(!isNaN(feo) && feo > 22){
-  msg += "<span class='orange'>⚠ Pre-deoxidation required</span><br>";
+if(typeof expectedMn !== "undefined" && expectedMn > mn2 + 0.02){
+  msg += "<span class='orange'>⚠ Mn Overshoot Risk</span><br>";
 }
 
 msg += "<span class='orange'>⚠ Avoid long purging (>90 sec)</span><br>";
-
 // ================= FINAL PRINT =================
 res.innerHTML = msg;
 
