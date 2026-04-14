@@ -14,6 +14,9 @@ button{width:100%;padding:12px;background:#ff7a00;border:none;border-radius:8px;
 .active{display:block;}
 .nav{position:fixed;bottom:0;width:100%;display:flex;}
 .nav button{flex:1;}
+.red { color:#ff4d4d; font-weight:bold; }
+.orange { color:#ffa500; font-weight:bold; }
+.green { color:#00e676; font-weight:bold; }
 </style>
 
 </head>
@@ -688,15 +691,93 @@ msg += "🤖 Using last heat recovery: "+(lastRec*100).toFixed(0)+"%<br>";
 
 }
 
+  // ================= AI SUGGESTION BOX =================
+
+let ai = "<b>🧠 AI Suggestions:</b><br>";
+
+// ================= FeO =================
+if(!isNaN(feo)){
+
+  if(feo > 28){
+    ai += "<span class='red'>🔴 FeO Very High ("+feo+"%)</span><br>";
+    let carbon = (feo - 20) * (m/15) * 5;
+    ai += "👉 Add Carbon: "+carbon.toFixed(0)+"–"+(carbon+5).toFixed(0)+" kg<br>";
+  }
+  else if(feo > 22){
+    ai += "<span class='orange'>🟠 FeO High ("+feo+"%)</span><br>";
+  }
+  else{
+    ai += "<span class='green'>🟢 FeO OK ("+feo+"%)</span><br>";
+  }
+}
+
+// ================= BASICITY =================
+if(basicity){
+
+  if(basicity < 2.0){
+    let lime = (2.5 - basicity) * 40;
+    ai += "<br><span class='red'>🔴 Low Basicity ("+basicity.toFixed(2)+")</span><br>";
+    ai += "👉 Add Lime: "+lime.toFixed(0)+" kg (2–3 steps)<br>";
+  }
+  else if(basicity < 2.3){
+    ai += "<br><span class='orange'>🟠 Slight Low Basicity ("+basicity.toFixed(2)+")</span><br>";
+  }
+  else{
+    ai += "<br><span class='green'>🟢 Basicity OK ("+basicity.toFixed(2)+")</span><br>";
+  }
+}
+
+// ================= REMIX =================
+if(!isNaN(feo) && feo > 25){
+  ai += "<br>👉 Remix77: 10–20 kg<br>";
+}
+
+// ================= PRE-DEOX =================
+let al = m * 0.00008;
+let si = m * 0.0002;
+
+ai += "<br><b>⚡ Pre-Deoxidation:</b><br>";
+ai += "👉 Al: "+al.toFixed(1)+" kg | Si: "+si.toFixed(1)+" kg<br>";
+
+// ================= TEMP =================
+ai += "<br><b>🌡 Addition Timing:</b><br>";
+ai += "👉 1600–1610°C start Si-Mn<br>";
+
+// ================= PURGING =================
+ai += "<br><b>💨 Purging:</b><br>";
+ai += "👉 Nitrogen: 60–90 sec only<br>";
+
+
+// ================= 🚨 WRONG PRACTICE =================
+ai += "<br><br><b>🚨 Alerts:</b><br>";
+
+// FeO high
+if(!isNaN(feo) && feo > 25){
+  ai += "<span class='red'>❌ High FeO → Mn loss risk</span><br>";
+}
+
+// Basicity low
+if(basicity && basicity < 2.0){
+  ai += "<span class='red'>❌ Low Basicity → Add Lime</span><br>";
+}
+
+// Overshoot
+if(typeof expectedMn !== "undefined" && expectedMn > mn2 + 0.02){
+  ai += "<span class='orange'>⚠ Mn Overshoot Risk</span><br>";
+}
+
+// Pre-deox missing
+if(!isNaN(feo) && feo > 22){
+  ai += "<span class='orange'>⚠ Pre-deoxidation required</span><br>";
+}
+
+// Purging
+ai += "<span class='orange'>⚠ Avoid long purging (>90 sec)</span><br>";
+
+// ================= SHOW =================
+document.getElementById("aiBox").innerHTML = ai;
 res.innerHTML = msg;
 
-}
-  
-// ===== GRADE =====
-function gradeAI(){
-let t=spec.value.toLowerCase();
-if(t.includes("0.22")) gradeRes.innerHTML="Fe500";
-else gradeRes.innerHTML="XLS";
 }
 
 // ===== SLAG =====
