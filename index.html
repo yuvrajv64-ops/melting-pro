@@ -569,12 +569,14 @@ if(!isNaN(feo) && feo > 25){
   ladleRatio = 0.20;
 }
 
+if(typeof simn !== "undefined"){
 let furnaceAdd = simn * furnaceRatio;
 let ladleAdd   = simn * ladleRatio;
 
-msg += "<br>👉 Suggested Addition:<br>";
-msg += "🔥 Furnace: " + furnaceAdd.toFixed(0) + " kg<br>";
-msg += "🪣 Ladle: " + ladleAdd.toFixed(0) + " kg<br>";
+msg += "<br><b>📦 SiMn Distribution:</b><br>";
+msg += "🔥 Furnace: "+furnaceAdd.toFixed(0)+" kg<br>";
+msg += "🪣 Ladle: "+ladleAdd.toFixed(0)+" kg<br>";
+}
 
 // ===== CHEMISTRY IMPACT =====
 let siP = parseFloat(document.getElementById("siP").value)||0;
