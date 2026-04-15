@@ -109,17 +109,24 @@ button{width:100%;padding:12px;background:#ff7a00;border:none;border-radius:8px;
 </div>
 
 <!-- PAGE 2 -->
+<div id="p2" class="page">
+
 <div class="card">
 <h3>🧪 Slag Control AI</h3>
+
+<!-- 📸 CAMERA -->
 <input type="file" id="imgInput" accept="image/*">
 <canvas id="canvas" style="display:none;"></canvas>
 
 <button onclick="slagCameraAI()">📸 Analyze by Photo</button>
-  
-<input id="s_feo" placeholder="FeO %">
+
+<br>
+
+<!-- 🧪 MANUAL INPUT -->
+<input id="s_feo" placeholder="FeO % (optional)">
 
 <select id="s_color">
-<option value="">Slag Color</option>
+<option value="">Select Slag Color</option>
 <option value="black">Black</option>
 <option value="darkbrown">Dark Brown</option>
 <option value="brown">Brown</option>
@@ -128,12 +135,16 @@ button{width:100%;padding:12px;background:#ff7a00;border:none;border-radius:8px;
 <option value="white">White</option>
 </select>
 
-<button onclick="slagControl()">Analyze Slag</button>
+<button onclick="slagControl()">🧪 Analyze Slag</button>
 
+<!-- ✅ RESULT -->
 <div id="slagControlRes" class="result"></div>
-</div>
+
 </div>
 
+</div>
+
+<!-- NAV -->
 <div class="nav">
 <button onclick="show(1)">1</button>
 <button onclick="show(2)">2</button>
