@@ -124,21 +124,23 @@ font-weight:bold;
 
 </div>
 
-<!-- PAGE 2 -->
+  <!-- PAGE 2 -->
 <div id="p2" class="page">
 
 <div class="card">
+
+<!-- 🔘 TAB BUTTONS -->
+<div style="display:flex; gap:5px;">
+<button onclick="openTab(1)">🧪 Slag</button>
+<button onclick="openTab(2)">📸 Camera</button>
+<button onclick="openTab(3)">🧾 Lab</button>
+</div>
+
+<!-- ================= TAB 1 (SLAG) ================= -->
+<div id="tab1" class="tab activeTab">
+
 <h3>🧪 Slag Control AI</h3>
 
-<!-- 📸 CAMERA -->
-<input type="file" id="imgInput" accept="image/*">
-<canvas id="canvas" style="display:none;"></canvas>
-
-<button onclick="slagCameraAI()">📸 Analyze by Photo</button>
-
-<br>
-
-<!-- 🧪 MANUAL INPUT -->
 <input id="s_feo" placeholder="FeO % (optional)">
 
 <select id="s_color">
@@ -151,10 +153,68 @@ font-weight:bold;
 <option value="white">White</option>
 </select>
 
-<button onclick="slagControl()">🧪 Analyze Slag</button>
+<button onclick="slagControl()">Analyze Slag</button>
 
-<!-- ✅ RESULT -->
 <div id="slagControlRes" class="result"></div>
+
+</div>
+
+<!-- ================= TAB 2 (CAMERA) ================= -->
+<div id="tab2" class="tab">
+
+<h3>📸 Camera Slag AI</h3>
+
+<input type="file" id="imgInput" accept="image/*">
+<canvas id="canvas" style="display:none;"></canvas>
+
+<button onclick="slagCameraAI()">📸 Analyze by Photo</button>
+
+<div id="slagCameraRes" class="result"></div>
+
+</div>
+
+<!-- ================= TAB 3 (LAB SOP) ================= -->
+<div id="tab3" class="tab">
+
+<h3>🧾 Lab SOP (BIS)</h3>
+
+<button onclick="toggleLab('feoLab')">FeO Test</button>
+<div id="feoLab" class="result" style="display:none;">
+KMnO₄ method (slag):
+1. Sample crush (200 mesh)
+2. HCl dissolve
+3. KMnO₄ titration  
+Formula: FeO % = V × N × 7.18 / W
+</div>
+
+<button onclick="toggleLab('sio2Lab')">SiO₂</button>
+<div id="sio2Lab" class="result" style="display:none;">
+Gravimetric method:
+Dry → fuse → filter → ignite  
+SiO₂ % = (Residue/W) ×100
+</div>
+
+<button onclick="toggleLab('caoLab')">CaO</button>
+<div id="caoLab" class="result" style="display:none;">
+EDTA titration  
+Indicator: Murexide  
+CaO % = (V×N×56/W)
+</div>
+
+<button onclick="toggleLab('mgoLab')">MgO</button>
+<div id="mgoLab" class="result" style="display:none;">
+EDTA method  
+Indicator: EBT  
+MgO % = (V×N×40/W)
+</div>
+
+<button onclick="toggleLab('fetLab')">FeT (Sponge)</button>
+<div id="fetLab" class="result" style="display:none;">
+Dichromate method  
+FeT % = V × N × 5.585 / W
+</div>
+
+</div>
 
 </div>
 
