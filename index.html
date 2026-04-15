@@ -109,31 +109,26 @@ button{width:100%;padding:12px;background:#ff7a00;border:none;border-radius:8px;
 </div>
 
 <!-- PAGE 2 -->
-<div id="p2" class="page">
-
 <div class="card">
-<h3>🧪 Slag AI</h3>
+<h3>🧪 Slag Control AI</h3>
 
-<input id="cao" placeholder="CaO%">
-<input id="sio2" placeholder="SiO2%">
-<input id="feoS" placeholder="FeO%">
+<input id="s_metal" placeholder="Metal (kg)">
+<input id="s_feo" placeholder="FeO %">
 
-<button onclick="slagAI()">Analyze</button>
+<select id="s_color">
+<option value="">Slag Color</option>
+<option value="black">Black</option>
+<option value="darkbrown">Dark Brown</option>
+<option value="brown">Brown</option>
+<option value="green">Green</option>
+<option value="yellow">Yellow</option>
+<option value="white">White</option>
+</select>
 
-<div id="slagRes" class="result"></div>
+<button onclick="slagControl()">Analyze Slag</button>
 
+<div id="slagControlRes" class="result"></div>
 </div>
-
-<div class="card">
-<h3>📄 Report</h3>
-
-<textarea id="report"></textarea>
-
-<button onclick="makeReport()">Generate</button>
-<button onclick="sendWA()">WhatsApp</button>
-
-</div>
-
 </div>
 
 <div class="nav">
