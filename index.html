@@ -726,22 +726,6 @@ if(!isNaN(feo)){
   }
 }
 
-// ================= BASICITY =================
-if(!isNaN(basicity)){
-
-  if(basicity < 2.0){
-    let lime = (2.5 - basicity) * 30;  // controlled (not high)
-    msg += "<br><span class='red'>🔴 Low Basicity ("+basicity.toFixed(2)+")</span><br>";
-    msg += "👉 Add Lime: "+lime.toFixed(0)+" kg (2–3 steps)<br>";
-  }
-  else if(basicity < 2.3){
-    msg += "<br><span class='orange'>🟠 Slight Low Basicity</span><br>";
-  }
-  else{
-    msg += "<br><span class='green'>🟢 Basicity OK</span><br>";
-  }
-}
-
 // ================= REMIX =================
 if(!isNaN(feo) && feo > 25){
   msg += "👉 Remix77: 10–15 kg (slag separation)<br>";
