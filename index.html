@@ -590,11 +590,6 @@ if(isNaN(m)||isNaN(mn1)||isNaN(mn2)||isNaN(mnP)){
 res.innerHTML="⚠ Fill required values";
 return;
 }
- // TAB SWITCH
-function openTab(n){
-document.querySelectorAll(".tab").forEach(x=>x.classList.remove("activeTab"));
-document.getElementById("tab"+n).classList.add("activeTab");
-}
 
 // 🔥 RECOVERY LOGIC (FINAL FIX)
 let rec;
