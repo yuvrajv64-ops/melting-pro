@@ -784,6 +784,115 @@ function slagAI(){
 let b=cao.value/sio2.value;
 slagRes.innerHTML="Basicity "+b.toFixed(2);
 }
+  function slagCameraAI(){
+
+let file = document.getElementById("imgInput").files[0];
+let manualColor = document.getElementById("s_color").value;
+let res = document.getElementById("slagControlRes");
+
+if(!file && !manualColor){
+res.innerHTML="⚠ Upload image or select color";
+return;
+}
+
+// ================= IMAGE MODE =================
+if(file){
+
+let img = new Image();
+let reader = new FileReader();
+
+reader.onload = function(e){
+img.src = e.target.result;
+}
+
+img.onload = function(){
+
+let canvas = document.getElementById("canvas");
+let ctx = canvas.getContext("2d");
+
+canvas.width = img.width;
+canvas.height = img.height;
+
+ctx.drawImage(img,0,0);
+
+// 🔥 CENTER AREA (more accurate)
+let startX = img.width * 0.25;
+let startY = img.height * 0.25;
+let endX   = img.width * 0.75;
+let endY   = img.height * 0.75;
+
+let data = ctx.getImageData(startX, startY, endX-startX, endY-startY).data;
+
+let r=0,g=0,b=0,count=0;
+
+// 🔥 smart sampling
+for(let i=0;i<data.length;i+=20){
+r+=data[i];
+g+=data[i+1];
+b+=data[i+2];
+count++;
+}
+
+r/=count;
+g/=count;
+b/=count;
+
+// 🔥 brightness detect
+let brightness = (r+g+b)/3;
+
+// ================= COLOR LOGIC (ADVANCED) =================
+let color="unknown";
+
+// BLACK (very high FeO)
+if(brightness < 60){
+color="black";
+}
+
+// WHITE (lime excess, avoid glare)
+else if(brightness > 200 && Math.abs(r-g)<20 && Math.abs(g-b)<20){
+color="white";
+}
+
+// GREEN (best slag)
+else if(g > r && g > b){
+color="green";
+}
+
+// DARK BROWN (high FeO)
+else if(r > g && g > b && brightness < 140){
+color="darkbrown";
+}
+
+// BROWN (normal)
+else if(r > g && g > b){
+color="brown";
+}
+
+// YELLOW (low FeO)
+else if(r > 180 && g > 150){
+color="yellow";
+}
+
+else{
+color="brown";
+}
+
+// show result
+showSlagResult(color, brightness);
+
+}
+
+reader.readAsDataURL(file);
+
+}
+
+// ================= MANUAL MODE =================
+else{
+showSlagResult(manualColor, 150);
+}
+
+  }
+  
 function slagControl(){
 
 let m = parseFloat(document.getElementById("s_metal").value);
