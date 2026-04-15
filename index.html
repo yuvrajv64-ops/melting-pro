@@ -1267,6 +1267,11 @@ toggleMn();       // ✅ Mn toggle add
 
 });
 
+  function openTab(n){
+document.querySelectorAll(".tab").forEach(x=>x.classList.remove("activeTab"));
+document.getElementById("tab"+n).classList.add("activeTab");
+  }
+  
 </script>
 
 </body>
