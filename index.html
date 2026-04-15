@@ -1260,6 +1260,18 @@ toggleCarbon();   // 🔥 carbon toggle fix
 toggleMn();       // ✅ Mn toggle add
 
 });
+
+  // ===== TAB SWITCH =====
+function openTab(n){
+document.querySelectorAll(".tab").forEach(x=>x.classList.remove("activeTab"));
+document.getElementById("tab"+n).classList.add("activeTab");
+}
+
+// ===== LAB TOGGLE =====
+function toggleLab(id){
+let el = document.getElementById(id);
+el.style.display = (el.style.display==="none") ? "block" : "none";
+}
   
 </script>
 
