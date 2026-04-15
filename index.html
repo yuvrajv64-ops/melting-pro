@@ -99,7 +99,6 @@ button{width:100%;padding:12px;background:#ff7a00;border:none;border-radius:8px;
 <input id="siP" placeholder="Si % in SiMn">
 <input id="cP" placeholder="C % in SiMn">
 <input id="pP" placeholder="P % in SiMn">
-<input id="basicity" placeholder="Basicity (CaO/SiO2)">
   
 <button onclick="calcMn()">Calculate</button>
 
@@ -582,7 +581,7 @@ msg += "🪣 Ladle: "+ladleAdd.toFixed(0)+" kg<br>";
 let siP = parseFloat(document.getElementById("siP").value)||0;
 let cP  = parseFloat(document.getElementById("cP").value)||0;
 let pP  = parseFloat(document.getElementById("pP").value)||0;
-let basicity = parseFloat(document.getElementById("basicity").value);
+
   
 if(siP || cP || pP){
 
