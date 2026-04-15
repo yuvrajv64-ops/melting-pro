@@ -774,11 +774,7 @@ msg += "<br><b>🚨 Auto Alerts:</b><br>";
 if(!isNaN(feo) && feo > 25){
   msg += "<span class='red'>❌ High FeO → Mn loss risk</span><br>";
 }
-
-if(!isNaN(basicity) && basicity < 2.0){
-  msg += "<span class='red'>❌ Low Basicity → Slag weak</span><br>";
-}
-
+  
 if(typeof expectedMn !== "undefined" && expectedMn > mn2 + 0.02){
   msg += "<span class='orange'>⚠ Mn Overshoot Risk</span><br>";
 }
