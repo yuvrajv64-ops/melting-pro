@@ -899,72 +899,107 @@ showSlagResult(manualColor, 150);
   function showSlagResult(color, brightness){
 
 let res = document.getElementById("slagControlRes");
+let m = 15000; // default heat (agar future me auto lena ho to change kar sakte ho)
+
 let msg = "<b>🎨 Slag AI Result:</b><br><br>";
 
 msg += "📊 Brightness: "+brightness.toFixed(0)+"<br><br>";
 
+// ================= COLOR + FeO =================
 if(color==="black"){
 msg += "<span class='red'>🔴 Black Slag</span><br>";
 msg += "👉 FeO Very High (>28%)<br>";
-msg += "👉 Add CI urgently<br>";
+
+let ci = m * 0.002;
+let lime = m * 0.01;
+
+msg += "<br><b>🧪 Correction:</b><br>";
+msg += "👉 Cast Iron: "+ci.toFixed(0)+" kg (2–3 steps)<br>";
+msg += "👉 Lime: "+lime.toFixed(0)+" kg<br>";
+
+msg += "<br><b>⚠ Impact:</b><br>";
+msg += "👉 Mn loss very high<br>";
+msg += "👉 Alloy consumption ↑<br>";
+msg += "👉 Slag fluidity high<br>";
 }
 
 else if(color==="darkbrown"){
-msg += "<span class='orange'>🟠 Dark Brown</span><br>";
+msg += "<span class='orange'>🟠 Dark Brown Slag</span><br>";
 msg += "👉 FeO High (25–28%)<br>";
-msg += "👉 Add Carbon + Lime<br>";
+
+let ci = m * 0.0015;
+let lime = m * 0.008;
+
+msg += "<br><b>🧪 Correction:</b><br>";
+msg += "👉 Carbon/CI: "+ci.toFixed(0)+" kg<br>";
+msg += "👉 Lime: "+lime.toFixed(0)+" kg<br>";
+
+msg += "<br><b>⚠ Impact:</b><br>";
+msg += "👉 Mn recovery low<br>";
+msg += "👉 Slag oxidizing<br>";
 }
 
 else if(color==="brown"){
 msg += "⚖ Brown Slag<br>";
 msg += "👉 FeO Normal (20–25%)<br>";
+
+msg += "<br><b>🧪 Action:</b><br>";
+msg += "👉 Maintain current practice<br>";
+msg += "👉 Alloy addition safe<br>";
 }
 
 else if(color==="green"){
 msg += "<span class='green'>🟢 Green Slag</span><br>";
 msg += "👉 Best slag (18–22%)<br>";
+
+msg += "<br><b>🧪 Action:</b><br>";
+msg += "👉 Direct SiMn addition OK<br>";
+msg += "👉 Maximum recovery zone<br>";
 }
 
 else if(color==="yellow"){
-msg += "<span class='orange'>🟠 Yellow Slag</span><br>";
+msg += "<span class='orange'>🟡 Yellow Slag</span><br>";
 msg += "👉 Low FeO (<18%)<br>";
+
+msg += "<br><b>🧪 Correction:</b><br>";
+msg += "👉 Add mill scale / oxygen blow<br>";
+
+msg += "<br><b>⚠ Impact:</b><br>";
+msg += "👉 Carbon removal slow<br>";
 }
 
 else if(color==="white"){
-msg += "<span class='red'>🔴 White Slag</span><br>";
-msg += "👉 Excess Lime<br>";
-}
+msg += "<span class='red'>⚪ White Slag</span><br>";
+msg += "👉 Excess lime / high basicity<br>";
 
-// ================= ACTION PLAN =================
-msg += "<br><b>🚀 Action:</b><br>";
-
-if(color==="black"){
-msg += "👉 Add CI: fast recovery<br>";
-msg += "👉 Avoid alloy loss<br>";
-}
-else if(color==="darkbrown"){
-msg += "👉 Add Carbon + control slag<br>";
-}
-else if(color==="yellow"){
-msg += "👉 Increase FeO slightly<br>";
-}
-else if(color==="white"){
+msg += "<br><b>🧪 Correction:</b><br>";
 msg += "👉 Reduce lime addition<br>";
+msg += "👉 Add silica sand if needed<br>";
+
+msg += "<br><b>⚠ Impact:</b><br>";
+msg += "👉 Slag thick<br>";
+msg += "👉 Poor refining<br>";
 }
-else{
-msg += "👉 Continue normal process<br>";
-}
+
+// ================= UNIVERSAL AI =================
+msg += "<br><b>🚀 Smart Action Plan:</b><br>";
+msg += "👉 Temp: 1600–1620°C maintain<br>";
+msg += "👉 Purging: 60–90 sec only<br>";
+msg += "👉 Alloy after slag control<br>";
 
 // ================= ALERT =================
-msg += "<br><b>🚨 Alert:</b><br>";
+msg += "<br><b>🚨 Alerts:</b><br>";
 
 if(color==="black"||color==="darkbrown"){
 msg += "<span class='red'>❌ Mn loss risk</span><br>";
+msg += "<span class='red'>❌ High oxidation</span><br>";
 }
 
 if(color==="white"){
 msg += "<span class='orange'>⚠ Over liming</span><br>";
 }
+
+msg += "<span class='orange'>⚠ Avoid long purging (>90 sec)</span><br>";
 
 res.innerHTML = msg;
 
