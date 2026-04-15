@@ -784,7 +784,149 @@ function slagAI(){
 let b=cao.value/sio2.value;
 slagRes.innerHTML="Basicity "+b.toFixed(2);
 }
+function slagControl(){
 
+let m = parseFloat(document.getElementById("s_metal").value);
+let feo = parseFloat(document.getElementById("s_feo").value);
+let color = document.getElementById("s_color").value;
+
+let res = document.getElementById("slagControlRes");
+
+if(isNaN(m) || isNaN(feo)){
+res.innerHTML = "⚠ Enter Metal & FeO";
+return;
+}
+
+let msg = "<b>🧪 Slag Analysis:</b><br><br>";
+
+// ================= FeO ANALYSIS =================
+if(feo > 28){
+
+let ci = m * 0.002;
+let lime = m * 0.01;
+
+msg += "<span class='red'>🔴 Very High FeO ("+feo+"%)</span><br>";
+msg += "👉 Add CI: "+ci.toFixed(0)+" kg (2–3 steps)<br>";
+msg += "👉 Add Lime: "+lime.toFixed(0)+" kg<br>";
+msg += "⚠ Mn & Si loss very high<br>";
+
+}
+
+else if(feo > 25){
+
+let ci = m * 0.0015;
+let lime = m * 0.008;
+
+msg += "<span class='orange'>🟠 High FeO ("+feo+"%)</span><br>";
+msg += "👉 Add Carbon/CI: "+ci.toFixed(0)+" kg<br>";
+msg += "👉 Add Lime: "+lime.toFixed(0)+" kg<br>";
+msg += "⚠ Mn recovery low<br>";
+
+}
+
+else if(feo < 15){
+
+msg += "<span class='green'>🟢 Low FeO ("+feo+"%)</span><br>";
+msg += "👉 No carbon needed<br>";
+msg += "⚠ Carbon removal slow<br>";
+
+}
+
+else{
+
+msg += "⚖ Normal FeO ("+feo+"%)<br>";
+msg += "👉 Maintain practice<br>";
+
+}
+
+// ================= SLAG COLOR =================
+if(color){
+
+msg += "<br><b>🎨 Slag Color:</b><br>";
+
+if(color === "black"){
+msg += "<span class='red'>🔴 Black → High FeO confirmed</span><br>";
+msg += "👉 Strong oxidation<br>";
+}
+
+else if(color === "darkbrown"){
+msg += "<span class='orange'>🟠 Dark Brown → High FeO</span><br>";
+}
+
+else if(color === "brown"){
+msg += "⚖ Brown → Normal slag<br>";
+}
+
+else if(color === "green"){
+msg += "<span class='green'>🟢 Green → Good basic slag</span><br>";
+}
+
+else if(color === "yellow"){
+msg += "<span class='orange'>🟠 Yellow → Low FeO</span><br>";
+}
+
+else if(color === "white"){
+msg += "<span class='red'>🔴 White → Excess lime</span><br>";
+msg += "👉 Reduce lime<br>";
+}
+
+}
+
+// ================= SLAG CONDITION =================
+msg += "<br><b>🧱 Slag Condition:</b><br>";
+
+if(feo > 28){
+msg += "👉 Slag thin & aggressive<br>";
+msg += "👉 Increase basicity<br>";
+}
+else if(feo < 15){
+msg += "👉 Slag thick<br>";
+msg += "👉 Improve oxidation<br>";
+}
+else{
+msg += "👉 Slag balanced<br>";
+}
+
+// ================= REMIX =================
+if(feo > 25){
+msg += "<br>👉 Add Remix77: 10–20 kg<br>";
+}
+
+// ================= FINAL PLAN =================
+msg += "<br><b>🚀 Action Plan:</b><br>";
+
+if(feo > 28){
+msg += "1️⃣ Add CI first<br>";
+msg += "2️⃣ Add Lime<br>";
+msg += "3️⃣ Wait 2–3 min<br>";
+msg += "4️⃣ Then alloy<br>";
+}
+else if(feo > 25){
+msg += "1️⃣ Add Carbon<br>";
+msg += "2️⃣ Light Lime<br>";
+msg += "3️⃣ Then Mn addition<br>";
+}
+else{
+msg += "✔ Direct alloying possible<br>";
+}
+
+// ================= ALERT =================
+msg += "<br><b>🚨 Alerts:</b><br>";
+
+if(feo > 25){
+msg += "<span class='red'>❌ High FeO → Mn loss risk</span><br>";
+}
+
+if(color === "white"){
+msg += "<span class='orange'>⚠ Over liming</span><br>";
+}
+
+msg += "<span class='orange'>⚠ Avoid long purging (>90 sec)</span><br>";
+
+res.innerHTML = msg;
+
+}
+  
 // ===== REPORT =====
 function makeReport(){
 report.value=furnaceRes.innerText+"\n"+carbonRes.innerText+"\n"+mnRes.innerText;
