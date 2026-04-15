@@ -111,7 +111,11 @@ button{width:100%;padding:12px;background:#ff7a00;border:none;border-radius:8px;
 <!-- PAGE 2 -->
 <div class="card">
 <h3>🧪 Slag Control AI</h3>
+<input type="file" id="imgInput" accept="image/*">
+<canvas id="canvas" style="display:none;"></canvas>
 
+<button onclick="slagCameraAI()">📸 Analyze by Photo</button>
+  
 <input id="s_feo" placeholder="FeO %">
 
 <select id="s_color">
