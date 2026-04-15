@@ -764,12 +764,16 @@ if(!isNaN(feo) && feo > 25){
   ladleRatio = 0.20;
 }
 
+  if(typeof simn !== "undefined" && !isNaN(simn)){
+    
 let furnaceAdd = simn * furnaceRatio;
 let ladleAdd   = simn * ladleRatio;
 
 msg += "<br><b>📦 SiMn Distribution:</b><br>";
 msg += "🔥 Furnace: "+furnaceAdd.toFixed(0)+" kg<br>";
 msg += "🪣 Ladle: "+ladleAdd.toFixed(0)+" kg<br>";
+
+  }
 
 // ================= TEMPERATURE =================
 msg += "<br><b>🌡 Addition Timing:</b><br>";
