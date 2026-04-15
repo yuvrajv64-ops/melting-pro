@@ -892,6 +892,80 @@ showSlagResult(manualColor, 150);
 }
 
   }
+
+  function showSlagResult(color, brightness){
+
+let res = document.getElementById("slagControlRes");
+let msg = "<b>🎨 Slag AI Result:</b><br><br>";
+
+msg += "📊 Brightness: "+brightness.toFixed(0)+"<br><br>";
+
+if(color==="black"){
+msg += "<span class='red'>🔴 Black Slag</span><br>";
+msg += "👉 FeO Very High (>28%)<br>";
+msg += "👉 Add CI urgently<br>";
+}
+
+else if(color==="darkbrown"){
+msg += "<span class='orange'>🟠 Dark Brown</span><br>";
+msg += "👉 FeO High (25–28%)<br>";
+msg += "👉 Add Carbon + Lime<br>";
+}
+
+else if(color==="brown"){
+msg += "⚖ Brown Slag<br>";
+msg += "👉 FeO Normal (20–25%)<br>";
+}
+
+else if(color==="green"){
+msg += "<span class='green'>🟢 Green Slag</span><br>";
+msg += "👉 Best slag (18–22%)<br>";
+}
+
+else if(color==="yellow"){
+msg += "<span class='orange'>🟠 Yellow Slag</span><br>";
+msg += "👉 Low FeO (<18%)<br>";
+}
+
+else if(color==="white"){
+msg += "<span class='red'>🔴 White Slag</span><br>";
+msg += "👉 Excess Lime<br>";
+}
+
+// ================= ACTION PLAN =================
+msg += "<br><b>🚀 Action:</b><br>";
+
+if(color==="black"){
+msg += "👉 Add CI: fast recovery<br>";
+msg += "👉 Avoid alloy loss<br>";
+}
+else if(color==="darkbrown"){
+msg += "👉 Add Carbon + control slag<br>";
+}
+else if(color==="yellow"){
+msg += "👉 Increase FeO slightly<br>";
+}
+else if(color==="white"){
+msg += "👉 Reduce lime addition<br>";
+}
+else{
+msg += "👉 Continue normal process<br>";
+}
+
+// ================= ALERT =================
+msg += "<br><b>🚨 Alert:</b><br>";
+
+if(color==="black"||color==="darkbrown"){
+msg += "<span class='red'>❌ Mn loss risk</span><br>";
+}
+
+if(color==="white"){
+msg += "<span class='orange'>⚠ Over liming</span><br>";
+}
+
+res.innerHTML = msg;
+
+  }
   
 function slagControl(){
 
