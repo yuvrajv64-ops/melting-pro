@@ -1252,10 +1252,11 @@ window.open("https://wa.me/?text="+encodeURIComponent(report.value));
 // INIT
 document.addEventListener("DOMContentLoaded", function(){
 
-updateUnitUI();   // 🔥 unit fix
-toggleCarbon();   // 🔥 carbon toggle fix
-toggleMn();       // ✅ Mn toggle add
-  
+try{ updateUnitUI(); }catch(e){}
+try{ toggleCarbon(); }catch(e){}
+try{ toggleMn(); }catch(e){}
+try{ openTab(1); }catch(e){}
+
 });
 
   // ===== TAB SWITCH =====
