@@ -254,9 +254,16 @@ return v;
 
 // ===== PAGE =====
 function show(p){
+
 document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
 document.getElementById("p"+p).classList.add("active");
+
+// 🔥 IMPORTANT FIX
+if(p==2){
+  openTab(1);
 }
+
+   }
 
 // ===== FURNACE =====
 function calcFurnace(){
@@ -1251,7 +1258,6 @@ document.addEventListener("DOMContentLoaded", function(){
 updateUnitUI();   // 🔥 unit fix
 toggleCarbon();   // 🔥 carbon toggle fix
 toggleMn();       // ✅ Mn toggle add
-openTab(1);   // 🔥
   
 });
 
