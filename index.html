@@ -1350,7 +1350,11 @@ let area = (dia * dia);
 
 // density (auto)
 let density = 7850;
+let densityText = "7850 kg/m³";
 
+if(unit==="mm") densityText="7.85 g/cm³";
+if(unit==="inch") densityText="0.284 lb/in³";
+  
 // single billet
 let single = area * len * density;
 
