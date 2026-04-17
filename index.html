@@ -1328,44 +1328,55 @@ document.getElementById("tab"+n).classList.add("activeTab");
 }
 
   // ===== BILLET CALCULATOR =====
-function calcBillet(){
+function calcBilletPro(){
 
-let w = parseFloat(document.getElementById("bw").value);
-let h = parseFloat(document.getElementById("bh").value);
-let unit = document.getElementById("bunit").value;
+let d1 = parseFloat(d1.value);
+let d2 = parseFloat(d2.value);
+let unit = document.getElementById("unit").value;
 
-let len = parseFloat(document.getElementById("blen").value);
-let nos = parseFloat(document.getElementById("bnos").value) || 1;
-
-let rlen = parseFloat(document.getElementById("rlen").value) || 0;
-let rnos = parseFloat(document.getElementById("rnos").value) || 0;
-
-if(!w || !h || !len){
-document.getElementById("billetRes").innerHTML="⚠ Fill required values";
-return;
-}
+let len = parseFloat(len.value);
+let nos = parseFloat(nos.value) || 1;
 
 // convert to meter
-if(unit==="mm"){ w/=1000; h/=1000; }
-if(unit==="cm"){ w/=100; h/=100; }
-if(unit==="inch"){ w*=0.0254; h*=0.0254; }
+if(unit==="mm"){ d1/=1000; d2/=1000; }
+if(unit==="cm"){ d1/=100; d2/=100; }
+if(unit==="inch"){ d1*=0.0254; d2*=0.0254; }
 
+// average dia
+let dia = (d1 + d2)/2;
+
+// area
+let area = (dia * dia);
+
+// density (auto)
 let density = 7850;
 
-let single = w*h*len*density;
+// single billet
+let single = area * len * density;
+
+// main total
 let mainTotal = single * nos;
 
-let randomTotal = w*h*rlen*density * rnos;
+// random
+let totalRandom = 0;
 
-let total = mainTotal + randomTotal;
+for(let i=1;i<=3;i++){
+let l = parseFloat(document.getElementById("rlen"+i).value)||0;
+let n = parseFloat(document.getElementById("rnos"+i).value)||0;
+
+totalRandom += area * l * density * n;
+}
+
+let grand = mainTotal + totalRandom;
 
 document.getElementById("billetRes").innerHTML =
+
 "⚖ Single Billet: "+single.toFixed(0)+" kg<br>"+
 "📦 Main Total: "+mainTotal.toFixed(0)+" kg<br>"+
-"📦 Random Total: "+randomTotal.toFixed(0)+" kg<br>"+
-"🔥 Grand Total: "+total.toFixed(0)+" kg<br><br>"+
+"📦 Random Total: "+totalRandom.toFixed(0)+" kg<br>"+
+"🔥 Grand Total: "+grand.toFixed(0)+" kg<br><br>"+
 
-"⚠️ Note: Shrinkage hone par weight thoda kam aa sakta hai<br><br>"+
+"⚠ Shrinkage hone par weight kam aayega<br><br>"+
 
 "⚠️ कब ज्यादा shrinkage होता है?<br>"+
 "🔴 High superheat (>40°C)<br>"+
@@ -1374,7 +1385,7 @@ document.getElementById("billetRes").innerHTML =
 "🔴 Improper secondary cooling<br>"+
 "🔴 High FeO slag";
 
-}
+  }
   
 // ===== LAB TOGGLE =====
 function toggleLab(id){
