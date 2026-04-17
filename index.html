@@ -118,12 +118,12 @@ font-weight:bold;
   </div>
 
     <!-- 📏 BILLET BOX -->
-<div id="billetBox" style="display:none;">
+<div id="billetBox">
 
 <h3>📏 Billet Weight Calculator</h3>
 
-<!-- D1 -->
-<input id="d1" placeholder="D1">
+<!-- SIZE -->
+<input id="d1" placeholder="D1 (e.g. 99.8)">
 <select id="u1">
 <option value="mm">MM</option>
 <option value="cm">CM</option>
@@ -131,8 +131,7 @@ font-weight:bold;
 <option value="inch">Inch</option>
 </select>
 
-<!-- D2 -->
-<input id="d2" placeholder="D2">
+<input id="d2" placeholder="D2 (e.g. 99.5)">
 <select id="u2">
 <option value="mm">MM</option>
 <option value="cm">CM</option>
@@ -141,7 +140,7 @@ font-weight:bold;
 </select>
 
 <!-- LENGTH -->
-<input id="len" placeholder="Length">
+<input id="len" placeholder="Main Length (e.g. 6)">
 <select id="u3">
 <option value="m">Meter</option>
 <option value="mm">MM</option>
@@ -149,14 +148,19 @@ font-weight:bold;
 <option value="inch">Inch</option>
 </select>
 
+<input id="nos" placeholder="Main Nos (optional)">
+
+<!-- 🔥 MULTI RANDOM -->
+<textarea id="randoms" placeholder="Random billets (example):
+2.5x10
+3x5
+4x2"></textarea>
+
 <!-- DENSITY -->
 <input id="density" placeholder="Density (auto)">
-<button onclick="autoDensity()">Auto Density</button>
+<button onclick="autoDensity()">⚡ Auto Density</button>
 
-<!-- NOS -->
-<input id="nos" placeholder="Nos (optional)">
-
-<button onclick="calcBillet()">Calculate</button>
+<button onclick="calcBillet()">🔥 Calculate</button>
 
 <div id="billetRes" class="result"></div>
 
