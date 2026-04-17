@@ -1374,69 +1374,96 @@ document.getElementById("tab"+n).classList.add("activeTab");
 }
 
   // ===== BILLET CALCULATOR =====
-function calcBilletPro(){
-
-let d1 = parseFloat(d1.value);
-let d2 = parseFloat(d2.value);
-let unit = document.getElementById("unit").value;
-
-let len = parseFloat(len.value);
-let nos = parseFloat(nos.value) || 1;
-
-// convert to meter
-if(unit==="mm"){ d1/=1000; d2/=1000; }
-if(unit==="cm"){ d1/=100; d2/=100; }
-if(unit==="inch"){ d1*=0.0254; d2*=0.0254; }
-
-// average dia
-let dia = (d1 + d2)/2;
-
-// area
-let area = (dia * dia);
-
-// density (auto)
-let density = 7850;
-let densityText = "7850 kg/m³";
-
-if(unit==="mm") densityText="7.85 g/cm³";
-if(unit==="inch") densityText="0.284 lb/in³";
-  
-// single billet
-let single = area * len * density;
-
-// main total
-let mainTotal = single * nos;
-
-// random
-let totalRandom = 0;
-
-for(let i=1;i<=3;i++){
-let l = parseFloat(document.getElementById("rlen"+i).value)||0;
-let n = parseFloat(document.getElementById("rnos"+i).value)||0;
-
-totalRandom += area * l * density * n;
+// ===== UNIT CONVERT =====
+function toMeter(v,u){
+if(u==="mm") return v/1000;
+if(u==="cm") return v/100;
+if(u==="inch") return v*0.0254;
+return v;
 }
 
-let grand = mainTotal + totalRandom;
+// ===== AUTO DENSITY =====
+function autoDensity(){
+let densityBox = document.getElementById("density");
+densityBox.value = 7850;
+}
 
-document.getElementById("billetRes").innerHTML =
+// ===== MAIN CALCULATOR =====
+function calcBillet(){
 
-  "🧪 Density: "+densityText+"<br><br>"+
-  
-"⚖ Single Billet: "+single.toFixed(0)+" kg<br>"+
-"📦 Main Total: "+mainTotal.toFixed(0)+" kg<br>"+
-"📦 Random Total: "+totalRandom.toFixed(0)+" kg<br>"+
-"🔥 Grand Total: "+grand.toFixed(0)+" kg<br><br>"+
+let d1 = parseFloat(document.getElementById("d1").value);
+let d2 = parseFloat(document.getElementById("d2").value);
+let len = parseFloat(document.getElementById("len").value);
+let nos = parseFloat(document.getElementById("nos").value)||1;
 
-"⚠ Shrinkage hone par weight kam aayega<br><br>"+
+let u1 = document.getElementById("u1").value;
+let u2 = document.getElementById("u2").value;
+let u3 = document.getElementById("u3").value;
 
-"⚠️ कब ज्यादा shrinkage होता है?<br>"+
-"🔴 High superheat (>40°C)<br>"+
-"🔴 Centre porosity<br>"+
-"🔴 Slow cooling<br>"+
-"🔴 Improper secondary cooling<br>"+
-"🔴 High FeO slag";
+let density = parseFloat(document.getElementById("density").value)||7850;
 
+let randomText = document.getElementById("randoms").value;
+
+let res = document.getElementById("billetRes");
+
+// validation
+if(isNaN(d1)||isNaN(d2)||isNaN(len)){
+res.innerHTML="⚠ Enter D1, D2 & Length";
+return;
+}
+
+// convert
+d1 = toMeter(d1,u1);
+d2 = toMeter(d2,u2);
+len = toMeter(len,u3);
+
+// volume
+let vol = d1*d2*len;
+
+// weight
+let single = vol*density;
+let mainTotal = single*nos;
+
+// ===== RANDOM CALC =====
+let randomTotal = 0;
+
+if(randomText.trim()!==""){
+
+let lines = randomText.split("\n");
+
+lines.forEach(line=>{
+let parts = line.split("x");
+
+if(parts.length===2){
+let l = parseFloat(parts[0]);
+let n = parseFloat(parts[1]);
+
+if(!isNaN(l)&&!isNaN(n)){
+let l_m = toMeter(l,u3);
+let wt = d1*d2*l_m*density;
+randomTotal += wt*n;
+}
+}
+});
+
+}
+
+// ===== FINAL =====
+let grand = mainTotal + randomTotal;
+
+// OUTPUT
+res.innerHTML = `
+⚖ Single Billet: ${single.toFixed(2)} kg<br>
+📦 Main Total (${nos}): ${mainTotal.toFixed(0)} kg<br>
+📦 Random Total: ${randomTotal.toFixed(0)} kg<br>
+🔥 Grand Total: ${grand.toFixed(0)} kg<br><br>
+
+💡 Suggestions:<br>
+👉 Shrinkage (1–2%) consider karo<br>
+👉 High superheat → weight loss<br>
+👉 High FeO → metal loss<br>
+👉 Improper cooling → variation<br>
+`;
   }
   
 // ===== LAB TOGGLE =====
