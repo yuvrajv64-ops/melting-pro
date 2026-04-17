@@ -47,6 +47,11 @@ font-weight:bold;
 <div id="p1" class="page active">
 
 <div class="card">
+  <!-- 🔘 TOGGLE -->
+<select id="calcMode" onchange="switchCalc()">
+<option value="furnace">🔥 Furnace</option>
+<option value="billet">📏 Billet</option>
+</select>
 <h3>🔥 Furnace Metal calculator</h3>
 
   <select id="unit" onchange="updateUnitUI()">
