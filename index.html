@@ -87,31 +87,37 @@ font-weight:bold;
 <div id="billetBox" style="display:none;">
 
 <div class="card">
+<h3>📏 Billet Weight Calculator (Pro)</h3>
 
-<h3>📏 Billet Weight Calculator</h3>
+<input id="d1" placeholder="D1 (e.g. 99.8)">
+<input id="d2" placeholder="D2 (e.g. 99.7)">
 
-<input id="bw" placeholder="Width">
-<input id="bh" placeholder="Height">
-
-<select id="bunit">
+<select id="unit">
 <option value="mm">MM</option>
 <option value="cm">CM</option>
 <option value="m">Meter</option>
 <option value="inch">Inch</option>
 </select>
 
-<input id="blen" placeholder="Main Length">
-<input id="bnos" placeholder="Main Nos">
+<input id="len" placeholder="Specific Length (e.g. 6)">
+<input id="nos" placeholder="Nos (optional)">
 
-<input id="rlen" placeholder="Random Length (optional)">
-<input id="rnos" placeholder="Random Nos (optional)">
+<h4>🔹 Random Billets</h4>
 
-<button onclick="calcBillet()">Calculate</button>
+<input id="rlen1" placeholder="Length 1">
+<input id="rnos1" placeholder="Nos 1">
+
+<input id="rlen2" placeholder="Length 2">
+<input id="rnos2" placeholder="Nos 2">
+
+<input id="rlen3" placeholder="Length 3">
+<input id="rnos3" placeholder="Nos 3">
+
+<button onclick="calcBilletPro()">Calculate</button>
 
 <div id="billetRes" class="result"></div>
 
 </div>
-
 </div>
 <!-- 📏 BILLET BOX END -->
 </div>   <!-- 🔥 PAGE 1 CLOSE -->
