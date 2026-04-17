@@ -1320,6 +1320,55 @@ document.querySelectorAll(".tab").forEach(x=>x.classList.remove("activeTab"));
 document.getElementById("tab"+n).classList.add("activeTab");
 }
 
+  // ===== BILLET CALCULATOR =====
+function calcBillet(){
+
+let w = parseFloat(document.getElementById("bw").value);
+let h = parseFloat(document.getElementById("bh").value);
+let unit = document.getElementById("bunit").value;
+
+let len = parseFloat(document.getElementById("blen").value);
+let nos = parseFloat(document.getElementById("bnos").value) || 1;
+
+let rlen = parseFloat(document.getElementById("rlen").value) || 0;
+let rnos = parseFloat(document.getElementById("rnos").value) || 0;
+
+if(!w || !h || !len){
+document.getElementById("billetRes").innerHTML="⚠ Fill required values";
+return;
+}
+
+// convert to meter
+if(unit==="mm"){ w/=1000; h/=1000; }
+if(unit==="cm"){ w/=100; h/=100; }
+if(unit==="inch"){ w*=0.0254; h*=0.0254; }
+
+let density = 7850;
+
+let single = w*h*len*density;
+let mainTotal = single * nos;
+
+let randomTotal = w*h*rlen*density * rnos;
+
+let total = mainTotal + randomTotal;
+
+document.getElementById("billetRes").innerHTML =
+"⚖ Single Billet: "+single.toFixed(0)+" kg<br>"+
+"📦 Main Total: "+mainTotal.toFixed(0)+" kg<br>"+
+"📦 Random Total: "+randomTotal.toFixed(0)+" kg<br>"+
+"🔥 Grand Total: "+total.toFixed(0)+" kg<br><br>"+
+
+"⚠️ Note: Shrinkage hone par weight thoda kam aa sakta hai<br><br>"+
+
+"⚠️ कब ज्यादा shrinkage होता है?<br>"+
+"🔴 High superheat (>40°C)<br>"+
+"🔴 Centre porosity<br>"+
+"🔴 Slow cooling<br>"+
+"🔴 Improper secondary cooling<br>"+
+"🔴 High FeO slag";
+
+}
+  
 // ===== LAB TOGGLE =====
 function toggleLab(id){
 let el = document.getElementById(id);
