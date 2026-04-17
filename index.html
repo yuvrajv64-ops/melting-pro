@@ -366,6 +366,21 @@ furnaceRes.innerHTML =
 
 }
 
+  // ===== TOGGLE CALCULATOR =====
+function switchCalc(){
+
+let mode = document.getElementById("calcMode").value;
+
+if(mode === "furnace"){
+document.getElementById("furnaceBox").style.display="block";
+document.getElementById("billetBox").style.display="none";
+}
+else{
+document.getElementById("furnaceBox").style.display="none";
+document.getElementById("billetBox").style.display="block";
+}
+
+}
 // ===== CARBON TOGGLE =====
 function toggleCarbon(){
 
