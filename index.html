@@ -387,7 +387,6 @@ let b = toMeter(Number(document.getElementById("bottom").value)||0, unit);
 let taperH = toMeter(Number(document.getElementById("taper").value)||0, unit);
 let h = toMeter(Number(document.getElementById("height").value)||0, unit);
   // ===== AUTO UNIT DETECT =====
-let unit = document.getElementById("unit").value;
 
 let topVal = Number(document.getElementById("top").value)||0;
 let bottomVal = Number(document.getElementById("bottom").value)||0;
@@ -1384,7 +1383,7 @@ window.open("https://wa.me/?text="+encodeURIComponent(report.value));
 // INIT
 document.addEventListener("DOMContentLoaded", function(){
 
-updateUnitUI();   // 🔥 THIS LINE FIXES YOUR ISSUE
+updateUnitUI();   // 🔥 THIS FIX
 
 toggleCarbon();
 toggleMn();
