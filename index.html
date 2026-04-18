@@ -338,14 +338,16 @@ document.getElementById("height").placeholder = "Total Height ("+label+")";
 }
 document.getElementById("unit").addEventListener("change",updateUnitUI);
 
-// ===== UNIT CONVERT =====
-function toMeter(v){
-  let u = document.getElementById("unit").value;
-if(u=="cm") return v/100;
-if(u=="mm") return v/1000;
-if(u=="inch") return v*0.0254;
-return v;
-}
+// ===== UNIVERSAL UNIT CONVERSION =====
+function toMeter(v, unit){
+
+if(unit==="mm") return v/1000;
+if(unit==="cm") return v/100;
+if(unit==="inch") return v*0.0254;
+
+return v; // meter
+
+  }
 
 // ===== PAGE =====
 function show(p){
@@ -378,6 +380,23 @@ let b = toMeter(Number(document.getElementById("bottom").value)||0);
 let taperH = toMeter(Number(document.getElementById("taper").value)||0);
 let h = toMeter(Number(document.getElementById("height").value)||0);
 
+  // ===== AUTO UNIT DETECT =====
+let unit = document.getElementById("unit").value;
+
+let topVal = Number(document.getElementById("top").value)||0;
+let bottomVal = Number(document.getElementById("bottom").value)||0;
+
+// 🔴 CASE 1: Inch selected but value looks like mm
+if(unit==="inch" && topVal > 100){
+res.innerHTML="⚠ Value mm jaisa lag raha hai, unit check karo";
+return;
+}
+
+// 🔴 CASE 2: mm selected but value looks like inch
+if(unit==="mm" && topVal < 10){
+res.innerHTML="⚠ Value inch jaisa lag raha hai, unit check karo";
+return;
+}
 if(!t||!b||!h){
 furnaceRes.innerHTML="⚠ Enter dimensions";
 return;
