@@ -1490,14 +1490,17 @@ let grand = mainTotal + randomTotal;
 // OUTPUT
 res.innerHTML = `
 ⚖ Single Billet: ${single.toFixed(2)} kg<br>
-📦 Main Total (${nos}): ${mainTotal.toFixed(0)} kg<br>
-📦 Random Total: ${randomTotal.toFixed(0)} kg<br>
+📦 Total Billets: ${mainTotal.toFixed(0)} kg<br>
+📦 Random Billets: ${randomTotal.toFixed(0)} kg<br>
 🔥 Grand Total: ${grand.toFixed(0)} kg<br><br>
 
-💡 Suggestions:<br>
-👉 Shrinkage (1–2%) consider karo<br>
-👉 High superheat → weight loss<br>
-👉 High FeO → metal loss<br>
+📊 Info:<br>
+• Density: ${density} kg/m³<br>
+• Section: ${(d1*d2).toFixed(4)} m²<br><br>
+
+💡 Notes:<br>
+👉 1–2% shrinkage consider karo<br>
+👉 High temp → weight loss<br>
 👉 Improper cooling → variation<br>
 `;
   }
