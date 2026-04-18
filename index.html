@@ -1429,6 +1429,11 @@ let randomText = document.getElementById("randoms").value;
 
 let res = document.getElementById("billetRes");
 
+  if(randomText.includes("*")){
+res.innerHTML="⚠ Use 'x' not '*' (example: 2.5x10)";
+return;
+  }
+  
 // validation
 if(isNaN(d1)||isNaN(d2)||isNaN(len)){
 res.innerHTML="⚠ Enter D1, D2 & Length";
