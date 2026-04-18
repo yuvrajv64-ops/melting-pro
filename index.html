@@ -284,48 +284,49 @@ font-weight:bold;
 
 <h3>🧾 Lab SOP (BIS)</h3>
 
-<button onclick="toggleLab('feoLab')">FeO Test</button>
-<div id="feoLab" class="result" style="display:none;">
-KMnO₄ method (slag):
-1. Sample crush (200 mesh)
-2. HCl dissolve
-3. KMnO₄ titration  
-Formula: FeO % = V × N × 7.18 / W
-</div>
+<button onclick="toggleLab('fem')">Fe(M) – Metallic Iron</button>
 
-<button onclick="toggleLab('sio2Lab')">SiO₂</button>
-<div id="sio2Lab" class="result" style="display:none;">
-Gravimetric method:
-Dry → fuse → filter → ignite  
-SiO₂ % = (Residue/W) ×100
-</div>
+<div id="fem" class="result" style="display:none;">
 
-<button onclick="toggleLab('caoLab')">CaO</button>
-<div id="caoLab" class="result" style="display:none;">
-EDTA titration  
-Indicator: Murexide  
-CaO % = (V×N×56/W)
-</div>
+<b>Test: Fe(M) – Metallic Iron (Sponge Iron)</b><br><br>
 
-<button onclick="toggleLab('mgoLab')">MgO</button>
-<div id="mgoLab" class="result" style="display:none;">
-EDTA method  
-Indicator: EBT  
-MgO % = (V×N×40/W)
-</div>
+<b>🔬 Reagents Preparation:</b><br>
 
-<button onclick="toggleLab('fetLab')">FeT (Sponge)</button>
-<div id="fetLab" class="result" style="display:none;">
-Dichromate method  
-FeT % = V × N × 5.585 / W
-</div>
+1. <b>0.1 N Potassium Dichromate:</b><br>
+4.903 g K₂Cr₂O₇ → make 1 litre solution<br><br>
+
+2. <b>Acid Mixture:</b><br>
+30 ml H₂SO₄ + 30 ml H₃PO₄ + 40 ml distilled water<br><br>
+
+3. <b>Indicator:</b><br>
+0.2 g Barium Diphenylamine Sulphonate in 100 ml water<br><br>
+
+4. <b>HgCl₂:</b><br>
+Use directly (solid)<br><br>
+
+
+<b>⚙️ Procedure:</b><br>
+1. Take 0.2 g sample<br>
+2. Add 2 g HgCl₂<br>
+3. Add 100 ml distilled water<br>
+4. Heat till ~50 ml<br>
+5. Cool & filter (Whatman 41)<br>
+6. Add 20 ml acid mixture<br>
+7. Add indicator<br>
+8. Titrate with 0.1 N K₂Cr₂O₇ till colour changes (clear → greenish)<br><br>
+
+
+<b>🧮 Calculation:</b><br>
+Fe(M)% = (Reading × 0.05585 × 100) / W<br><br>
+
+
+<b>💡 Suggestions:</b><br>
+👉 <80% = Low metallization<br>
+👉 80–85% = Normal<br>
+👉 >85% = Good<br>
 
 </div>
-
-</div>
-
-</div>
-
+  
 <!-- NAV -->
 <div class="nav">
 <button onclick="show(1)">1</button>
