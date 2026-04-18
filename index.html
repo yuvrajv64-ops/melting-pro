@@ -1401,10 +1401,19 @@ openTab(1);
 
   // ===== TAB SWITCH =====
 function openTab(n){
+
 document.querySelectorAll(".tab").forEach(x=>x.classList.remove("activeTab"));
 document.getElementById("tab"+n).classList.add("activeTab");
-}
 
+// clear result
+let res = document.getElementById("slagRes");
+if(res) res.innerHTML = "";
+
+// 🔥 dynamic title
+let titles = ["🧪 Slag Control AI","📸 Camera Slag AI","🧾 Lab SOP"];
+document.querySelector("#p2 h3").innerText = titles[n-1];
+
+  }
   // ===== BILLET CALCULATOR =====
 
 // ===== UNIVERSAL UNIT =====
