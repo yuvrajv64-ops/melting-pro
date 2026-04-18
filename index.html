@@ -1455,20 +1455,28 @@ if(randomText.trim()!==""){
 let lines = randomText.split("\n");
 
 lines.forEach(line=>{
+line = line.trim();
+
+if(line.includes("x")){
+
 let parts = line.split("x");
 
-if(parts.length===2){
-let l = parseFloat(parts[0]);
-let n = parseFloat(parts[1]);
+let l = parseFloat(parts[0]); // length
+let n = parseFloat(parts[1]); // qty
 
-if(!isNaN(l)&&!isNaN(n)){
+if(!isNaN(l) && !isNaN(n)){
+
 let l_m = toMeter(l,u3);
-let wt = d1*d2*l_m*density;
-randomTotal += wt*n;
+
+// same section area use (main billet ka)
+let wt = d1 * d2 * l_m * density;
+
+randomTotal += wt * n;
+
 }
+
 }
 });
-
 }
 
 // ===== FINAL =====
