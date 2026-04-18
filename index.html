@@ -329,15 +329,20 @@ FeT % = V × N × 5.585 / W
 function updateUnitUI(){
 
 let u = document.getElementById("unit").value;
-let label = (u === "inch") ? "in" : u;
 
-// ✅ FIX: proper element targeting
+let label = "m";
+if(u === "mm") label = "mm";
+if(u === "cm") label = "cm";
+if(u === "inch") label = "in";
+
+// placeholders update
 document.getElementById("top").placeholder = "Top Dia ("+label+")";
 document.getElementById("bottom").placeholder = "Bottom Dia ("+label+")";
 document.getElementById("taper").placeholder = "Taper Height ("+label+")";
 document.getElementById("height").placeholder = "Total Height ("+label+")";
+
+  }
   
-}
 document.getElementById("unit").addEventListener("change",updateUnitUI);
 
 // ===== UNIVERSAL UNIT CONVERSION =====
