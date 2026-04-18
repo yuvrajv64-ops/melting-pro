@@ -143,13 +143,15 @@ font-weight:bold;
 </select>
 
 <!-- LENGTH -->
-<input id="len" placeholder="Billet Length (e.g. 6)">
-<select id="u3">
-<option value="m">Meter</option>
-<option value="mm">MM</option>
-<option value="cm">CM</option>
-<option value="inch">Inch</option>
-</select>
+<div style="display:flex; gap:5px;">
+  <input id="d1" placeholder="Billet Length" style="flex:2;">
+  <select id="u1" style="flex:1;">
+    <option value="mm">MM</option>
+    <option value="cm">CM</option>
+    <option value="m">M</option>
+    <option value="inch">IN</option>
+  </select>
+</div>
 
 <input id="nos" placeholder="Total Billet (optional)">
 
