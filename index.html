@@ -375,11 +375,12 @@ furnaceRes.innerHTML="⚠ Scrap+Sponge=100%";
 return;
 }
 
-let t = toMeter(Number(document.getElementById("top").value)||0);
-let b = toMeter(Number(document.getElementById("bottom").value)||0);
-let taperH = toMeter(Number(document.getElementById("taper").value)||0);
-let h = toMeter(Number(document.getElementById("height").value)||0);
+let unit = document.getElementById("unit").value;
 
+let t = toMeter(Number(document.getElementById("top").value)||0, unit);
+let b = toMeter(Number(document.getElementById("bottom").value)||0, unit);
+let taperH = toMeter(Number(document.getElementById("taper").value)||0, unit);
+let h = toMeter(Number(document.getElementById("height").value)||0, unit);
   // ===== AUTO UNIT DETECT =====
 let unit = document.getElementById("unit").value;
 
