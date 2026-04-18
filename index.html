@@ -1431,6 +1431,8 @@ let density = parseFloat(document.getElementById("density").value)||7850;
 
 let randomText = document.getElementById("randoms").value;
 
+  randomText = randomText.replace(/[×*]/g,"x");
+  
 let res = document.getElementById("billetRes");
 
   if(randomText.includes("*")){
