@@ -127,8 +127,8 @@ font-weight:bold;
 
 <!-- SIZE -->
 <div style="display:flex; gap:5px;">
-  <input id="d1" placeholder="D1" style="flex:2;">
-  <select id="u1" style="flex:1;">
+  <input id="d1" placeholder="Width">
+  <select id="u1">
     <option value="mm">MM</option>
     <option value="cm">CM</option>
     <option value="m">M</option>
@@ -137,8 +137,8 @@ font-weight:bold;
 </div>
 
 <div style="display:flex; gap:5px;">
-  <input id="d1" placeholder="D2" style="flex:2;">
-  <select id="u1" style="flex:1;">
+  <input id="d2" placeholder="Height">
+  <select id="u2">
     <option value="mm">MM</option>
     <option value="cm">CM</option>
     <option value="m">M</option>
@@ -148,27 +148,26 @@ font-weight:bold;
 
 <!-- LENGTH -->
 <div style="display:flex; gap:5px;">
-  <input id="d1" placeholder="Billet Length" style="flex:2;">
-  <select id="u1" style="flex:1;">
+  <input id="len" placeholder="Billet Length">
+  <select id="u3">
+    <option value="m">M</option>
     <option value="mm">MM</option>
     <option value="cm">CM</option>
-    <option value="m">M</option>
     <option value="inch">IN</option>
   </select>
 </div>
 
-<input id="nos" placeholder="Total Billet (optional)">
+<input id="nos" placeholder="Total Billets (optional)">
 
-<!-- 🔥 MULTI RANDOM -->
-<textarea id="randoms" placeholder="Random billets (example):
+<!-- RANDOM -->
+<textarea id="randoms" placeholder="Random billets:
 2.5x10
-3x5
-4x2"></textarea>
+3x5"></textarea>
 
-  <small style="color:#aaa;">
-Example: 2.5x10 = 10 billets of 2.5m
+<small style="color:#aaa; display:block; margin-top:5px;">
+💡 Example: 2.5x10 = 10 billets of 2.5m
 </small>
-  
+
 <!-- DENSITY -->
 <input id="density" placeholder="Density (auto)">
 <button onclick="autoDensity()">⚡ Auto Density</button>
@@ -176,7 +175,6 @@ Example: 2.5x10 = 10 billets of 2.5m
 <button onclick="calcBillet()">🔥 Calculate</button>
 
 <div id="billetRes" class="result"></div>
-
 </div>
 <!-- 📏 BILLET BOX END -->
 
