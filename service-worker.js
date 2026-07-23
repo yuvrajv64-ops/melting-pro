@@ -7,7 +7,9 @@ self.addEventListener("install", event => {
       return cache.addAll([
         "./",
         "./index.html",
-        "./manifest.json"
+        "./manifest.json",
+        "./icon-192.png",
+        "./icon-512.png"
       ]);
     })
   );
@@ -27,10 +29,8 @@ self.addEventListener("activate", event => {
 
 self.addEventListener("fetch", event => {
 
-  // Sirf GET requests handle karo
   if (event.request.method !== "GET") return;
 
-  // Sirf apni website ki files cache karo
   if (new URL(event.request.url).origin !== location.origin) return;
 
   event.respondWith(
