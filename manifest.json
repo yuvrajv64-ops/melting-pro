@@ -1,8 +1,12 @@
 {
   "name": "MeltingPro",
   "short_name": "MeltingPro",
+  "description": "Offline Steel Melting Calculator & Lab Assistant",
+  "lang": "en",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#0f0f0f",
   "theme_color": "#ff7b00",
   "icons": [
