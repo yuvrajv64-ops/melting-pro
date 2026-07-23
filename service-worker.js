@@ -26,19 +26,39 @@ self.addEventListener("activate", event => {
 });
 
 self.addEventListener("fetch", event => {
+
+  // Sirf GET requests handle karo
+  if (event.request.method !== "GET") return;
+
+  // Sirf apni website ki files cache karo
+  if (new URL(event.request.url).origin !== location.origin) return;
+
   event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        if (response) {
+    caches.match(event.request).then(cached => {
+
+      if (cached) {
+        return cached;
+      }
+
+      return fetch(event.request).then(response => {
+
+        if (!response || response.status !== 200) {
           return response;
         }
-        return fetch(event.request)
-          .then(networkResponse => {
-            return caches.open(CACHE_NAME).then(cache => {
-              cache.put(event.request, networkResponse.clone());
-              return networkResponse;
-            });
-          });
-      })
+
+        const copy = response.clone();
+
+        caches.open(CACHE_NAME).then(cache => {
+          cache.put(event.request, copy);
+        });
+
+        return response;
+
+      }).catch(() => {
+        return caches.match("./index.html");
+      });
+
+    })
   );
+
 });
